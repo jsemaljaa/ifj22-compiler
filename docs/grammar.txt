@@ -1,0 +1,15 @@
+1. <program> -> <prolog> <body>
+. <prolog> -> "<?php declare"              // как разделить "<?php" и "declare(...)" в правиле
+. <body> -> EOF
+. <body> -> <list_of_functions>
+. <body> -> <list_of_expressions>
+. <list_of_functions> -> function global identifier( <list_of_datatypes> ) : <list_of_ret_datatypes>
+. <list_of_functions> -> function identifier( <list_of_parameters> ) : <list_of_ret_datatypes> { <list_of_expressions> }
+. <list_of_functions> -> id ( <list_of_parameters> )
+. <list_of_expressions> -> ε
+. <list_of_expressions> -> <expression> <list_of_expressions>
+. <expression> -> $ identifier = <call_function_or_expression>
+. <expression> -> if ( condition ) { <list_of_expressions> } else { <list_of_expressions> }
+. <expression> -> while ( condition ) { <list_of_expressions> }
+
+
