@@ -1,14 +1,33 @@
 1. <program> -> <prolog> <body>
-. <prolog> -> "<?php declare"              // как разделить "<?php" и "declare(...)" в правиле
+2. <prolog> -> <?php declare(strict_types=1);
+    // в правиле выше между <?php и declare() может находиться любое количество белых символов
+       и комментарии (!)
+    // женя сказала что комменты она пропускает в сканнере и поэтому нам не надо писать правило
+       для случая если есть что то между <?php и declare()
 . <body> -> EOF
 . <body> -> <list_of_functions>
 . <body> -> <list_of_expressions>
-. <list_of_functions> -> function global identifier( <list_of_datatypes> ) : <list_of_ret_datatypes>
-. <list_of_functions> -> function identifier( <list_of_parameters> ) : <list_of_ret_datatypes> { <list_of_expressions> }
-. <list_of_functions> -> id ( <list_of_parameters> )
-. <list_of_expressions> -> ε
-. <list_of_expressions> -> <expression> <list_of_expressions>
-. <expression> -> $ identifier = <call_function_or_expression>
+. <list_of_functions> -> ε
+. <list_of_functions> -> <function_dec_def> <list_of_functions>
+. <list_of_functions> -> <function_call>
+. <function_dec_def> -> function identifier( <list_of_parameters> ) : <list_of_datatypes_ret> { <list_of_expressions> }
+. <function_call> -> identifier ( <list_of_parameters> );
+. <list_of_datatypes> -> <datatype>
+. <list_of_datatypes_ret> -> <datatype>
+. <list_of_datatypes_ret> -> void
+. <list_of_parameters> -> ε
+. <list_of_parameters> -> <parameter> , <list_of_parameters>
+. <parameter> -> datatype <variable>
+. <parameter> -> <variable>
+. <variable> -> $identifier
+. <datatype> -> int
+. <datatype> -> bool
+. <datatype> -> float
+. <datatype> -> string
+. <datatype> -> nil
+. <list_of_statements> -> ε
+. <list_of_statements> -> <statement>; <list_of_statements>
+. <expression> -> $identifier = <function_call>
 . <expression> -> if ( condition ) { <list_of_expressions> } else { <list_of_expressions> }
 . <expression> -> while ( condition ) { <list_of_expressions> }
 
