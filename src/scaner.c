@@ -238,8 +238,8 @@ int getNextToken(string *attr)
                 else if (strCmpConstStr(attr, "int") == 0)
                     return INT;
 
-                // else if (strCmpConstStr(attr, "null") == 0)
-                //   return NULL;
+                else if (strCmpConstStr(attr, "null") == 0)
+                   return KEYWORD_NULL;
 
                 else if (strCmpConstStr(attr, "return") == 0)
                     return RETURN;

@@ -15,7 +15,7 @@
 #define FUNCTION 12
 #define IF 13
 #define INT 14
-//#define NULL        15
+#define KEYWORD_NULL        15
 #define RETURN 16
 #define STRING 17
 #define VOID 18
