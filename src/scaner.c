@@ -1,4 +1,9 @@
-// lexikalni analyzator
+/*
+ * Lexikalni analyzator
+ * Autor: Evgenia Taipova
+ */
+
+
 #include <stdio.h>
 #include <ctype.h>
 #include "str.h"
