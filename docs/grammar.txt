@@ -1,3 +1,57 @@
+1. <program> -> <prolog> <list_of_statements>
+2. <prolog> -> <?php declare(strict_types=1);
+3. <list_of_statements> -> EOF
+4. <list_of_statements> -> <statement> <list_of_statements> 
+5. <statement> -> <function_definition>
+6. <statement> -> <variable_definition>;
+7. <statement> -> <function_call>;
+8. <statement> -> if ( <expression> ) { <list_of_statements> } else { <list_of_statements> }
+9. <statement> -> while ( <expression> ) { <list_of_statements> }
+10. <function_definition> -> function ID( <list_of_parameters> ) : <list_of_datatypes_ret> { <list_of_statements> }
+11. <variable_definition> -> <variable> = <expression>; 
+12. <variable_definition> -> <variable> = <function_call>;
+13. <function_call> -> ID( <list_of_call_parameters> );
+14. <list_of_call_parameters> -> ε
+15. <list_of_call_parameters> -> <call_parameter> <list_of_call_parameters_n>
+16. <call_parameter> -> <variable>
+17. <call_parameter> -> "string" // ?????
+18. <list_of_call_parameters_n> -> , <call_parameter> <list_of_call_parameters_n>
+19. <list_of_call_parameters_n> -> ε 
+20. <list_of_parameters> -> ε
+21. <list_of_parameters> -> <parameter> <list_of_parameters_n>
+22. <parameter> -> <list_of_datatypes> <variable>
+23. <list_of_datatypes> -> int
+24. <list_of_datatypes> -> bool
+25. <list_of_datatypes> -> float
+26. <list_of_datatypes> -> string
+27. <list_of_datatypes> -> nil
+28. <variable> -> $ID
+29. <list_of_parameters_n> -> ε
+30. <list_of_parameters_n> -> , <parameter> <list_of_parameters_n>
+31. <list_of_datatypes_ret> -> void
+32. <list_of_datatypes_ret> -> <list_of_datatypes>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+................................
+
 1. <program> -> <prolog> <body>
 2. <prolog> -> <?php declare(strict_types=1);
     // в правиле выше между <?php и declare() может находиться любое количество белых символов
@@ -14,13 +68,24 @@
 . <list_of_parameters> -> <parameter> <list_of_parameters_n>
 . <list_of_parameters_n> -> ε
 . <list_of_parameters_n> -> , <parameter> <list_of_parameters_n>
+. <parameter> -> <datatype> <variable>
+. <parameter> -> <variable>
+. <variable> -> $ID
+. <datatype> -> int
+. <datatype> -> bool
+. <datatype> -> float
+. <datatype> -> string
+. <datatype> -> nil
 . <list_of_datatypes_ret> -> <list_of_datatypes>
 . <list_of_datatypes_ret> -> void
 . <list_of_datatypes> -> <datatype>
 
-. <function_body> -> <function_statement> <function_body>
-. <function_statement> -> [expression_local]
-
+. <list_of_statements> -> <statement>; <list_of_statements>
+. <list_of_statements> -> ε
+. <statement> -> <variable_definition>;
+. <statement> -> <expression_assignment>;
+. <statement> -> if ( <expression> ) { <list_of_statements> } else { <list_of_statements> }
+. <statement> -> while ( <expression> ) { <list_of_statements> }
 
 
 
