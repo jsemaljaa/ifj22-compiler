@@ -4,22 +4,51 @@
        и комментарии (!)
     // женя сказала что комменты она пропускает в сканнере и поэтому нам не надо писать правило
        для случая если есть что то между <?php и declare()
+. <body> -> <statement> <body>
+. <body> -> EOF
+. <statement> -> [expression_global]
+. <statement> -> <function_definition>
+
+. <function_definition> -> function ID( <list_of_parameters> ) : <list_of_datatypes_ret> { <function_body> }
+. <list_of_parameters> -> ε
+. <list_of_parameters> -> <parameter> <list_of_parameters_n>
+. <list_of_parameters_n> -> ε
+. <list_of_parameters_n> -> , <parameter> <list_of_parameters_n>
+. <list_of_datatypes_ret> -> <list_of_datatypes>
+. <list_of_datatypes_ret> -> void
+. <list_of_datatypes> -> <datatype>
+
+. <function_body> -> <function_statement> <function_body>
+. <function_statement> -> [expression_local]
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////
 . <body> -> EOF
 . <body> -> <list_of_functions>
 . <body> -> <list_of_expressions>
 . <list_of_functions> -> ε
-. <list_of_functions> -> <function_dec_def> <list_of_functions>
+. <list_of_functions> -> <function_definition> <list_of_functions>
 . <list_of_functions> -> <function_call>
-. <function_dec_def> -> function identifier( <list_of_parameters> ) : <list_of_datatypes_ret> { <list_of_expressions> }
-. <function_call> -> identifier ( <list_of_parameters> );
+. <function_definition> -> function ID( <list_of_parameters> ) : <list_of_datatypes_ret> { <list_of_expressions> }
+. <function_call> -> ID( <list_of_parameters> );
 . <list_of_datatypes> -> <datatype>
 . <list_of_datatypes_ret> -> <datatype>
 . <list_of_datatypes_ret> -> void
 . <list_of_parameters> -> ε
-. <list_of_parameters> -> <parameter> , <list_of_parameters>
-. <parameter> -> datatype <variable>
+. <list_of_parameters> -> <parameter> <list_of_parameters_n>
+. <list_of_parameters_n> -> , <parameter> <list_of_parameters_n>
+. <list_of_parameters_n> -> ε
+. <parameter> -> <datatype> <variable>
 . <parameter> -> <variable>
-. <variable> -> $identifier
+. <variable> -> $ID
 . <datatype> -> int
 . <datatype> -> bool
 . <datatype> -> float
@@ -27,7 +56,7 @@
 . <datatype> -> nil
 . <list_of_statements> -> ε
 . <list_of_statements> -> <statement>; <list_of_statements>
-. <expression> -> $identifier = <function_call>
+. <expression> -> $ID = <function_call>
 . <expression> -> if ( condition ) { <list_of_expressions> } else { <list_of_expressions> }
 . <expression> -> while ( condition ) { <list_of_expressions> }
 
