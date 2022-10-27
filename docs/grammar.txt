@@ -3,33 +3,74 @@
 3. <list_of_statements> -> EOF
 4. <list_of_statements> -> <statement> <list_of_statements> 
 5. <statement> -> <function_definition>
-6. <statement> -> <variable_definition>;
-7. <statement> -> <function_call>;
+6. <statement> -> <variable_definition>
+7. <statement> -> <function_call>
 8. <statement> -> if ( <expression> ) { <list_of_statements> } else { <list_of_statements> }
 9. <statement> -> while ( <expression> ) { <list_of_statements> }
 10. <statement> -> return <return_expressions>;
 11. <return_expressions> -> <expression>
 12. <return_expressions> -> <variable>
 13. <function_definition> -> function ID( <list_of_parameters> ) : <list_of_datatypes_ret> { <list_of_statements> }
-14. <variable_definition> -> <variable> = <expression> 
-15. <variable_definition> -> <variable> = <function_call>
-16. <function_call> -> ID( <list_of_call_parameters> )
-17. <list_of_call_parameters> -> ε
-18. <list_of_call_parameters> -> <call_parameter> <list_of_call_parameters_n>
-19. <call_parameter> -> <variable>
-20. <call_parameter> -> "string" // ?????
-21. <list_of_call_parameters_n> -> , <call_parameter> <list_of_call_parameters_n>
-22. <list_of_call_parameters_n> -> ε 
-23. <list_of_parameters> -> ε
-24. <list_of_parameters> -> <parameter> <list_of_parameters_n>
-25. <parameter> -> <list_of_datatypes> <variable>
-26. <list_of_datatypes> -> int
-27. <list_of_datatypes> -> bool
-28. <list_of_datatypes> -> float
-29. <list_of_datatypes> -> string
-30. <list_of_datatypes> -> nil
-31. <variable> -> $ID
-32. <list_of_parameters_n> -> ε
-33. <list_of_parameters_n> -> , <parameter> <list_of_parameters_n>
-34. <list_of_datatypes_ret> -> void
-35. <list_of_datatypes_ret> -> <list_of_datatypes>
+14. <variable_definition> -> <variable> = <var_def_expr>
+15. <var_def_expr> -> <function_call>
+16. <var_def_expr> -> <expression>;
+17. <function_call> -> ID( <list_of_call_parameters> );
+18. <list_of_call_parameters> -> ε
+19. <list_of_call_parameters> -> <call_parameter> <list_of_call_parameters_n>
+20. <call_parameter> -> <variable>
+21. <call_parameter> -> "string" // ?????
+22. <list_of_call_parameters_n> -> , <call_parameter> <list_of_call_parameters_n>
+23. <list_of_call_parameters_n> -> ε 
+24. <list_of_parameters> -> ε
+25. <list_of_parameters> -> <parameter> <list_of_parameters_n>
+26. <parameter> -> <list_of_datatypes> <variable>
+27. <list_of_datatypes> -> int
+28. <list_of_datatypes> -> bool
+29. <list_of_datatypes> -> float
+30. <list_of_datatypes> -> string
+31. <list_of_datatypes> -> nil
+32. <variable> -> $ID
+33. <list_of_parameters_n> -> ε
+34. <list_of_parameters_n> -> , <parameter> <list_of_parameters_n>
+35. <list_of_datatypes_ret> -> void
+36. <list_of_datatypes_ret> -> <list_of_datatypes>
+
+
+
+
+A  ::= B C
+B  ::= php
+C  ::= ''
+C  ::= D C
+D  ::= E
+D  ::= F 
+D  ::= G 
+D  ::= if ( expr ) { C } else { C }
+D  ::= while ( expr ) { C }
+D  ::= return H
+H  ::= expr
+H  ::= M
+E  ::= function id ( K ) : L { C }
+F  ::= M = Z
+Z  ::=  expr ;
+Z  ::= G
+G  ::= id ( N ) ;
+N  ::= ''
+N  ::= O N'
+O  ::= M
+O  ::= str
+N' ::= , O N'
+N' ::= ''
+K  ::= ''
+K  ::= P K'
+P  ::= Q M
+Q  ::= int
+Q  ::= bool
+Q  ::= float
+Q  ::= string
+Q  ::= nil
+M  ::= %id
+K' ::= ''
+K' ::= , P K'
+L  ::= void
+L  ::= Q
