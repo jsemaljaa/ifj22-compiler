@@ -1,9 +1,4 @@
-/*
- * Lexikalni analyzator
- * Autor: Evgenia Taipova
- */
-
-
+// lexikalni analyzator
 #include <stdio.h>
 #include <ctype.h>
 #include "str.h"
@@ -22,9 +17,10 @@ int getNextToken(string *attr)
 {
     int state = 0;
     int c;
+    token_t *token;
     // vymazeme obsah atributu a v pripade identifikatoru
     // budeme postupne do nej vkladat jeho nazev
-    strClear(attr);
+    // strClear(attr);
 
     while (1)
     {
@@ -39,46 +35,88 @@ int getNextToken(string *attr)
                 state = STATE_START;
 
             else if (c == '+')
-                return PLUS;
+            {
+                token->type = PLUS;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == '-')
-                return MINUS;
+            {
+                token->type = MINUS;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == '*')
-                return MUL;
-
-            else if (c == '-')
-                return MINUS;
+            {
+                token->type = MUL;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == '(')
-                return LEFT_PAR;
+            {
+                token->type = LEFT_PAR;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == ')')
-                return RIGHT_PAR;
+            {
+                token->type = RIGHT_PAR;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == ':')
-                return COLON;
+            {
+                token->type = COLON;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == '{')
-                return LEFT_BR;
+            {
+                token->type = LEFT_BR;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == '}')
-                return RIGHT_BR;
+            {
+                token->type = RIGHT_BR;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == ';')
-                return SEMICOLON;
+            {
+                token->type = SEMICOLON;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == EOF)
-                return END_OF_FILE;
-
-            else if (c == '\n')
-                return END_OF_LINE;
+            {
+                token->type = END_OF_FILE;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == '.')
-                return POINT;
+            {
+                token->type = POINT;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == ',')
-                return COMMA;
+            {
+                token->type = COMMA;
+                strClear(attr);
+                return token;
+            }
 
             else if (c == '<')
                 state = STATE_LESS_THAN;
@@ -92,6 +130,9 @@ int getNextToken(string *attr)
             else if (c == '!')
                 state = STATE_NOT_EQUAL_START;
 
+            else if (c == '?')
+                state = STATE_QUEST;
+
             else if (c == '"')
                 state = STATE_STRING_START;
 
@@ -104,7 +145,7 @@ int getNextToken(string *attr)
                 state = STATE_NUMBER;
             }
 
-            else if (isalpha(c) || c == '_')
+            else if (isalpha(c) || c == '_' || c == '$')
             {
                 strAddChar(attr, c);
                 state = STATE_IDENTIFIER_OR_KEYWORD;
@@ -117,27 +158,35 @@ int getNextToken(string *attr)
 
         case STATE_LESS_THAN: // <
 
-            if (c == '=')
-                return LESS_EQ; // <=
-
-            else if (c == EOF)
-                return LEX_ERROR;
-
-            ungetc(c, source);
-            return LESS;
+            if (c == '=') // <=
+            {
+                token->type = LESS_EQ;
+            }
+            else
+            {
+                ungetc(c, source);
+                token->type = LESS;
+            }
+            strClear(attr);
+            return token;
 
             break;
 
         case STATE_MORE_THAN: // >
             // komentar
-            if (c == '=')
-                return GREATER_EQ; // >=
+            if (c == '=') // >=
+            {
+                token->type = GREATER_EQ;
+            }
 
-            else if (c == EOF)
-                return LEX_ERROR;
+            else
+            {
+                ungetc(c, source);
+                token->type = GREATER;
+            }
+            strClear(attr);
+            return token;
 
-            ungetc(c, source);
-            return GREATER;
             break;
 
         case STATE_EQUAL_START: // =
@@ -145,10 +194,10 @@ int getNextToken(string *attr)
                 state = STATE_EQUAL; // ==
             else
             {
-                if (c == EOF)
-                    return LEX_ERROR;
                 ungetc(c, source);
-                return ASSIGN;
+                token->type = ASSIGN;
+                strClear(attr);
+                return token;
             }
             break;
 
@@ -224,37 +273,66 @@ int getNextToken(string *attr)
 
                 // kontrola, zda se nejedna o klicove slovo
                 if (strCmpConstStr(attr, "else") == 0)
-                    return ELSE;
+                {
+                    token->attribute.keyword = ELSE;
+                    token->type = KEY_W;
+                }
 
                 else if (strCmpConstStr(attr, "float") == 0)
-                    return FLOAT;
+                {
+                    token->attribute.keyword = FLOAT;
+                    token->type = KEY_W;
+                }
 
                 else if (strCmpConstStr(attr, "function") == 0)
-                    return FUNCTION;
+                {
+                    token->attribute.keyword = FUNCTION;
+                    token->type = KEY_W;
+                }
 
                 else if (strCmpConstStr(attr, "if") == 0)
-                    return IF;
+                {
+                    token->attribute.keyword = IF;
+                    token->type = KEY_W;
+                }
 
                 else if (strCmpConstStr(attr, "int") == 0)
-                    return INT;
+                {
+                    token->attribute.keyword = INT;
+                    token->type = KEY_W;
+                }
 
                 else if (strCmpConstStr(attr, "null") == 0)
-                   return KEYWORD_NULL;
+                {
+                    token->attribute.keyword = K_NULL;
+                    token->type = KEY_W;
+                }
 
                 else if (strCmpConstStr(attr, "return") == 0)
-                    return RETURN;
+                {
+
+                    token->attribute.keyword = RETURN;
+                    token->type = KEY_W;
+                }
 
                 else if (strCmpConstStr(attr, "string") == 0)
-                    return STRING;
-
+                {
+                    token->attribute.keyword = STRING;
+                    token->type = KEY_W;
+                }
                 else if (strCmpConstStr(attr, "void") == 0)
-                    return VOID;
-
+                {
+                    token->attribute.keyword = VOID;
+                    token->type = KEY_W;
+                }
                 else if (strCmpConstStr(attr, "while") == 0)
-                    return WHILE;
+                {
+                    token->attribute.keyword = WHILE;
+                    token->type = KEY_W;
+                }
 
                 // jednalo se skutecne o identifikator
-                return ID;
+                token->type = ID;
             }
             break;
 
@@ -264,6 +342,7 @@ int getNextToken(string *attr)
                 state = STATE_NUMBER_EXPONENT;
                 strAddChar(attr, c);
             }
+            // TODO начинается функция с else if, хотя еще не было просто if. Либо ты потеряла где-то первый if, либо просто заменить первый else if на if, ошибка (expected a statement)
             else if (isdigit(c))
                 strAddChar(attr, c);
             else if (c == '.')
@@ -277,7 +356,7 @@ int getNextToken(string *attr)
                 return TYPE_INT;
             }
             break;
-
+        // TODO switch закончился на 343 строке, нового нет, выдает ошибку (a case label may only be used within a switch)
         case STATE_NUMBER_POINT:
             if (isdigit(c))
             {

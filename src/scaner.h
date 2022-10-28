@@ -6,52 +6,66 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-// identifikator
-#define ID 0
-
-// klicova slova
-#define ELSE 10
-#define FLOAT 11
-#define FUNCTION 12
-#define IF 13
-#define INT 14
-#define KEYWORD_NULL        15
-#define RETURN 16
-#define STRING 17
-#define VOID 18
-#define WHILE 19
-
+typedef enum keyword
+{
+    // klicova slova
+    ELSE,
+    FLOAT,
+    FUNCTION,
+    IF,
+    INT,
+    K_NULL,
+    RETURN,
+    STRING,
+    VOID,
+    WHILE
+} keyword_t;
 // operatory
-#define PLUS 20       // +
-#define MINUS 21      // -
-#define MUL 22        // *
-#define DIV 23        // /
-#define EQUAL 24      // ===
-#define NOT_EQUAL 25  // !==
-#define LESS 26       // <
-#define GREATER 27    // >
-#define LESS_EQ 28    // <=
-#define GREATER_EQ 29 // >=
+typedef enum token
+{
+    PLUS,
+    MINUS,
+    MUL,
+    DIV,
+    EQUAL,
+    NOT_EQUAL,
+    LESS,
+    GREATER,
+    LESS_EQ,
+    GREATER_EQ,
+    LEFT_PAR,
+    RIGHT_PAR,
+    SEMICOLON,
+    COLON,
+    ASSIGN,
+    COMMA,
+    POINT,
+    LEFT_BR,
+    RIGHT_BR,
+    DO_QUOTES,
+    QUEST,
+    ID,
+    KEY_W,
+    TYPE_INT,
+    TYPE_FLOAT,
+    TYPE_STRING,
+    END_OF_FILE
+} token_type_t;
 
-// jednotlive znaky
-#define LEFT_PAR 30  // '('
-#define RIGHT_PAR 31 // ')'
-#define SEMICOLON 32 // ';'
-#define COLON 33     // ':'
-#define ASSIGN 34    // '='
-#define COMMA 35     // ','
-#define POINT 36     // '.'
-#define LEFT_BR 37   // '{'
-#define RIGHT_BR 38  // '}'
-#define DO_QUOTES 39 // '"'
+typedef union attribute
+{
+    int integer;       /// Integer value.
+    double decimal;    /// Decimal value.
+    char *string;      /// String or identifier value.
+    keyword_t keyword; /// Keyword, one of the KEYWORD_... constant
 
-#define TYPE_INT 40
-#define TYPE_FLOAT 41
-#define TYPE_STRING 42
+} token_attribute_t;
 
-// specialni znaky
-#define END_OF_FILE 50
-#define END_OF_LINE 51
+typedef struct struct_token
+{
+    token_type_t type;
+    token_attribute_t attribute;
+} token_t;
 
 // chybove hlasky
 #define LEX_ERROR 1
@@ -89,7 +103,7 @@
 #define STATE_STRING_ESCAPE_REST 227 /// the rest cases, when the third number can be only digit, from 001 to 249
 #define STATE_LESS_THAN 228          /// Starts with < | Returns <= or <
 #define STATE_MORE_THAN 229          /// Starts with > | Returns > or >=
-
+#define STATE_QUEST 230
 // hlavicka funkce simulujici lexikalni analyzator
 void setSourceFile(FILE *f);
 int getNextToken(string *attr);
