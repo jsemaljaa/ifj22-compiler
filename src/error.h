@@ -1,3 +1,12 @@
+/*
+ * IFJ2022/project/error.h 
+ * 
+ * @brief Error handler interface declaration
+ * 
+ * @author Mazurava Maryia <xmazur08@vutbr.cz>
+ */
+
+
 #ifndef _ERROR_H
 #define _ERROR_H
 
@@ -15,6 +24,6 @@ typedef enum error_types{
     ALLOCATION_ERROR
 } error_types_e;
 
-void error(int error_name);
+int error(int error_name);
 
 #endif // _ERROR_H

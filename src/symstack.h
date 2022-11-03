@@ -16,6 +16,8 @@
 #include "str.h"
 #include "symtable.h"
 
+
+
 typedef struct array_of_symtables{
     int size;
     htable *table;
