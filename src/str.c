@@ -1,4 +1,12 @@
-//jednoducha knihovna pro praci s nekonecne dlouhymi retezci
+/*
+ * IFJ2022/project/str.h 
+ * 
+ * @brief Dynamic string interface implementation
+ * 
+ * @author Taipova Evgenia <xtaipo00@vutbr.cz>
+ */
+
+
 #include <string.h>
 #include <malloc.h>
 #include "str.h"

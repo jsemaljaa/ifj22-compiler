@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "symtable.h"
+#include "error.h"
 
 
 /*
@@ -36,8 +37,8 @@ void symt_init(htable *table){
 
 var_t *symt_add_symb(htable *table, char *key){
     if(table == NULL || key == NULL) {
-        // TODO: set error to return
-        return NULL;
+        exit_error(INTERNAL_ERROR);
+        // return NULL;
     }
 
     unsigned int pos = hash_func(key);
@@ -52,23 +53,23 @@ var_t *symt_add_symb(htable *table, char *key){
 
     ht_item_t *new = (ht_item_t*)malloc(sizeof(ht_item_t));
     if(new == NULL){
-        // TODO: malloc errors processing
-        return NULL;
+        exit_error(ALLOCATION_ERROR);
+        //return NULL;
     }
 
     new->key = (char *)malloc((strlen(key) + 1) * sizeof(char));
     if(new->key == NULL){
         free(new);
-        // TODO: malloc errors processing
-        return NULL;
+        exit_error(ALLOCATION_ERROR);
+        // return NULL;
     }
 
     new->value.parameters = (string_t *)malloc(sizeof(string_t));
     if(new->value.parameters == NULL){
         free(new->key);
         free(new);
-        // TODO: malloc errors processing
-        return NULL;
+        exit_error(ALLOCATION_ERROR);
+        // return NULL;
     }
 
     if(strInit(new->value.parameters) == 1){
@@ -76,8 +77,8 @@ var_t *symt_add_symb(htable *table, char *key){
         free(new->value.parameters);
         free(new);
 
-        // TODO: malloc errors processing
-        return NULL;
+        exit_error(INTERNAL_ERROR);
+        // return NULL;
     }
 
     strcpy(new->key, key);
@@ -94,7 +95,8 @@ var_t *symt_add_symb(htable *table, char *key){
 }
 
 void symt_free(htable *table){
-    if(table == NULL) return;
+    if(table == NULL) 
+        return INTERNAL_ERROR;
 
     ht_item_t *current, *next;
 
@@ -114,32 +116,24 @@ void symt_free(htable *table){
 }
 
 bool *symt_add_param(var_t *data, int datatype){
-    if(data == NULL) {
-        // TODO: errors processing
+    if(data == NULL) 
         return (bool *)false;
-    }
 
     switch (datatype)
     {
     case INTEGER_DT:
-        if(strAddChar(data->parameters, 'i') == 1){
-            // TODO: errors processing
+        if(strAddChar(data->parameters, 'i') == 1)
             return (bool *)false;
-        }
         break;
     
     case FLOAT_DT:
-        if(strAddChar(data->parameters, 'f') == 1){
-            // TODO: errors processing
+        if(strAddChar(data->parameters, 'f') == 1)
             return (bool *)false;
-        }
         break;
     
     case STRING_DT:
-        if(strAddChar(data->parameters, 's') == 1){
-            // TODO: errors processing
+        if(strAddChar(data->parameters, 's') == 1)
             return (bool *)false;
-        }
         break;
 
     default:
@@ -152,8 +146,8 @@ bool *symt_add_param(var_t *data, int datatype){
 
 var_t *symt_search(htable *table, char *key){
     if(table == NULL || key == NULL){
-        // TODO: errors processing
-        return NULL;
+        exit_error(INTERNAL_ERROR);
+        // return NULL;
     }
 
     unsigned int pos = hash_func(key);

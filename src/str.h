@@ -1,4 +1,10 @@
-//hlavickovy soubor pro praci s nekonecne dlouhymi retezci
+/*
+ * IFJ2022/project/str.h 
+ * 
+ * @brief Dynamic string interface declaration
+ * 
+ * @author Taipova Evgenia <xtaipo00@vutbr.cz>
+ */
 
 #ifndef STR_H
 #define STR_H 

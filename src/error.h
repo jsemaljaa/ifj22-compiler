@@ -10,20 +10,17 @@
 #ifndef _ERROR_H
 #define _ERROR_H
 
-typedef enum error_types{
-    NO_ERROR,
-    LEXICAL_ERROR, 
-    SYNTAX_ERROR,
-    SEM_DEF_FUNC_ERROR, 
-    SEM_TYPE_ERROR,
-    SEM_FUNC_ERROR, 
-    SEM_STMT_FUNC_ERROR, 
-    SEM_TYPE_COMP_ERROR, 
-    SEM_OTHER_ERROR, 
-    INTERNAL_ERROR,
-    ALLOCATION_ERROR
-} error_types_e;
+#define LEXICAL_ERROR 1  
+#define SYNTAX_ERROR 2
+#define SEM_DEF_FUNC_ERROR 3 
+#define SEM_TYPE_ERROR 4
+#define SEM_FUNC_ERROR 5 
+#define SEM_STMT_FUNC_ERROR 6 
+#define SEM_TYPE_COMP_ERROR 7 
+#define SEM_OTHER_ERROR 8
+#define INTERNAL_ERROR 99
+#define ALLOCATION_ERROR 9
 
-int error(int error_name);
+void exit_error(int error_name);
 
 #endif // _ERROR_H
