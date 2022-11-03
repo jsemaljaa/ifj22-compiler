@@ -1,3 +1,12 @@
+/*
+ * IFJ2022/project/scaner.h 
+ * 
+ * @brief Scanner interface declaration
+ * 
+ * @author Taipova Evgenia <xtaipo00@vutbr.cz>
+ */
+
+
 // hlavicka pro lexikalni analyzator
 #ifndef SCANNER_H
 #define SCANNER_H
@@ -109,4 +118,4 @@ typedef struct struct_token
 void setSourceFile(FILE *f);
 int getNextToken(string_t *attr);
 
-#endif /* SCANNER_H*/
+#endif // SCANNER_H

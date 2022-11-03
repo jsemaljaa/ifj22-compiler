@@ -1,4 +1,12 @@
-// lexikalni analyzator
+/*
+ * IFJ2022/project/scaner.c
+ * 
+ * @brief Scanner interface implementation
+ * 
+ * @author Taipova Evgenia <xtaipo00@vutbr.cz>
+ */
+
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>

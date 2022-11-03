@@ -1,3 +1,12 @@
+/*
+ * IFJ2022/project/symtable.c
+ * 
+ * @brief Table of symbols implementation
+ * 
+ * @author Vinogradova Alina <xvinog00@vutbr.cz>
+ */
+
+
 #include <stdlib.h>
 #include <string.h>
 #include "symtable.h"
@@ -23,6 +32,7 @@ void symt_init(htable *table){
         (*table)[i] = NULL;
     }
 }
+
 
 var_t *symt_add_symb(htable *table, char *key){
     if(table == NULL || key == NULL) {
@@ -82,7 +92,6 @@ var_t *symt_add_symb(htable *table, char *key){
 
     return &new->value;
 }
-
 
 void symt_free(htable *table){
     if(table == NULL) return;

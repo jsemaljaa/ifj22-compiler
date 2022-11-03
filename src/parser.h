@@ -1,6 +1,12 @@
-//
-// Created by jsema on 11/3/2022.
-//
+/*
+ * IFJ2022/project/parser.h 
+ * 
+ * @brief Parser interface declaration
+ * 
+ * @author Vinogradova Alina <xvinog00@vutbr.cz>
+ * @author Mazurava Maryia <xmazur08@vutbr.cz>
+ */
+
 
 #ifndef PARSER_H
 #define PARSER_H
