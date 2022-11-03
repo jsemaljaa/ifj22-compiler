@@ -1,5 +1,7 @@
 // lexikalni analyzator
 #include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include "str.h"
 #include "scaner.h"
@@ -12,7 +14,7 @@ void setSourceFile(FILE *f)
     source = f;
 }
 
-int getNextToken(string *attr)
+int getNextToken(string_t *attr)
 // hlavni funkce lexikalniho analyzatoru
 {
     int state = 0;
@@ -25,7 +27,8 @@ int getNextToken(string *attr)
     while (1)
     {
         // nacteni dalsiho znaku
-        c = getc(source);
+        // TODO: connect with setSourceFile
+        c = getc(stdin);
 
         switch (state)
         {
@@ -38,84 +41,96 @@ int getNextToken(string *attr)
             {
                 token->type = PLUS;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == '-')
             {
                 token->type = MINUS;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == '*')
             {
                 token->type = MUL;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == '(')
             {
                 token->type = LEFT_PAR;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == ')')
             {
                 token->type = RIGHT_PAR;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == ':')
             {
                 token->type = COLON;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == '{')
             {
                 token->type = LEFT_BR;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == '}')
             {
                 token->type = RIGHT_BR;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == ';')
             {
                 token->type = SEMICOLON;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == EOF)
             {
                 token->type = END_OF_FILE;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == '.')
             {
                 token->type = POINT;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == ',')
             {
                 token->type = COMMA;
                 strClear(attr);
-                return token;
+                printf("%d\n", token->type);
+                return token->type;
             }
 
             else if (c == '<')
@@ -143,12 +158,14 @@ int getNextToken(string *attr)
             {
                 strAddChar(attr, c);
                 state = STATE_NUMBER;
+                printf("%s\n", token->attribute.string);
             }
 
             else if (isalpha(c) || c == '_' || c == '$')
             {
                 strAddChar(attr, c);
                 state = STATE_IDENTIFIER_OR_KEYWORD;
+                printf("%s\n", token->attribute.string);
             }
 
             else
@@ -161,14 +178,17 @@ int getNextToken(string *attr)
             if (c == '=') // <=
             {
                 token->type = LESS_EQ;
+                printf("%d\n", token->type);
             }
             else
             {
                 ungetc(c, source);
                 token->type = LESS;
+                printf("%d\n", token->type);
             }
             strClear(attr);
-            return token;
+            printf("%s\n", token->attribute.string);
+            return token->type;
 
             break;
 
@@ -185,7 +205,7 @@ int getNextToken(string *attr)
                 token->type = GREATER;
             }
             strClear(attr);
-            return token;
+            return token->type;
 
             break;
 
@@ -197,7 +217,7 @@ int getNextToken(string *attr)
                 ungetc(c, source);
                 token->type = ASSIGN;
                 strClear(attr);
-                return token;
+                return token->type;
             }
             break;
 

@@ -11,7 +11,7 @@
 #define STR_ERROR   1
 #define STR_SUCCESS 0
 
-int strInit(string *s)
+int strInit(string_t *s)
 // funkce vytvori novy retezec
 {
    if ((s->str = (char*) malloc(STR_LEN_INC)) == NULL)
@@ -22,20 +22,20 @@ int strInit(string *s)
    return STR_SUCCESS;
 }
 
-void strFree(string *s)
+void strFree(string_t *s)
 // funkce uvolni retezec z pameti
 {
    free(s->str);
 }
 
-void strClear(string *s)
+void strClear(string_t *s)
 // funkce vymaze obsah retezce
 {
    s->str[0] = '\0';
    s->length = 0;
 }
 
-int strAddChar(string *s1, char c)
+int strAddChar(string_t *s1, char c)
 // prida na konec retezce jeden znak
 {
    if (s1->length + 1 >= s1->allocSize)
@@ -51,7 +51,7 @@ int strAddChar(string *s1, char c)
    return STR_SUCCESS;
 }
 
-int strCopyString(string *s1, string *s2)
+int strCopyString(string_t *s1, string_t *s2)
 // prekopiruje retezec s2 do s1
 {
    int newLength = s2->length;
@@ -67,25 +67,25 @@ int strCopyString(string *s1, string *s2)
    return STR_SUCCESS;
 }
 
-int strCmpString(string *s1, string *s2)
+int strCmpString(string_t *s1, string_t *s2)
 // porovna oba retezce a vrati vysledek
 {
    return strcmp(s1->str, s2->str);
 }
 
-int strCmpConstStr(string *s1, char* s2)
+int strCmpConstStr(string_t *s1, char* s2)
 // porovna nas retezec s konstantnim retezcem
 {
    return strcmp(s1->str, s2);
 }
 
-char *strGetStr(string *s)
+char *strGetStr(string_t *s)
 // vrati textovou cast retezce
 {
    return s->str;
 }
 
-int strGetLength(string *s)
+int strGetLength(string_t *s)
 // vrati delku daneho retezce
 {
    return s->length;

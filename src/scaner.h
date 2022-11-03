@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include "str.h"
 
 typedef enum keyword
 {
@@ -106,6 +107,6 @@ typedef struct struct_token
 #define STATE_QUEST 230
 // hlavicka funkce simulujici lexikalni analyzator
 void setSourceFile(FILE *f);
-int getNextToken(string *attr);
+int getNextToken(string_t *attr);
 
 #endif /* SCANNER_H*/
