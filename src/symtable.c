@@ -96,7 +96,8 @@ var_t *symt_add_symb(htable *table, char *key){
 
 void symt_free(htable *table){
     if(table == NULL) 
-        return INTERNAL_ERROR;
+        // TODO: return error from void ??
+        return;
 
     ht_item_t *current, *next;
 

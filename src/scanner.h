@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "str.h"
+#include "error.h"
 
 typedef enum keyword
 {
@@ -31,6 +32,35 @@ typedef enum keyword
     WHILE
 } keyword_t;
 // operatory
+
+/*
+TOKEN_PLUS,
+    TOKEN_MINUS,
+    TOKEN_MUL,
+    TOKEN_DIV,
+    TOKEN_EQUAL,
+    TOKEN_NOT_EQUAL,
+    TOKEN_LESS,
+    TOKEN_GREATER,
+    TOKEN_LESS_EQ,
+    TOKEN_GREATER_EQ,
+    TOKEN_LEFT_PAR,
+    TOKEN_RIGHT_PAR,
+    TOKEN_SEMICOLON,
+    TOKEN_COLON,
+    TOKEN_ASSIGN,
+    TOKEN_COMMA,
+    TOKEN_CONC,
+    TOKEN_LEFT_BR,
+    TOKEN_RIGHT_BR,
+    TOKEN_DO_QUOTES,
+    TOKEN_QUEST,
+    TOKEN_ID,
+    TOKEN_KEY_W,
+    TOKEN_TYPE_INT,
+    TOKEN_TYPE_FLOAT,
+    TOKEN_TYPE_STRING,
+    TOKEN_END_OF_FILE*/
 typedef enum token
 {
     PLUS,
@@ -66,7 +96,7 @@ typedef union attribute
 {
     int integer;       /// Integer value.
     double decimal;    /// Decimal value.
-    char *string;      /// String or identifier value.
+    string_t *string;      /// String or identifier value.
     keyword_t keyword; /// Keyword, one of the KEYWORD_... constant
 
 } token_attribute_t;
@@ -76,9 +106,6 @@ typedef struct struct_token
     token_type_t type;
     token_attribute_t attribute;
 } token_t;
-
-// chybove hlasky
-#define LEX_ERROR 1
 
 // Scanner states.
 #define STATE_START 200                  /// Starting state every new token processing starts here and initializes other states
@@ -115,7 +142,6 @@ typedef struct struct_token
 #define STATE_MORE_THAN 229          /// Starts with > | Returns > or >=
 #define STATE_QUEST 230
 // hlavicka funkce simulujici lexikalni analyzator
-void setSourceFile(FILE *f);
-int getNextToken(string_t *attr);
+token_t get_next_token();
 
 #endif // SCANNER_H

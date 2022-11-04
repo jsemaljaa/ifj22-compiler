@@ -13,7 +13,7 @@
 #include "parser.h"
 #include "symtable.h"
 
-void exit_error(int error_name) {
+int exit_error(int error_name) {
     int error_number = 0;
     switch (error_name) {
         case LEXICAL_ERROR:

@@ -22,7 +22,8 @@
 int strInit(string_t *s)
 // funkce vytvori novy retezec
 {
-   if ((s->str = (char*) malloc(STR_LEN_INC)) == NULL)
+   s->str = (char *)malloc(STR_LEN_INC * sizeof(char*)); 
+   if (s->str == NULL)
       return STR_ERROR;
    s->str[0] = '\0';
    s->length = 0;

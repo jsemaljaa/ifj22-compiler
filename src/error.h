@@ -10,6 +10,7 @@
 #ifndef _ERROR_H
 #define _ERROR_H
 
+#define NO_ERRORS 0 
 #define LEXICAL_ERROR 1  
 #define SYNTAX_ERROR 2
 #define SEM_DEF_FUNC_ERROR 3 
@@ -21,6 +22,6 @@
 #define INTERNAL_ERROR 99
 #define ALLOCATION_ERROR 9
 
-void exit_error(int error_name);
+int exit_error(int error_name);
 
 #endif // _ERROR_H

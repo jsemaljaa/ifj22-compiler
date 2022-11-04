@@ -78,7 +78,6 @@ L  ::= Q
 
 
 // Prec. table
-
 1. E -> id
 2. E -> ( E )
 3. E -> E * E
