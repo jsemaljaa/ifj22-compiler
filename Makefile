@@ -7,7 +7,7 @@ TARGET=ifj22
 
 all: $(TARGET)
 
-$(TARGET): src/*.c
+$(TARGET): src/*.c 
 	gcc $(CFLAGS) $^ -o $@
 
 clean:

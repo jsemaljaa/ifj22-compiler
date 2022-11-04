@@ -72,7 +72,7 @@ var_t *symt_add_symb(htable *table, char *key){
         // return NULL;
     }
 
-    if(strInit(new->value.parameters) == 1){
+    if(str_init(new->value.parameters) == 1){
         free(new->key);
         free(new->value.parameters);
         free(new);
@@ -123,17 +123,17 @@ bool *symt_add_param(var_t *data, int datatype){
     switch (datatype)
     {
     case INTEGER_DT:
-        if(strAddChar(data->parameters, 'i') == 1)
+        if(str_add_char(data->parameters, 'i') == 1)
             return (bool *)false;
         break;
     
     case FLOAT_DT:
-        if(strAddChar(data->parameters, 'f') == 1)
+        if(str_add_char(data->parameters, 'f') == 1)
             return (bool *)false;
         break;
     
     case STRING_DT:
-        if(strAddChar(data->parameters, 's') == 1)
+        if(str_add_char(data->parameters, 's') == 1)
             return (bool *)false;
         break;
 
@@ -183,7 +183,7 @@ bool *symt_rm_symb(htable *table, char *key){
             free(current->key);
 
             if(current->value.parameters != NULL){
-                strFree(current->value.parameters);
+                str_free(current->value.parameters);
                 free(current->value.parameters);
             }
 

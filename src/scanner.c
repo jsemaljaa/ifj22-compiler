@@ -23,7 +23,6 @@ static int exit_free(int code, string_t *str)
     return code;
 }
 
-
 int get_next_token(token_t *token)
 // hlavni funkce lexikalniho analyzatoru
 {
@@ -173,7 +172,7 @@ int get_next_token(token_t *token)
                 token->type = TOKEN_LESS;
                  
             }
-              
+
             //printf("%s\n", token->attribute.string);
             
             return exit_free(NO_ERRORS, str);

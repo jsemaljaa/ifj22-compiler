@@ -31,6 +31,11 @@ int str_init(string_t *s)
    return STR_SUCCESS;
 }
 
+void str_print(string_t *s)
+{
+   printf("%s\n", s->str);
+} 
+
 void str_free(string_t *s)
 // funkce uvolni retezec z pameti
 {
@@ -82,7 +87,7 @@ int str_cmp_string(string_t *s1, string_t *s2)
    return strcmp(s1->str, s2->str);
 }
 
-int str_Cmp_const_str(string_t *s1, char* s2)
+int str_cmp_const_str(string_t *s1, char* s2)
 // porovna nas retezec s konstantnim retezcem
 {
    return strcmp(s1->str, s2);
