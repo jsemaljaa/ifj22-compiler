@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "str.h"
-#include "scaner.h"
+#include "scanner.h"
 
 // promenna pro ulozeni vstupniho souboru
 FILE *source;

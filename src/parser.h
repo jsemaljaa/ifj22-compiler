@@ -14,7 +14,7 @@
 
 
 #include <stdbool.h>
-#include "scaner.h"
+#include "scanner.h"
 #include "symtable.h"
 
 

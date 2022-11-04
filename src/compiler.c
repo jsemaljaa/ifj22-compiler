@@ -1,9 +1,5 @@
-#ifdef DEBUG_SCANNER
-    #include "scanner.h"
-#else
-    #include "parser.h"
-#endif
-
+#include "scanner.h"
+#include "parser.h"
 #include <stdio.h>
 #include "error.h"
 #include "str.h"

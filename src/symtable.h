@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "scaner.h"
+#include "scanner.h"
 #include "str.h"
 
 #define MAX_HT_SIZE 101

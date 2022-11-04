@@ -1,5 +1,5 @@
 /*
- * IFJ2022/project/scaner.h 
+ * IFJ2022/project/scanner.h 
  * 
  * @brief Scanner interface declaration
  * 
