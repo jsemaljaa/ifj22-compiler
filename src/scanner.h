@@ -20,21 +20,22 @@
 typedef enum keyword
 {
     // klicova slova
-    ELSE,
-    FLOAT,
-    FUNCTION,
-    IF,
-    INT,
+    K_ELSE,
+    K_FLOAT,
+    K_FUNCTION,
+    K_IF,
+    K_INT,
     K_NULL,
-    RETURN,
-    STRING,
-    VOID,
-    WHILE
+    K_RETURN,
+    K_STRING,
+    K_VOID,
+    K_WHILE
 } keyword_t;
 // operatory
 
-/*
-TOKEN_PLUS,
+typedef enum token
+{
+    TOKEN_PLUS,
     TOKEN_MINUS,
     TOKEN_MUL,
     TOKEN_DIV,
@@ -60,36 +61,7 @@ TOKEN_PLUS,
     TOKEN_TYPE_INT,
     TOKEN_TYPE_FLOAT,
     TOKEN_TYPE_STRING,
-    TOKEN_END_OF_FILE*/
-typedef enum token
-{
-    PLUS,
-    MINUS,
-    MUL,
-    DIV,
-    EQUAL,
-    NOT_EQUAL,
-    LESS,
-    GREATER,
-    LESS_EQ,
-    GREATER_EQ,
-    LEFT_PAR,
-    RIGHT_PAR,
-    SEMICOLON,
-    COLON,
-    ASSIGN,
-    COMMA,
-    POINT,
-    LEFT_BR,
-    RIGHT_BR,
-    DO_QUOTES,
-    QUEST,
-    ID,
-    KEY_W,
-    TYPE_INT,
-    TYPE_FLOAT,
-    TYPE_STRING,
-    END_OF_FILE
+    TOKEN_END_OF_FILE
 } token_type_t;
 
 typedef union attribute
@@ -142,6 +114,6 @@ typedef struct struct_token
 #define STATE_MORE_THAN 229          /// Starts with > | Returns > or >=
 #define STATE_QUEST 230
 // hlavicka funkce simulujici lexikalni analyzator
-token_t get_next_token();
+int get_next_token(token_t *token);
 
 #endif // SCANNER_H
