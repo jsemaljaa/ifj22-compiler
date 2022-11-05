@@ -24,7 +24,7 @@ void str_clear(string_t *s);
 int str_add_char(string_t *s1, char c);
 int str_copy_string(string_t *s1, string_t *s2);
 int str_cmp_string(string_t *s1, string_t *s2);
-int str_cmp_const_str(string_t *s1, char *s2);
+int str_cmp_const_str(string_t *s1, const char *s2);
 
 char *str_get_str(string_t *s);
 int str_get_length(string_t *s);

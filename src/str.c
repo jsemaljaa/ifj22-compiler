@@ -11,7 +11,7 @@
 #include <malloc.h>
 #include "str.h"
 
-#define STR_LEN_INC 16
+#define STR_LEN_INC 8
 // konstanta STR_LEN_INC udava, na kolik bytu provedeme pocatecni alokaci pameti
 // pokud nacitame retezec znak po znaku, pamet se postupne bude alkokovat na
 // nasobky tohoto cisla 
@@ -22,23 +22,30 @@
 int str_init(string_t *s)
 // funkce vytvori novy retezec
 {   
-   s->str = calloc(STR_LEN_INC, sizeof(char)); 
-   if (s->str == NULL) return STR_ERROR;
+   if ((s->str = (char*) malloc(STR_LEN_INC)) == NULL)
+      return STR_ERROR;
+   s->str[0] = '\0';
    s->length = 0;
    s->allocSize = STR_LEN_INC;
-
    return STR_SUCCESS;
 }
 
 void str_print(string_t *s)
 {
-   printf("%s\n", s->str);
+   printf("-- BEGIN DEBUG: STRING INFO\n");
+   printf("string: %s\n", s->str);
+   printf("length: %d\n", s->length);
+   printf("allocation size: %d\n", s->allocSize);
+   printf("-- END DEBUG: STRING INFO\n");
 } 
 
 void str_free(string_t *s)
 // funkce uvolni retezec z pameti
 {
-   free(s->str);
+   if(s->str != NULL){
+      free(s->str);
+      s->str = NULL;
+   }
 }
 
 void str_clear(string_t *s)
@@ -48,18 +55,19 @@ void str_clear(string_t *s)
    s->length = 0;
 }
 
-int str_add_char(string_t *s, char c)
+int str_add_char(string_t *s1, char c)
 // prida na konec retezce jeden znak
 {
-   if (s->length + 1 >= s->allocSize)
+   if(s1 == NULL || s1->str == NULL) return STR_ERROR;
+   if (s1->length + 1 >= s1->allocSize)
    {
       // pamet nestaci, je potreba provest realokaci
-      if ((s->str = (char*) realloc(s->str, s->length + STR_LEN_INC)) == NULL)
-         return STR_ERROR;
-      s->allocSize = s->length + STR_LEN_INC;
+      s1->str = (char*) realloc(s1->str, s1->length + STR_LEN_INC);
+      if(s1->str == NULL) return STR_ERROR;
+      s1->allocSize = s1->length + STR_LEN_INC;
    }
-   s->str[s->length] = c;
-   s->str[++s->length] = '\0';
+   s1->str[s1->length++] = c;
+   s1->str[s1->length] = '\0';
    return STR_SUCCESS;
 }
 
@@ -85,7 +93,7 @@ int str_cmp_string(string_t *s1, string_t *s2)
    return strcmp(s1->str, s2->str);
 }
 
-int str_cmp_const_str(string_t *s1, char* s2)
+int str_cmp_const_str(string_t *s1, const char* s2)
 // porovna nas retezec s konstantnim retezcem
 {
    return strcmp(s1->str, s2);

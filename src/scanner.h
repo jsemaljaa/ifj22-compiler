@@ -17,9 +17,22 @@
 #include "str.h"
 #include "error.h"
 
+#define CONST_EMPTY ""
+#define CONST_ELSE "else"
+#define CONST_FLOAT "float"
+#define CONST_FUNCTION "function"
+#define CONST_IF "if"
+#define CONST_INT "int"
+#define CONST_NULL "null"
+#define CONST_RETURN "return"
+#define CONST_STRING "string"
+#define CONST_VOID "void"
+#define CONST_WHILE "while"
+
 typedef enum keyword
 {
     // klicova slova
+    K_EMPTY,
     K_ELSE,
     K_FLOAT,
     K_FUNCTION,
@@ -35,6 +48,7 @@ typedef enum keyword
 
 typedef enum token
 {
+    TOKEN_EMPTY,
     TOKEN_PLUS,
     TOKEN_MINUS,
     TOKEN_MUL,
@@ -64,17 +78,15 @@ typedef enum token
     TOKEN_END_OF_FILE
 } token_type_t;
 
-typedef union attribute
-{
+typedef union attribute {
     int integer;       /// Integer value.
     double decimal;    /// Decimal value.
-    string_t *string;      /// String or identifier value.
+    string_t string;   /// String or identifier value.
     keyword_t keyword; /// Keyword, one of the KEYWORD_... constant
 
 } token_attribute_t;
 
-typedef struct struct_token
-{
+typedef struct struct_token {
     token_type_t type;
     token_attribute_t attribute;
 } token_t;
