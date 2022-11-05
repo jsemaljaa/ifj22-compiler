@@ -4,14 +4,15 @@
 
 ZIPNAME=xvinog00
 TARGET=ifj22
+CFLAGS=-std=c99 -Werror -g
 
 all: $(TARGET)
 
-$(TARGET): src/*.c 
+$(TARGET): src/ifj22.c src/error.c src/scanner.c src/str.c src/symstack.c src/symtable.c 
 	gcc $(CFLAGS) $^ -o $@
 
 clean:
 	rm -f *.o $(TARGET)
 
-zip:
-	zip $(ZIPNAME) src/* Makefile rozdeleni rozsireni doc/dokumentace.pdf
+# zip:
+# 	zip $(ZIPNAME) src/* Makefile rozdeleni rozsireni doc/dokumentace.pdf

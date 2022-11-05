@@ -11,7 +11,7 @@
 #include <malloc.h>
 #include "str.h"
 
-#define STR_LEN_INC 8
+#define STR_LEN_INC 16
 // konstanta STR_LEN_INC udava, na kolik bytu provedeme pocatecni alokaci pameti
 // pokud nacitame retezec znak po znaku, pamet se postupne bude alkokovat na
 // nasobky tohoto cisla 
@@ -21,13 +21,12 @@
 
 int str_init(string_t *s)
 // funkce vytvori novy retezec
-{
-   s->str = (char *)malloc(STR_LEN_INC * sizeof(char*)); 
-   if (s->str == NULL)
-      return STR_ERROR;
-   s->str[0] = '\0';
+{   
+   s->str = calloc(STR_LEN_INC, sizeof(char)); 
+   if (s->str == NULL) return STR_ERROR;
    s->length = 0;
    s->allocSize = STR_LEN_INC;
+
    return STR_SUCCESS;
 }
 
@@ -49,19 +48,18 @@ void str_clear(string_t *s)
    s->length = 0;
 }
 
-int str_add_char(string_t *s1, char c)
+int str_add_char(string_t *s, char c)
 // prida na konec retezce jeden znak
 {
-   if (s1->length + 1 >= s1->allocSize)
+   if (s->length + 1 >= s->allocSize)
    {
       // pamet nestaci, je potreba provest realokaci
-      if ((s1->str = (char*) realloc(s1->str, s1->length + STR_LEN_INC)) == NULL)
+      if ((s->str = (char*) realloc(s->str, s->length + STR_LEN_INC)) == NULL)
          return STR_ERROR;
-      s1->allocSize = s1->length + STR_LEN_INC;
+      s->allocSize = s->length + STR_LEN_INC;
    }
-   s1->str[s1->length] = c;
-   s1->length++;
-   s1->str[s1->length] = '\0';
+   s->str[s->length] = c;
+   s->str[++s->length] = '\0';
    return STR_SUCCESS;
 }
 
