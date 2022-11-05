@@ -86,6 +86,11 @@ int get_next_token(token_t *token)
     while (1)
     {
         //printf("char: %c\nstring pointer is %p\n", c, token->attribute.string.attr);
+        printf("-- BEGIN DEBUG: TOKEN INFO\n");
+        printf("   token type: %d\n", token->type);
+        printf("   token keyw: %d\n", token->attribute.keyword);
+        // str_print(&token->attribute.string);
+        printf("-- END DEBUG: TOKEN INFO\n");
         printf("state: %d || symbol: %c\n", state, c);
         // nacteni dalsiho znaku
         c = getc(stdin);
