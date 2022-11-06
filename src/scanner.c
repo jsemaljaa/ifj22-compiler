@@ -136,8 +136,11 @@ int get_next_token(token_t *token)
             else if (c == '!')
                 state = STATE_NOT_EQUAL_START;
 
-            // else if (c == '?')
-            //   state = STATE_QUEST;
+            else if (c == '?')
+            {
+                printf("see ?\n");
+                state = STATE_QUEST;
+            }
 
             else if (c == '"')
                 state = STATE_STRING_START;
@@ -171,12 +174,38 @@ int get_next_token(token_t *token)
             {
                 token->type = TOKEN_LESS_EQ;
             }
+            else if (c == '?')
+            {
+                state = STATE_PROLOG_START;
+            }
             else
             {
                 ungetc(c, stdin);
                 token->type = TOKEN_LESS;
+                return exit_free(NO_ERRORS, str);
             }
-            return exit_free(NO_ERRORS, str);
+
+            break;
+
+        case STATE_PROLOG_START: // <?
+            if (isalpha(c))
+            {
+                str_add_char(str, c);
+            }
+            else
+            {
+                ungetc(c, stdin);
+                if (str_cmp_const_str(str, "php") == 0)
+                {
+                    token->attribute.keyword = K_PHP;
+                    token->type = TOKEN_PROLOG;
+                }
+                else
+                {
+                    return exit_free(LEXICAL_ERROR, str);
+                }
+                return exit_free(NO_ERRORS, str);
+            }
 
             break;
 
@@ -195,6 +224,31 @@ int get_next_token(token_t *token)
 
             break;
 
+        case STATE_QUEST:
+            printf("c = %c\n", c);
+            if (c == '>')
+            {
+                state = STATE_EOF;
+            }
+            else
+            {
+                return exit_free(LEXICAL_ERROR, str);
+            }
+            break;
+
+        case STATE_EOF:
+            if (c == EOF)
+            {
+                ungetc(c, stdin);
+                token->type = TOKEN_END_OF_FILE;
+                return exit_free(NO_ERRORS, str);
+            }
+            else
+            {
+                return exit_free(LEXICAL_ERROR, str);
+            }
+            break;
+            
         case STATE_EQUAL_START: // =
             if (c == '=')
                 state = STATE_EQUAL; // ==

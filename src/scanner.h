@@ -28,7 +28,8 @@ typedef enum
     K_RETURN,
     K_STRING,
     K_VOID,
-    K_WHILE
+    K_WHILE,
+    K_PHP
 } keyword_t;
 // operatory
 
@@ -60,7 +61,9 @@ typedef enum
     TOKEN_TYPE_INT,
     TOKEN_TYPE_FLOAT,
     TOKEN_TYPE_STRING,
-    TOKEN_END_OF_FILE
+    TOKEN_END_OF_FILE,
+    TOKEN_PROLOG,
+    TOKEN_LESS_QUEST, 
 } token_type_t;
 
 typedef union
@@ -112,6 +115,8 @@ typedef struct
 #define STATE_LESS_THAN 228          /// Starts with < | Returns <= or <
 #define STATE_MORE_THAN 229          /// Starts with > | Returns > or >=
 #define STATE_QUEST 230
+#define STATE_PROLOG_START 231
+#define STATE_EOF 232
 // hlavicka funkce simulujici lexikalni analyzator
 int get_next_token(token_t *token);
 

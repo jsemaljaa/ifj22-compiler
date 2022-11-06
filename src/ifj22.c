@@ -31,13 +31,15 @@ static const char *list[] = {
     "TYPE_INT",
     "TYPE_FLOAT",
     "TYPE_STRING",
-    "END_OF_FILE"};
+    "END_OF_FILE", 
+    "PROLOG",
+    "LESS_QUEST"};
 
 // TODO str_print() + fix get_next_token assignment to token
 int main(int argc, char **argv)
 {
     token_t token;
-    while (1)
+    while (token.type != TOKEN_END_OF_FILE)
     {
 //get_next_token(&token);
        if( get_next_token(&token) == 1){
@@ -48,8 +50,8 @@ int main(int argc, char **argv)
         printf("Token: %s \n", list[token.type]);
 
          //printf("Value: %s \n", token.attribute.string->str);
-        if (token.type == TOKEN_END_OF_FILE)
-            break;
+        //if (token.type == TOKEN_END_OF_FILE)
+           // break;
     }
     fprintf(stderr, "\nNo error in scanner\n");
     return 0;
