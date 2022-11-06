@@ -1,99 +1,49 @@
 /*
  * IFJ2022/project/scaner.c
- * 
+ *
  * @brief Scanner interface implementation
- * 
+ *
  * @author Taipova Evgenia <xtaipo00@vutbr.cz>
  */
 
-
 #include <stdio.h>
+//#include <windows.h>
+//#include <unistd.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "str.h"
 #include "scanner.h"
 
-// static string_t *attribute;
+string_t *dynStr;
 
-static int exit_free(int code, string_t *attr)
+static int exit_free(int code, string_t *str)
 {
-    str_free(attr);
+
+    str_free(str);
     return code;
-}
-
-static int get_identifier_or_keyword(string_t *str, token_t *token){
-    // kontrola, zda se nejedna o klicove slovo
-    if (str_cmp_const_str(str, CONST_ELSE) == 0){
-        token->attribute.keyword = K_ELSE;
-        token->type = TOKEN_KEY_W;
-    } else if (str_cmp_const_str(str, CONST_FLOAT) == 0){
-        token->attribute.keyword = K_FLOAT;
-        token->type = TOKEN_KEY_W;
-    } else if (str_cmp_const_str(str, CONST_FUNCTION) == 0){
-        token->attribute.keyword = K_FUNCTION;
-        token->type = TOKEN_KEY_W;
-    } else if (str_cmp_const_str(str, CONST_IF) == 0){
-        token->attribute.keyword = K_IF;
-        token->type = TOKEN_KEY_W;
-    } else if (str_cmp_const_str(str, CONST_INT) == 0){
-        token->attribute.keyword = K_INT;
-        token->type = TOKEN_KEY_W;
-    } else if (str_cmp_const_str(str, CONST_NULL) == 0){
-        token->attribute.keyword = K_NULL;
-        token->type = TOKEN_KEY_W;
-    } else if (str_cmp_const_str(str, CONST_RETURN) == 0){
-        token->attribute.keyword = K_RETURN;
-        token->type = TOKEN_KEY_W;
-    } else if (str_cmp_const_str(str, CONST_STRING) == 0){
-        token->attribute.keyword = K_STRING;
-        token->type = TOKEN_KEY_W;
-    } else if (str_cmp_const_str(str, CONST_VOID) == 0){
-        token->attribute.keyword = K_VOID;
-        token->type = TOKEN_KEY_W;
-    } else if (str_cmp_const_str(str, CONST_WHILE) == 0){
-        token->attribute.keyword = K_WHILE;
-        token->type = TOKEN_KEY_W;
-    } else // jednalo se skutecne o identifikator
-        token->type = TOKEN_ID;
-
-    if(token->type == TOKEN_KEY_W) return exit_free(NO_ERRORS, str);
-
-    if(str_copy_string(&token->attribute.string, str) == 1) return exit_free(INTERNAL_ERROR, str);
-
-    return exit_free(NO_ERRORS, str);
 }
 
 int get_next_token(token_t *token)
 // hlavni funkce lexikalniho analyzatoru
-{
-    // str_print(&token->attribute.string);
-    token->attribute.keyword = K_EMPTY;
-    token->type = TOKEN_EMPTY;
-    
-    // String attribute inicialization
-    string_t ptr, *attr = &ptr;
-    if(str_init(attr) == 1)  return exit_free(LEXICAL_ERROR, attr);
+{ //инициализация динамических строк
+    string_t string, *str = &string;
+    if (str_init(str) == 1)
+        return exit_free(LEXICAL_ERROR, str);
 
-    // token.attribute.string = attribute;
+    token->attribute.string = dynStr;
     int state = STATE_START;
-    
-    int c;
-
+    char c;
     // vymazeme obsah atributu a v pripade identifikatoru
     // budeme postupne do nej vkladat jeho nazev
-    //   
+    //
 
     while (1)
     {
-        //printf("char: %c\nstring pointer is %p\n", c, token->attribute.string.attr);
-        printf("-- BEGIN DEBUG: TOKEN INFO\n");
-        printf("   token type: %d\n", token->type);
-        printf("   token keyw: %d\n", token->attribute.keyword);
-        // str_print(&token->attribute.string);
-        printf("-- END DEBUG: TOKEN INFO\n");
-        printf("state: %d || symbol: %c\n", state, c);
         // nacteni dalsiho znaku
-        c = getc(stdin);
+        // TODO: connect with setstdinFile
+        c = (char)getc(stdin);
+        // printf("c = %c\n", c);
+
         switch (state)
         {
         case STATE_START:
@@ -104,73 +54,74 @@ int get_next_token(token_t *token)
             else if (c == '+')
             {
                 token->type = TOKEN_PLUS;
-                return exit_free(NO_ERRORS, attr);
+                // printf("------------------: %d\n", token->type);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == '-')
             {
                 token->type = TOKEN_MINUS;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == '*')
             {
                 token->type = TOKEN_MUL;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == '(')
             {
                 token->type = TOKEN_LEFT_PAR;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == ')')
             {
                 token->type = TOKEN_RIGHT_PAR;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == ':')
             {
                 token->type = TOKEN_COLON;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == '{')
             {
                 token->type = TOKEN_LEFT_BR;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == '}')
             {
                 token->type = TOKEN_RIGHT_BR;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == ';')
             {
                 token->type = TOKEN_SEMICOLON;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == EOF)
             {
                 token->type = TOKEN_END_OF_FILE;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == '.')
             {
                 token->type = TOKEN_CONC;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == ',')
             {
                 token->type = TOKEN_COMMA;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
 
             else if (c == '<')
@@ -185,8 +136,8 @@ int get_next_token(token_t *token)
             else if (c == '!')
                 state = STATE_NOT_EQUAL_START;
 
-            else if (c == '?')
-                state = STATE_QUEST;
+            // else if (c == '?')
+            //   state = STATE_QUEST;
 
             else if (c == '"')
                 state = STATE_STRING_START;
@@ -195,20 +146,28 @@ int get_next_token(token_t *token)
                 state = STATE_DIV;
 
             else if (isdigit(c))
+            {
+                // printf("DIGIT\n" );
+                if (str_add_char(str, c))
+                    return exit_free(LEXICAL_ERROR, str);
                 state = STATE_NUMBER;
-
-            else if (isalpha(c) || c == '_' || c == '$'){  
-                if(str_add_char(attr, (char)c) == 1) return exit_free(INTERNAL_ERROR, attr);
-                state = STATE_IDENTIFIER_OR_KEYWORD;
+                // printf("%s\n", token->attribute.string);
             }
+
+            else if (isalpha(c) || c == '_' || c == '$')
+            {
+                str_add_char(str, c);
+                state = STATE_IDENTIFIER_OR_KEYWORD;
+                // printf("%s\n", token->attribute.string);
+            }
+
             else
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
 
             break;
 
         case STATE_LESS_THAN: // <
-
-            if (c == '=') // <=
+            if (c == '=')     // <=
             {
                 token->type = TOKEN_LESS_EQ;
             }
@@ -216,10 +175,8 @@ int get_next_token(token_t *token)
             {
                 ungetc(c, stdin);
                 token->type = TOKEN_LESS;
-                 
             }
-            
-            return exit_free(NO_ERRORS, attr);
+            return exit_free(NO_ERRORS, str);
 
             break;
 
@@ -234,7 +191,7 @@ int get_next_token(token_t *token)
                 ungetc(c, stdin);
                 token->type = TOKEN_GREATER;
             }
-            return exit_free(NO_ERRORS, attr);
+            return exit_free(NO_ERRORS, str);
 
             break;
 
@@ -245,8 +202,7 @@ int get_next_token(token_t *token)
             {
                 ungetc(c, stdin);
                 token->type = TOKEN_ASSIGN;
-                  
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
             break;
 
@@ -254,24 +210,29 @@ int get_next_token(token_t *token)
             if (c == '=')
                 state = STATE_NOT_EQUAL; // !=
             else
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_EQUAL: // ==
-            if (c == '='){
-                token->type = TOKEN_EQUAL;  // ===
-                return exit_free(NO_ERRORS, attr);
-            } else 
-                return exit_free(LEXICAL_ERROR, attr);
+            if (c == '=')
+            {
+                token->type = TOKEN_EQUAL; // ===
+                return exit_free(NO_ERRORS, str);
+            }
+            else
+            {
+                return exit_free(LEXICAL_ERROR, str);
+            }
             break;
 
         case STATE_NOT_EQUAL: // !=
-            if (c == '='){
+            if (c == '=')
+            {
                 token->type = TOKEN_NOT_EQUAL;
-                return exit_free(NO_ERRORS, attr); // !==
+                return exit_free(NO_ERRORS, str); // !==
             }
-            else 
-                return exit_free(LEXICAL_ERROR, attr);
+            else
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_DIV: // /
@@ -283,97 +244,199 @@ int get_next_token(token_t *token)
                 state = STATE_BLOCK_COMMENTARY; // /*
 
             else if (c == EOF)
-                
-                return exit_free(LEXICAL_ERROR, attr);
-
-            ungetc(c, stdin);
-
-            token->type = TOKEN_DIV;
-            
-                //return exit_free(NO_ERRORS, attr);
+                return exit_free(LEXICAL_ERROR, str);
+            else
+            {
+                token->type = TOKEN_DIV;
+                ungetc(c, stdin);
+                return exit_free(NO_ERRORS, str);
+            }
             break;
 
         case STATE_COMMENTARY: // //
-            if (c == 10 || c == EOF)
+
+            while (1)
             {
-                state = STATE_START;
-                ungetc(c, stdin);
+                if (c == '\n' || c == EOF)
+                {
+                    ungetc(c, stdin);
+                    break;
+                }
+                else if (c != '\n')
+                {
+                    c = (char)getc(stdin);
+                }
+                else
+                    break;
             }
+
+            state = STATE_START;
+
             break;
 
         case STATE_BLOCK_COMMENTARY: // /*
             if (c == '*')
                 state = STATE_BLOCK_COMMENTARY_LEAVE; // /**
             else if (c == EOF)
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_BLOCK_COMMENTARY_LEAVE: // /**
             if (c == '/')
                 state = STATE_START; // /**/
             else if (c == EOF)
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             else
                 state = STATE_BLOCK_COMMENTARY;
             break;
 
         case STATE_IDENTIFIER_OR_KEYWORD:
             // identifikator nebo klicove slovo
-            // str_print(&token->attribute.string);
-            // printf("current char is %c\n", c);
-            if (isalnum(c) || c == '_'){
+            if (isalnum(c) || c == '_')
+            {
                 // identifikator pokracuje
-                if(str_add_char(attr, (char)c) == 1) exit_error(INTERNAL_ERROR);
-            } else
+                str_add_char(str, c);
+            }
+            else
             // konec identifikatoru
             {
                 ungetc(c, stdin); // POZOR! Je potreba vratit posledni nacteny znak
-                get_identifier_or_keyword(attr, token); 
-                state = STATE_START;
+                // kontrola, zda se nejedna o klicove slovo
+                if (str_cmp_const_str(str, "else") == 0)
+                {
+                    token->attribute.keyword = K_ELSE;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if (str_cmp_const_str(str, "float") == 0)
+                {
+                    token->attribute.keyword = K_FLOAT;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if (str_cmp_const_str(str, "function") == 0)
+                {
+                    token->attribute.keyword = K_FUNCTION;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if (str_cmp_const_str(str, "if") == 0)
+                {
+                    token->attribute.keyword = K_IF;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if (str_cmp_const_str(str, "int") == 0)
+                {
+                    token->attribute.keyword = K_INT;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if (str_cmp_const_str(str, "null") == 0)
+                {
+                    token->attribute.keyword = K_NULL;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if (str_cmp_const_str(str, "return") == 0)
+                {
+
+                    token->attribute.keyword = K_RETURN;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if (str_cmp_const_str(str, "string") == 0)
+                {
+                    token->attribute.keyword = K_STRING;
+                    token->type = TOKEN_KEY_W;
+                }
+                else if (str_cmp_const_str(str, "void") == 0)
+                {
+                    token->attribute.keyword = K_VOID;
+                    token->type = TOKEN_KEY_W;
+                }
+                else if (str_cmp_const_str(str, "while") == 0)
+                {
+                    token->attribute.keyword = K_WHILE;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                // jednalo se skutecne o identifikator
+                else
+                    token->type = TOKEN_ID;
+                // printf("%s\n", str->str);
+                return exit_free(NO_ERRORS, str);
             }
             break;
 
         case STATE_NUMBER:
+            // printf("DIGIT num\n" );
             if (c == 'e' || c == 'E')
             {
                 state = STATE_NUMBER_EXPONENT;
-                  
+                str_add_char(str, c);
             }
             else if (isdigit(c))
-                str_add_char(&token->attribute.string, c);
+            {
+                str_add_char(str, c);
+            }
             else if (c == '.')
             {
                 state = STATE_NUMBER_POINT;
-                  
+                str_add_char(str, c);
             }
             else
             {
                 ungetc(c, stdin);
+                char *endptr;
+                int val = (int)strtol(str->str, &endptr, 10);
+
+                if (*endptr)
+                {
+                    return exit_free(LEXICAL_ERROR, str);
+                }
+
+                token->attribute.integer = val;
                 token->type = TOKEN_TYPE_INT;
-                return exit_free(NO_ERRORS, attr);
+                // printf("%d\n", token->attribute.integer);
+                return exit_free(NO_ERRORS, str);
             }
             break;
+
         case STATE_NUMBER_POINT:
             if (isdigit(c))
             {
                 state = STATE_NUMBER_DOUBLE;
+                str_add_char(str, c);
             }
             else
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_NUMBER_DOUBLE:
             if (isdigit(c))
-                str_add_char(&token->attribute.string, c);
+                str_add_char(str, c);
             else if (c == 'e' || c == 'E')
             {
+                // printf("e\n");
                 state = STATE_NUMBER_EXPONENT;
+                str_add_char(str, c);
             }
             else
             {
                 ungetc(c, stdin);
+                char *endptr;
+
+                double val = strtod(str->str, &endptr);
+                if (*endptr)
+                {
+                    return exit_free(LEXICAL_ERROR, str);
+                }
+
+                token->attribute.decimal = val;
                 token->type = TOKEN_TYPE_FLOAT;
-                return exit_free(NO_ERRORS, attr);
+                // printf("%f\n", token->attribute.decimal);
+                return exit_free(NO_ERRORS, str);
             }
             break;
 
@@ -381,108 +444,126 @@ int get_next_token(token_t *token)
             if (c == '+' || c == '-')
             {
                 state = STATE_NUMBER_EXPONENT_SIGN;
+                str_add_char(str, c);
             }
             else if (isdigit(c))
             {
                 state = STATE_NUMBER_EXPONENT_FINAL;
+                str_add_char(str, c);
             }
             else
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_NUMBER_EXPONENT_SIGN:
             if (isdigit(c))
             {
                 state = STATE_NUMBER_EXPONENT_FINAL;
+                str_add_char(str, c);
             }
             else
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_NUMBER_EXPONENT_FINAL:
             if (isdigit(c))
-                str_add_char(&token->attribute.string, c);
+                str_add_char(str, c);
             else
             {
                 ungetc(c, stdin);
+                char *endptr;
+
+                double val = strtod(str->str, &endptr);
+                if (*endptr)
+                {
+                    return exit_free(LEXICAL_ERROR, str);
+                }
+
+                token->attribute.decimal = val;
                 token->type = TOKEN_TYPE_FLOAT;
-                return exit_free(NO_ERRORS, attr);
+                // printf("%f\n", token->attribute.decimal);
+                return exit_free(NO_ERRORS, str);
             }
             break;
 
         case STATE_STRING_START:
-            if (c == '"'){
+            // printf("c = %c\n",c);
+            if (c == '"')
+            {
                 token->type = TOKEN_TYPE_STRING;
-                return exit_free(NO_ERRORS, attr);
+                return exit_free(NO_ERRORS, str);
             }
             else if (c == '\\')
+            {
                 state = STATE_STRING_ESCAPE;
+            }
+
             else if (c < 32)
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             else if (c == EOF)
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             else
-                  
+                str_add_char(str, c);
             break;
 
         case STATE_STRING_ESCAPE:
             if (c == 'n')
             {
-                str_add_char(&token->attribute.string, '\n');
+                str_add_char(str, '\n');
                 state = STATE_STRING_START;
             }
             else if (c == 't')
             {
-                str_add_char(&token->attribute.string, '\t');
+                str_add_char(str, '\t');
                 state = STATE_STRING_START;
             }
             else if (c == '"')
             {
-                  
+                str_add_char(str, '"');
                 state = STATE_STRING_START;
             }
             else if (c == '\\')
             {
-                  
+                str_add_char(str, '\\');
                 state = STATE_STRING_START;
             }
             else if (c == '$')
             {
-                  
+
                 state = STATE_STRING_START;
             }
             else if (c == 'x')
             {
                 state = STATE_STRING_ESCAPE_X;
-                  
             }
             else if (c == '0')
             {
-                  
+
                 state = STATE_STRING_ESCAPE_ZERO;
             }
             else if (c == '1' || c == '2' || c == '3')
             {
-                  
+
                 state = STATE_STRING_ESCAPE_ONE_THREE;
             }
             else
-                return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
+
             break;
 
         case STATE_STRING_ESCAPE_X:
             if (c == '0')
             {
-                  
+
                 state = STATE_STRING_ESCAPE_X_ZERO;
             }
             else if ((isdigit(c) && c != '0') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
             {
-                  
+
                 state = STATE_STRING_ESCAPE_X_NOT_ZERO;
             }
             else
-                 return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_STRING_ESCAPE_X_ZERO:
@@ -491,62 +572,62 @@ int get_next_token(token_t *token)
                 state = STATE_STRING_START;
             }
             else
-                 return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_STRING_ESCAPE_X_NOT_ZERO:
             if (isdigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'))
             {
-                  
+
                 state = STATE_STRING_START;
             }
             else
-                 return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_STRING_ESCAPE_ZERO:
             if (c == '0')
             {
-                  
+
                 state = STATE_STRING_ESCAPE_ZERO_ZERO;
             }
             else if (c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7')
             {
-                  
+
                 state = STATE_STRING_ESCAPE_REST;
             }
             else
-                 return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_STRING_ESCAPE_ZERO_ZERO:
             if (c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7')
             {
-                  
+
                 state = STATE_STRING_START;
             }
             else
-                 return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_STRING_ESCAPE_REST:
             if (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7')
             {
-                  
+
                 state = STATE_STRING_START;
             }
             else
-                 return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_STRING_ESCAPE_ONE_THREE:
             if (c == '0' || c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7')
             {
-                  
+
                 state = STATE_STRING_ESCAPE_REST;
             }
             else
-                 return exit_free(LEXICAL_ERROR, attr);
+                return exit_free(LEXICAL_ERROR, str);
             break;
         }
     }

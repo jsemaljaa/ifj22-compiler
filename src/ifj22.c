@@ -4,18 +4,53 @@
 #include "error.h"
 #include "str.h"
 
-//TODO str_print() + fix get_next_token assignment to token
-int main(){
+static const char *list[] = {
+    "PLUS",
+    "MINUS",
+    "MUL",
+    "DIV",
+    "EQUAL",
+    "NOT_EQUAL",
+    "LESS",
+    "GREATER",
+    "LESS_EQ",
+    "GREATER_EQ",
+    "LEFT_PAR",
+    "RIGHT_PAR",
+    "SEMICOLON",
+    "COLON",
+    "ASSIGN",
+    "COMMA",
+    "CONC",
+    "LEFT_BR",
+    "RIGHT_BR",
+    "DO_QUOTES",
+    "QUEST",
+    "ID",
+    "KEY_W",
+    "TYPE_INT",
+    "TYPE_FLOAT",
+    "TYPE_STRING",
+    "END_OF_FILE"};
+
+// TODO str_print() + fix get_next_token assignment to token
+int main(int argc, char **argv)
+{
     token_t token;
-    str_init(&token.attribute.string);
-    
-    int ret;
-    do{
-        ret = get_next_token(&token);
-        if(ret == LEXICAL_ERROR) exit_error(LEXICAL_ERROR);
-    } while(token.type != TOKEN_END_OF_FILE);
+    while (1)
+    {
+//get_next_token(&token);
+       if( get_next_token(&token) == 1){
+        printf("error\n");
+        return LEXICAL_ERROR;
+       }
+        
+        printf("Token: %s \n", list[token.type]);
+
+         //printf("Value: %s \n", token.attribute.string->str);
+        if (token.type == TOKEN_END_OF_FILE)
+            break;
+    }
     fprintf(stderr, "\nNo error in scanner\n");
-    
-    str_clear(&token.attribute.string);
     return 0;
 }
