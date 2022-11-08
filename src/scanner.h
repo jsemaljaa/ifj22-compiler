@@ -62,8 +62,7 @@ typedef enum
     TOKEN_TYPE_FLOAT,
     TOKEN_TYPE_STRING,
     TOKEN_END_OF_FILE,
-    TOKEN_PROLOG,
-    TOKEN_LESS_QUEST, 
+    TOKEN_PROLOG
 } token_type_t;
 
 typedef union
@@ -119,5 +118,6 @@ typedef struct
 #define STATE_EOF 232
 // hlavicka funkce simulujici lexikalni analyzator
 int get_next_token(token_t *token);
+void set_dynamic_string(string_t *string);
 
 #endif // SCANNER_H

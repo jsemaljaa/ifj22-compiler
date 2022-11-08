@@ -18,9 +18,13 @@ string_t *dynStr;
 
 static int exit_free(int code, string_t *str)
 {
-
     str_free(str);
     return code;
+}
+
+void set_dynamic_string(string_t *string)
+{
+    dynStr = string;
 }
 
 int get_next_token(token_t *token)
@@ -138,7 +142,6 @@ int get_next_token(token_t *token)
 
             else if (c == '?')
             {
-                printf("see ?\n");
                 state = STATE_QUEST;
             }
 
@@ -248,7 +251,7 @@ int get_next_token(token_t *token)
                 return exit_free(LEXICAL_ERROR, str);
             }
             break;
-            
+
         case STATE_EQUAL_START: // =
             if (c == '=')
                 state = STATE_EQUAL; // ==
@@ -417,8 +420,11 @@ int get_next_token(token_t *token)
 
                 // jednalo se skutecne o identifikator
                 else
+                {
                     token->type = TOKEN_ID;
-                // printf("%s\n", str->str);
+                    str_copy_string(token->attribute.string, str);
+                }
+
                 return exit_free(NO_ERRORS, str);
             }
             break;
@@ -545,6 +551,7 @@ int get_next_token(token_t *token)
             if (c == '"')
             {
                 token->type = TOKEN_TYPE_STRING;
+                  str_copy_string(token->attribute.string, str);
                 return exit_free(NO_ERRORS, str);
             }
             else if (c == '\\')
