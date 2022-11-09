@@ -16,13 +16,14 @@
 /*
  * @brief Bitwise hash algorithm (JS Hash)
  * @return hash of the string
- * @link https://www.programmingalgorithms.com/algorithm/js-hash/c/
+ * @link http://www.cse.yorku.ca/~oz/hash.html
+ * @cite djb2 algorithm
  */
-static unsigned int hash_func(char *key){
-    unsigned int hash = 0, i = 0;
+static unsigned int hash_func(const char *key){
+    unsigned int hash = 5381, i = 0;
     unsigned int length = strlen(key);
-    for(i = 0; i < length; ++i) {
-        hash ^= (hash << 5) + (*key) + (hash >> 2);
+    for(i = 0; i < length; ++i){
+        hash = ((hash << 5) + hash) + key[i];
     }
 
     return hash;
@@ -35,63 +36,32 @@ void symt_init(htable *table){
 }
 
 
-var_t *symt_add_symb(htable *table, char *key){
-    if(table == NULL || key == NULL) {
+ht_item_t *symt_add_symb(htable *table, const string_t *key){
+    if(table == NULL) {
         exit_error(INTERNAL_ERROR);
-        // return NULL;
     }
 
-    unsigned int pos = hash_func(key);
-    ht_item_t *last = NULL, *current = (*table)[pos];
+    unsigned int pos = hash_func(key->str);
+    ht_item_t *item = symt_search(table, key->str);
 
+    if(item != NULL && item->type == func){
+        exit_error(SEM_DEF_FUNC_ERROR);
+    } else {
+        ht_item_t *new = malloc(sizeof(ht_item_t));
+        if(new == NULL) exit_error(ALLOCATION_ERROR);
 
-    while(current != NULL){
-        if(!strcmp(key, current->key)) return NULL;
-        last = current;
-        current = current->next;
+        new->key = malloc((key->length + 1) * sizeof(char));
+        if(new->key == NULL){
+            free(new);
+            exit_error(ALLOCATION_ERROR);
+        }
+
+        strcpy(new->key, key->str);
+        new->next = (*table)[pos];
+        (*table)[pos] = new;
+
+        return new;
     }
-
-    ht_item_t *new = (ht_item_t*)malloc(sizeof(ht_item_t));
-    if(new == NULL){
-        exit_error(ALLOCATION_ERROR);
-        //return NULL;
-    }
-
-    new->key = (char *)malloc((strlen(key) + 1) * sizeof(char));
-    if(new->key == NULL){
-        free(new);
-        exit_error(ALLOCATION_ERROR);
-        // return NULL;
-    }
-
-    new->value.parameters = (string_t *)malloc(sizeof(string_t));
-    if(new->value.parameters == NULL){
-        free(new->key);
-        free(new);
-        exit_error(ALLOCATION_ERROR);
-        // return NULL;
-    }
-
-    if(str_init(new->value.parameters) == 1){
-        free(new->key);
-        free(new->value.parameters);
-        free(new);
-
-        exit_error(INTERNAL_ERROR);
-        // return NULL;
-    }
-
-    strcpy(new->key, key);
-        
-    new->value.id = new->key;
-    new->value.type = UNDEFINED_DT;
-    new->value.defined = false;
-    new->next = NULL;
-
-    if(last == NULL) (*table)[pos] = new;
-    else last->next = new;
-
-    return &new->value;
 }
 
 void symt_free(htable *table){
@@ -116,84 +86,82 @@ void symt_free(htable *table){
     }
 }
 
-bool *symt_add_param(var_t *data, int datatype){
-    if(data == NULL) 
+bool *symt_add_param(ht_item_t *item, int datatype){
+    if(item == NULL) 
         return (bool *)false;
 
-    switch (datatype)
-    {
-    case INTEGER_DT:
-        if(str_add_char(data->parameters, 'i') == 1)
-            return (bool *)false;
-        break;
+    else if(item->type = func){
+        switch (datatype){
+            case INTEGER_DT:
+                if(str_add_char(&item->data.func->argv, 'i') == 1)
+                return (bool *)false;
+            break;
     
-    case FLOAT_DT:
-        if(str_add_char(data->parameters, 'f') == 1)
-            return (bool *)false;
-        break;
+            case FLOAT_DT:
+                if(str_add_char(&item->data.func->argv, 'f') == 1)
+                return (bool *)false;
+            break;
     
-    case STRING_DT:
-        if(str_add_char(data->parameters, 's') == 1)
-            return (bool *)false;
-        break;
+            case STRING_DT:
+                if(str_add_char(&item->data.func->argv, 's') == 1)
+                return (bool *)false;
+            break;
 
-    default:
-        break;
+            default:
+            break;
     }
-
-    return (bool *)true;
-
+        return (bool *)true;
+    }
+    return (bool *)false;
 }
 
-var_t *symt_search(htable *table, char *key){
+ht_item_t *symt_search(htable *table, const char *key){
     if(table == NULL || key == NULL){
         exit_error(INTERNAL_ERROR);
         // return NULL;
     }
 
-    unsigned int pos = hash_func(key);
+    ht_item_t *item = (*table)[hash_func(key)];
 
-    ht_item_t *current = (*table)[pos];
-
-    while(current != NULL){
-        if(!strcmp(key, current->key)) return &current->value;
-        
-        current = current->next;
+    while(item != NULL){
+        if(strcmp(item->key, key) == 0) return item;
+    
+        item = item->next;
     }
-
     // TODO: if no item was found 
     return NULL;
 }
 
-bool *symt_rm_symb(htable *table, char *key){
-    if(table == NULL || key == NULL){
-        // TODO: errors processing
-        return (bool *)false;
-    }
+// bool *symt_rm_symb(htable *table, char *key){
+//     if(table == NULL || key == NULL){
+//         // TODO: errors processing
+//         return (bool *)false;
+//     }
 
-    unsigned int pos = hash_func(key);
+//     unsigned int pos = hash_func(key);
 
-    ht_item_t *last = NULL, *current = (*table)[pos];
+//     ht_item_t *last = NULL, *current = (*table)[pos];
 
-    while(current != NULL){
-        if(!strcmp(key, current->key)){
-            if(last == NULL) (*table)[pos] = (*table)[pos]->next;
-            else last->next = current->next;
+//     while(current != NULL){
+//         if(!strcmp(key, current->key)){
+//             if(last == NULL) (*table)[pos] = (*table)[pos]->next;
+//             else last->next = current->next;
 
-            free(current->key);
+//             free(current->key);
 
-            if(current->value.parameters != NULL){
-                str_free(current->value.parameters);
-                free(current->value.parameters);
-            }
+//             if(current->type == var){
+//                 if(current->data.var->id.str != NULL)
+//                 str_free(current->data.var->id.str);
+//                 free(current->data);
+//             }
 
-            free(current);
-            return (bool *)true;
-        }
+//             free(current);
+//             return (bool *)true;
+//         }
 
-        last = current;
-        current = current->next;
-    }
+//         last = current;
+//         current = current->next;
+//     }
 
-    return (bool *)false;
-}
+//     return (bool *)false;
+// }

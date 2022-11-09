@@ -12,8 +12,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "scanner.h"
 #include "str.h"
+#include "scanner.h"
 
 #define MAX_HT_SIZE 101
 
@@ -24,23 +24,41 @@ typedef enum datatype {
     INTEGER_DT, 
     FLOAT_DT,   
     STRING_DT,  
-    NIL_DT,     
+    NIL_DT,
+    VOID_DT,     
     UNDEFINED_DT
-} datatype_t;
+} symt_datatype_t;
 
-typedef struct var {
-    datatype_t type;
-    bool defined;
+typedef struct var_attr {
+    symt_datatype_t type;
     token_type_t *attr;
-    char *id;
-    string_t *parameters; // dynamic string for parameters
-} var_t;
+    string_t id;
+} symt_var_t;
+
+typedef struct func_attr {
+    string_t funcIdentif;
+    bool defined;
+    bool called;
+    symt_datatype_t ret;
+    string_t argv;          // dynamic string for parameters
+} symt_func_t;
 
 // Hashtable item representation
 
+typedef enum ht_item_type {
+    var,
+    func
+} ht_item_type_t;
+
+typedef union ht_item_data {
+    symt_func_t *func;
+    symt_var_t *var;
+} ht_item_data_t;
+
 typedef struct ht_item {
+    ht_item_type_t type;
     char *key;
-    var_t value;
+    ht_item_data_t data;
     struct ht_item *next;
 } ht_item_t;
 
@@ -58,7 +76,7 @@ void symt_init(htable *table);
  * @param *table - symbol table
  * @return If successful, returns a pointer to the new item, otherwise NULL
  */
-var_t *symt_add_symb(htable *table, char *key);
+ht_item_t *symt_add_symb(htable *table, const string_t *str);
 
 /*
  * @brief Delete all table elements 
@@ -73,7 +91,7 @@ void symt_free(htable *table);
  * @param datatype - data type of parameter
  * @return If successful, returns true, otherwise false
 */
-bool *symt_add_param(var_t *data, int datatype);
+bool *symt_add_param(ht_item_t *item, int datatype);
 
 /*
  * @brief Find symbol and return data of a symbol  
@@ -81,7 +99,7 @@ bool *symt_add_param(var_t *data, int datatype);
  * @param *key - identifier to search for
  * @return If successful, returns pointer to data of a symbol, otherwise NULL
 */
-var_t *symt_search(htable *table, char *key);
+ht_item_t *symt_search(htable *table, const char *key);
 
 /*
  * @brief Remove a symbol from the table 

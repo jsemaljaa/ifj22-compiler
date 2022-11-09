@@ -47,7 +47,7 @@ int get_next_token(token_t *token)
         // TODO: connect with setstdinFile
         c = (char)getc(stdin);
         // printf("c = %c\n", c);
-
+        //printf("current symbol is %c\n", c);
         switch (state)
         {
         case STATE_START:
@@ -228,10 +228,14 @@ int get_next_token(token_t *token)
             break;
 
         case STATE_QUEST:
-            printf("c = %c\n", c);
             if (c == '>')
             {
                 state = STATE_EOF;
+            }
+            else if (isalpha(c) || c == '_' || c == '$')
+            {
+                str_add_char(str, c);
+                state = STATE_IDENTIFIER_OR_KEYWORD;
             }
             else
             {

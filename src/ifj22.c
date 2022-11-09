@@ -43,10 +43,9 @@ int main(int argc, char **argv)
      set_dynamic_string(&string);
     while (token.type != TOKEN_END_OF_FILE)
     {
-//get_next_token(&token);
+        //get_next_token(&token);
        if( get_next_token(&token) == 1){
-        printf("error\n");
-        return LEXICAL_ERROR;
+        exit_error(LEXICAL_ERROR);
        }
         
         printf("Token: %s \n", list[token.type]);
