@@ -7,18 +7,16 @@
  * @author Mazurava Maryia <xmazur08@vutbr.cz>
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "expressions.h"
+
 #include "parser.h"
-#include "str.h"
-#include "symstack.h"
+
+htable *globalSymTab;
+htable *localSymTab;
 
 token_attribute_t token;
 
-int prolog() {
-    // if (token.keyword == PROLOG)
+int parse() {
+    
 }
 
 

@@ -11,12 +11,49 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
-#include "scanner.h"
+#include "expressions.h"
+#include "parser.h"
+#include "str.h"
+#include "symstack.h"
 #include "symtable.h"
+#include "scanner.h"
 
+static const char *list[] = {
+    "PLUS",
+    "MINUS",
+    "MUL",
+    "DIV",
+    "EQUAL",
+    "NOT_EQUAL",
+    "LESS",
+    "GREATER",
+    "LESS_EQ",
+    "GREATER_EQ",
+    "LEFT_PAR",
+    "RIGHT_PAR",
+    "SEMICOLON",
+    "COLON",
+    "ASSIGN",
+    "COMMA",
+    "CONC",
+    "LEFT_BR",
+    "RIGHT_BR",
+    "DO_QUOTES",
+    "QUEST",
+    "ID",
+    "KEY_W",
+    "TYPE_INT",
+    "TYPE_FLOAT",
+    "TYPE_STRING",
+    "END_OF_FILE", 
+    "PROLOG"};
+
+
+int parse();
 
 // 1. <program> -> <prolog> <list_of_statements>
 static int program();

@@ -7,21 +7,21 @@
  * Rules for analysis.
  */
 typedef enum {
-	NOT_RULE,		// rule doesn't exist
-	ID_R,           // E -> id
-	BRACKETS_R, 	// E -> (E)
-	MUL_R,		    // E -> E * E
-	DIV_R, 		    // E -> E / E
-	PLUS_R, 		// E -> E + E
-	MINUS_R, 	    // E -> E - E
-	CONC_R, 	    // E -> E . E
-	LESS_R, 		// E -> E < E
-	LEEQ_R,			// E -> E <= E
-	GREATER_R, 		// E -> E > E
-	GREQ_R, 	    // E -> E => E
-	TYPE_EQ_R,     	// E -> E === E
-	NTYPE_EQ_R,   	// E -> E !== E
-	EQ_R            // E -> E = E
+	NOT_RULE,		// 0. rule doesn't exist
+	ID_R,           // 1. E -> id
+	BRACKETS_R, 	// 2. E -> (E)
+	MUL_R,		    // 3. E -> E * E
+	DIV_R, 		    // 4. E -> E / E
+	PLUS_R, 		// 5. E -> E + E
+	MINUS_R, 	    // 6. E -> E - E
+	CONC_R, 	    // 7. E -> E . E
+	LESS_R, 		// 8. E -> E < E
+	LEEQ_R,			// 9. E -> E <= E
+	GREATER_R, 		// 10. E -> E > E
+	GREQ_R, 	    // 11. E -> E => E
+	TYPE_EQ_R,     	// 12. E -> E === E
+	NTYPE_EQ_R,   	// 13. E -> E !== E
+	EQ_R            // 14. E -> E = E
 } prec_rules_t;
 
 
@@ -43,7 +43,8 @@ typedef enum {
 	LEEQ,           // <=
     TYPE_EQ,        // ===
 	NTYPE_EQ,	    // !==
-	DOLLAR,		    // $
+	STOP,		    // @
+	NONTERM
 } prec_symbs_t;
 
 typedef enum {
@@ -52,6 +53,17 @@ typedef enum {
     STRING_TYPE,
 	UNDEFINED_TYPE
 } prec_datatypes_t;
+
+typedef enum {
+	I_plus_minus,	// 0 +-
+	I_mul_div,		// 1 */
+	I_rel_op,		// 2 RO
+	I_comp_op,		// 3 CO
+	I_open_par,		// 4 (
+	I_close_par,	// 5 )
+	I_data,			// 6 i
+	I_dollar		// 7 $
+} PT_idx; //precedence table index
 
 
 

@@ -36,7 +36,7 @@ void symt_init(htable *table){
 }
 
 
-ht_item_t *symt_add_symb(htable *table, const string_t *key){
+ht_item_t *symt_add_symb(htable *table, string_t *key){
     if(table == NULL) {
         exit_error(INTERNAL_ERROR);
     }
@@ -57,8 +57,8 @@ ht_item_t *symt_add_symb(htable *table, const string_t *key){
         }
 
         strcpy(new->key, key->str);
-        new->next = (*table)[pos];
-        (*table)[pos] = new;
+        new->next = (*table)[pos % MAX_HT_SIZE];
+        (*table)[pos % MAX_HT_SIZE] = new;
 
         return new;
     }
@@ -115,13 +115,14 @@ bool *symt_add_param(ht_item_t *item, int datatype){
     return (bool *)false;
 }
 
-ht_item_t *symt_search(htable *table, const char *key){
+ht_item_t *symt_search(htable *table, char *key){
     if(table == NULL || key == NULL){
         exit_error(INTERNAL_ERROR);
         // return NULL;
     }
 
-    ht_item_t *item = (*table)[hash_func(key)];
+    int pos = hash_func(key);
+    ht_item_t *item = (*table)[pos % MAX_HT_SIZE];
 
     while(item != NULL){
         if(strcmp(item->key, key) == 0) return item;

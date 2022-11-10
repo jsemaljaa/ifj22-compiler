@@ -76,7 +76,7 @@ void symt_init(htable *table);
  * @param *table - symbol table
  * @return If successful, returns a pointer to the new item, otherwise NULL
  */
-ht_item_t *symt_add_symb(htable *table, const string_t *str);
+ht_item_t *symt_add_symb(htable *table, string_t *str);
 
 /*
  * @brief Delete all table elements 
@@ -99,7 +99,7 @@ bool *symt_add_param(ht_item_t *item, int datatype);
  * @param *key - identifier to search for
  * @return If successful, returns pointer to data of a symbol, otherwise NULL
 */
-ht_item_t *symt_search(htable *table, const char *key);
+ht_item_t *symt_search(htable *table, char *key);
 
 /*
  * @brief Remove a symbol from the table 
