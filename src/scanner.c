@@ -193,7 +193,7 @@ int get_next_token(token_t *token)
         case STATE_PROLOG_START: // <?
             if (isalpha(c))
             {
-                str_add_char(str, c);
+                str_add_char(str, c); 
             }
             else
             {

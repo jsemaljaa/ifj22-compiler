@@ -77,6 +77,8 @@ L  ::= Q
 
 
 
+// declare(strict_types=1);
+
 // Prec. table
 1. E -> id
 2. E -> ( E )
@@ -91,3 +93,4 @@ L  ::= Q
 11. E -> E <= E
 12. E -> E === E
 13. E -> E !== E
+14. E -> E = E
