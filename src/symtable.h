@@ -21,12 +21,13 @@
 #define TYPE_VAR FUNC;
 
 typedef enum datatype {
-    INTEGER_DT, 
-    FLOAT_DT,   
-    STRING_DT,  
-    NIL_DT,
-    VOID_DT,     
-    UNDEFINED_DT
+    INTEGER_DT,     //I
+    FLOAT_DT,       //F
+    STRING_DT,      //S
+    NIL_DT,         //N
+    VOID_DT,        //V
+    UNDEFINED_DT,   //U
+    TERM_DT         //T
 } symt_datatype_t;
 
 typedef struct var_attr {
@@ -36,10 +37,9 @@ typedef struct var_attr {
 } symt_var_t;
 
 typedef struct func_attr {
-    string_t funcIdentif;
     bool defined;
     bool called;
-    symt_datatype_t ret;
+    string_t ret;           // dynamic string for return type
     string_t argv;          // dynamic string for parameters
 } symt_func_t;
 

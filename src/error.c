@@ -32,7 +32,7 @@ int exit_error(int error_name) {
             fprintf(stderr, "4 - Error with semantic analysis: wrong number/type of parameters in a function call or type of return value.\n");
             error_number = 4;
             break;
-        case SEM_FUNC_ERROR:
+        case SEM_VAR_ERROR:
             fprintf(stderr, "5 - Error with semantic analysis: using of undefined variable.\n");
             error_number = 5;
             break;

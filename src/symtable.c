@@ -41,15 +41,19 @@ ht_item_t *symt_add_symb(htable *table, string_t *key){
         exit_error(INTERNAL_ERROR);
     }
 
+
+    
     unsigned int pos = hash_func(key->str);
     ht_item_t *item = symt_search(table, key->str);
-
+    
+    
     if(item != NULL && item->type == func){
         exit_error(SEM_DEF_FUNC_ERROR);
     } else {
+        
         ht_item_t *new = malloc(sizeof(ht_item_t));
         if(new == NULL) exit_error(ALLOCATION_ERROR);
-
+        
         new->key = malloc((key->length + 1) * sizeof(char));
         if(new->key == NULL){
             free(new);
@@ -121,9 +125,9 @@ ht_item_t *symt_search(htable *table, char *key){
         // return NULL;
     }
 
-    int pos = hash_func(key);
+    unsigned int pos = hash_func(key);
     ht_item_t *item = (*table)[pos % MAX_HT_SIZE];
-
+    
     while(item != NULL){
         if(strcmp(item->key, key) == 0) return item;
     

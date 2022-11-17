@@ -22,34 +22,36 @@ int main(int argc, char **argv)
     set_dynamic_string(&string);
     while (token.type != TOKEN_END_OF_FILE)
     {
-        // parse(&pData);
-        get_next_token(&token);
-        printf("Token: %s \n", list[token.type]);
+        // TODO: parse() function is called outside the while loop, only once to get the very first token
+        parse(&pData);
         
-        switch (token.type)
-        {
-        case TOKEN_TYPE_INT:
-            printf("Value: %d \n", token.attribute.integer);
-            break;
+        // get_next_token(&token);
+        // printf("Token: %s \n", list[token.type]);
         
-        case TOKEN_TYPE_FLOAT:
-            printf("Value: %f \n", token.attribute.decimal);
-            break;
+        // switch (token.type)
+        // {
+        // case TOKEN_TYPE_INT:
+        //     printf("Value: %d \n", token.attribute.integer);
+        //     break;
+        
+        // case TOKEN_TYPE_FLOAT:
+        //     printf("Value: %f \n", token.attribute.decimal);
+        //     break;
 
-        case TOKEN_KEY_W:
-            printf("Value: %d \n", token.attribute.keyword);
-            break; 
+        // case TOKEN_KEY_W:
+        //     printf("Value: %d \n", token.attribute.keyword);
+        //     break; 
         
-        case TOKEN_ID:
-            printf("Value: %s \n", token.attribute.string->str);
-            break;
-        case TOKEN_TYPE_STRING:
-            printf("Value: %s \n", token.attribute.string->str);
-            break;
+        // case TOKEN_ID:
+        //     printf("Value: %s \n", token.attribute.string->str);
+        //     break;
+        // case TOKEN_TYPE_STRING:
+        //     printf("Value: %s \n", token.attribute.string->str);
+        //     break;
         
-        default:
-            break;
-        }
+        // default:
+        //     break;
+        // }
     }
 
     fprintf(stderr, "\nNo error in scanner\n");

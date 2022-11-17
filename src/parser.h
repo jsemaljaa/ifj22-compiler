@@ -22,6 +22,18 @@
 #include "symtable.h"
 #include "scanner.h"
 
+#define INTERNALS_COUNT 11
+#define RET_DATATYPES_COUNT 4
+#define KEYW_COUNT 11
+
+
+static const char *retDatatypes[RET_DATATYPES_COUNT] = {
+    "I",
+    "F",
+    "S",
+    "V"
+};
+
 static const char *list[] = {
     "PLUS",
     "MINUS",
@@ -52,36 +64,24 @@ static const char *list[] = {
     "END_OF_FILE", 
     "PROLOG"};
 
-static const char *internals[] = {
-    "reads",
-    "readi",
-    "readf",
-    "write",
-    "floatval",
-    "intval",
-    "strval",
-    "strlen",
-    "substring",
-    "ord",
-    "chr"
-};
-
 typedef struct {
     htable globalSymt;
     htable localSymt;
 } parser_data_t;
 
-int parse(parser_data_t* pData);
+int parse();
+
+static int symt_add_internal_functions();
 
 // 1. <program> -> <prolog> <list_of_statements>
-static bool program(parser_data_t* pData);
+static int program();
 
 //2. <prolog> -> <?php declare(strict_types=1);
-static bool prolog(parser_data_t* pData);
+static int prolog();
 
 //3. <list_of_statements> -> EOF
 //4. <list_of_statements> -> <statement> <list_of_statements> 
-static bool list_of_statements(parser_data_t* pData);
+static int list_of_statements();
 
 /*
 5. <statement> -> <function_definition>
@@ -91,55 +91,55 @@ static bool list_of_statements(parser_data_t* pData);
 9. <statement> -> while ( <expression> ) { <list_of_statements> }
 10. <statement> -> return <return_expressions>;
 */
-static bool statement(parser_data_t* pData);
+static int statement();
 
 /*
 11. <return_expressions> -> <expression>
 12. <return_expressions> -> <variable>
 */
-static bool return_expressions(parser_data_t* pData);
+static int return_expressions();
 
 // 13. <function_definition> -> function ID( <list_of_parameters> ) : <list_of_datatypes_ret> { <list_of_statements> }
-static bool function_definition(parser_data_t* pData);
+static int function_definition();
 
 //14. <variable_definition> -> <variable> = <var_def_expr>
-static bool variable_definition(parser_data_t* pData);
+static int variable_definition();
 
 /*
 15. <var_def_expr> -> <function_call>
 16. <var_def_expr> -> <expression>;
 */
-static bool var_def_expr(parser_data_t* pData);
+static int var_def_expr();
 
 //17. <function_call> -> ID( <list_of_call_parameters> );
-static bool function_call(parser_data_t* pData);
+static int function_call();
 
 /*
 18. <list_of_call_parameters> -> ε
 19. <list_of_call_parameters> -> <call_parameter> <list_of_call_parameters_n>
 */
-static bool list_of_call_parameters(parser_data_t* pData);
+static int list_of_call_parameters(ht_item_t* item);
 
 /*
 20. <call_parameter> -> <variable>
 21. <call_parameter> -> "string" // ?????
 */
-static bool call_parameter(parser_data_t* pData);
+static int call_parameter(ht_item_t* item);
 
 /*
 22. <list_of_call_parameters_n> -> , <call_parameter> <list_of_call_parameters_n>
 23. <list_of_call_parameters_n> -> ε 
 */
-static bool list_of_call_parameters_n(parser_data_t* pData);
+static int list_of_call_parameters_n(ht_item_t* item);
 
 /*
 24. <list_of_parameters> -> ε
 25. <list_of_parameters> -> <parameter> <list_of_parameters_n>
 */
-static bool list_of_parameters(parser_data_t* pData);
+static int list_of_parameters(ht_item_t* item);
 
 //26. <parameter> -> <list_of_datatypes> <variable>
-static bool parameter(parser_data_t* pData);
+static int parameter(ht_item_t* item);
 
 /*
 27. <list_of_datatypes> -> int
@@ -148,22 +148,22 @@ static bool parameter(parser_data_t* pData);
 30. <list_of_datatypes> -> string
 31. <list_of_datatypes> -> nil
 */
-static bool list_of_datatypes(parser_data_t* pData);
+static int list_of_datatypes(ht_item_t* item);
 
 //32. <variable> -> $ID
-static bool variable(parser_data_t* pData);
+static int variable();
 
 /*
 33. <list_of_parameters_n> -> ε
 34. <list_of_parameters_n> -> , <parameter> <list_of_parameters_n>
 */
-static bool list_of_parameters_n(parser_data_t* pData);
+static int list_of_parameters_n();
 
 /*
 35. <list_of_datatypes_ret> -> void
 36. <list_of_datatypes_ret> -> <list_of_datatypes>
 */
-static bool list_of_datatypes_ret(parser_data_t* pData);
+static int list_of_datatypes_ret();
 
 
 #endif //PARSER_H
