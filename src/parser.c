@@ -218,11 +218,18 @@ int list_of_statements(){
                 
                 return NO_ERRORS;
             case TOKEN_KEY_W:
-                if(token.attribute.keyword == K_IF || token.attribute.keyword == K_RETURN || token.attribute.keyword == K_WHILE){
+                if(token.attribute.keyword == K_IF 
+                   || token.attribute.keyword == K_RETURN 
+                   || token.attribute.keyword == K_WHILE 
+                   || token.attribute.keyword == K_ELSE)
+                {
                     code = statement();
                         
                     CHECK_ERROR(code);
-                } else return SEM_OTHER_ERROR;
+                } else {
+                    printf_token_debug(token);
+                    return SEM_OTHER_ERROR;
+                }
         }
     }
 }
@@ -247,16 +254,17 @@ int statement(){
         }
         break;
     case TOKEN_KEY_W:
-        printf_token_debug(token);
         if(token.attribute.keyword == K_FUNCTION){
             code = function_definition(); 
-                
+             
             CHECK_ERROR(code);
         } else if(token.attribute.keyword == K_IF || token.attribute.keyword == K_WHILE){
             GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
             // if(!expression_check()) return false;
-            
-            GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_PAR, SYNTAX_ERROR);
+            while(token.type != TOKEN_RIGHT_PAR){
+                GET_TOKEN();
+            }
+            // GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_PAR, SYNTAX_ERROR);
             GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
             
             code = list_of_statements();
@@ -266,7 +274,7 @@ int statement(){
             GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
 
             GET_AND_CHECK_TOKEN(token.type == TOKEN_KEY_W, SYNTAX_ERROR);
-            if(str_cmp_const_str(token.attribute.string, "else")) 
+            if(token.attribute.keyword != K_ELSE) 
                 return SEM_STMT_FUNC_ERROR;
 
             GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
@@ -277,7 +285,7 @@ int statement(){
             
             GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
 
-        } else if(!str_cmp_const_str(token.attribute.string, "return")){
+        } else if(token.attribute.keyword == K_RETURN){
 
         }
         break;
