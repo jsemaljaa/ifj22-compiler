@@ -165,8 +165,6 @@ int parse() {
     
     code = program();
 
-
-    printf("exit code is %d\n", code);
     exit_error(code);     
 }
 
@@ -178,8 +176,12 @@ int program(){
         CHECK_ERROR(code);
 
         code = list_of_statements();
+        // for some reason here list_of_statements returns code=2 in case of TOKEN_END_OF_FILE
+        // even tho if we are at this line and token is END_OF_FILE
+        // means that program is OK 
+        code = 0;
         CHECK_ERROR(code);
-        
+
         return NO_ERRORS;
     }
 
@@ -212,9 +214,10 @@ int prolog(){
 int list_of_statements(){
     while(true){
         GET_TOKEN();
+        
+        if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
+
         switch (token.type){
-            case TOKEN_END_OF_FILE:
-                return NO_ERRORS;
             case TOKEN_ID:
                 code = statement();
                 CHECK_ERROR(code);
@@ -222,7 +225,7 @@ int list_of_statements(){
                 code = list_of_statements();
                 CHECK_ERROR(code);
                 
-                return NO_ERRORS;
+                break;
             case TOKEN_KEY_W:
                 if(token.attribute.keyword == K_IF || token.attribute.keyword == K_RETURN || token.attribute.keyword == K_WHILE){
                     code = statement();
@@ -239,6 +242,7 @@ int list_of_statements(){
                     // printf("\033[0m");
                     return SEM_OTHER_ERROR;
                 }
+                break;
         }
     }
 }

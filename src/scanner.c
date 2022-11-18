@@ -227,12 +227,12 @@ int get_next_token(token_t *token)
 
             break;
 
-        case STATE_QUEST:
+        case STATE_QUEST: // ?
             if (c == '>')
             {
                 state = STATE_EOF;
             }
-            else if (isalpha(c) || c == '_' || c == '$')
+            else if ( c == 's' || c == 'f' || c == 'i')
             {
                 str_add_char(str, c);
                 state = STATE_IDENTIFIER_OR_KEYWORD;
@@ -369,12 +369,6 @@ int get_next_token(token_t *token)
                     token->type = TOKEN_KEY_W;
                 }
 
-                else if (str_cmp_const_str(str, "float") == 0)
-                {
-                    token->attribute.keyword = K_FLOAT;
-                    token->type = TOKEN_KEY_W;
-                }
-
                 else if (str_cmp_const_str(str, "function") == 0)
                 {
                     token->attribute.keyword = K_FUNCTION;
@@ -384,12 +378,6 @@ int get_next_token(token_t *token)
                 else if (str_cmp_const_str(str, "if") == 0)
                 {
                     token->attribute.keyword = K_IF;
-                    token->type = TOKEN_KEY_W;
-                }
-
-                else if (str_cmp_const_str(str, "int") == 0)
-                {
-                    token->attribute.keyword = K_INT;
                     token->type = TOKEN_KEY_W;
                 }
 
@@ -406,19 +394,33 @@ int get_next_token(token_t *token)
                     token->type = TOKEN_KEY_W;
                 }
 
-                else if (str_cmp_const_str(str, "string") == 0)
-                {
-                    token->attribute.keyword = K_STRING;
-                    token->type = TOKEN_KEY_W;
-                }
                 else if (str_cmp_const_str(str, "void") == 0)
                 {
                     token->attribute.keyword = K_VOID;
                     token->type = TOKEN_KEY_W;
                 }
+
                 else if (str_cmp_const_str(str, "while") == 0)
                 {
                     token->attribute.keyword = K_WHILE;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if ((str_cmp_const_str(str, "float") == 0) || (str_cmp_const_str(str, "?float") == 0))
+                {
+                    token->attribute.keyword = K_FLOAT;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if ((str_cmp_const_str(str, "string") == 0) || (str_cmp_const_str(str, "?string") == 0))
+                {
+                    token->attribute.keyword = K_STRING;
+                    token->type = TOKEN_KEY_W;
+                }
+
+                else if ((str_cmp_const_str(str, "int") == 0) || (str_cmp_const_str(str, "?int") == 0))
+                {
+                    token->attribute.keyword = K_INT;
                     token->type = TOKEN_KEY_W;
                 }
 

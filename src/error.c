@@ -16,6 +16,10 @@
 int exit_error(int error_name) {
     int error_number = 0;
     switch (error_name) {
+        case NO_ERRORS:
+            fprintf(stdout, "0 - Program finished without errors.\n");
+            error_number = 0;
+            break;
         case LEXICAL_ERROR:
             fprintf(stderr, "1 - Error with lexical analysis.\n");
             error_number = 1;
