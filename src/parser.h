@@ -165,6 +165,10 @@ static int list_of_parameters_n();
 */
 static int list_of_datatypes_ret();
 
+static int inside_if();
+
+static int inside_while();
+
 
 #endif //PARSER_H
 
