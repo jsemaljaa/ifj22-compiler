@@ -27,13 +27,16 @@ typedef enum datatype {
     NIL_DT,         //N
     VOID_DT,        //V
     UNDEFINED_DT,   //U
-    TERM_DT         //T
+    TERM_DT,        //T
+    INTEGER_N_DT,   //?I
+    FLOAT_N_DT,     //?F
+    STRING_N_DT     //?S
+
 } symt_datatype_t;
 
 typedef struct var_attr {
     symt_datatype_t type;
-    token_type_t *attr;
-    string_t id;
+    token_attribute_t *attr;
 } symt_var_t;
 
 typedef struct func_attr {

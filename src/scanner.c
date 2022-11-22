@@ -408,19 +408,28 @@ int get_next_token(token_t *token)
 
                 else if ((str_cmp_const_str(str, "float") == 0) || (str_cmp_const_str(str, "?float") == 0))
                 {
-                    token->attribute.keyword = K_FLOAT;
+                    if(str->str[0] == '?'){
+                        token->attribute.keyword = K_FLOAT_N;
+                    } else token->attribute.keyword = K_FLOAT;
+                    
                     token->type = TOKEN_KEY_W;
                 }
 
                 else if ((str_cmp_const_str(str, "string") == 0) || (str_cmp_const_str(str, "?string") == 0))
                 {
-                    token->attribute.keyword = K_STRING;
+                    if(str->str[0] == '?'){
+                        token->attribute.keyword = K_STRING_N;
+                    } else token->attribute.keyword = K_STRING;
+                    
                     token->type = TOKEN_KEY_W;
                 }
 
                 else if ((str_cmp_const_str(str, "int") == 0) || (str_cmp_const_str(str, "?int") == 0))
                 {
-                    token->attribute.keyword = K_INT;
+                    if(str->str[0] == '?'){
+                        token->attribute.keyword = K_INT_N;
+                    } else token->attribute.keyword = K_INT;
+                    
                     token->type = TOKEN_KEY_W;
                 }
 

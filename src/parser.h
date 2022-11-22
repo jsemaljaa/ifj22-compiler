@@ -23,7 +23,7 @@
 #include "scanner.h"
 
 #define INTERNALS_COUNT 11
-#define RET_DATATYPES_COUNT 4
+#define RET_DATATYPES_COUNT 7
 #define KEYW_COUNT 11
 
 
@@ -31,7 +31,10 @@ static const char *retDatatypes[RET_DATATYPES_COUNT] = {
     "I",
     "F",
     "S",
-    "V"
+    "V",
+    "?I",
+    "?F",
+    "?S"
 };
 
 static const char *list[] = {
@@ -168,6 +171,10 @@ static int list_of_datatypes_ret();
 static int inside_if();
 
 static int inside_while();
+
+static int check_id_for_keyword(string_t *word);
+
+static string_t collecting_an_expression();
 
 
 #endif //PARSER_H

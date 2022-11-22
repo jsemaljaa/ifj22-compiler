@@ -29,7 +29,10 @@ typedef enum
     K_STRING,
     K_VOID,
     K_WHILE,
-    K_PHP
+    K_PHP,
+    K_INT_N,
+    K_FLOAT_N,
+    K_STRING_N
 } keyword_t;
 // operatory
 
