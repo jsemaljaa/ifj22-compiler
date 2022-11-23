@@ -168,3 +168,5 @@ void generator_substr();
 void generator_ord();
 
 void generator_chr();
+
+void generator_code(char *func_name, char *len_dst, char *len_symb);

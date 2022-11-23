@@ -274,16 +274,17 @@ void generator_break()
 void generator_header()
 {
     printf(".IFJcode21\n");
+    generator_jump("main\n");
 }
 
 
-void generator_main()
+void generator_main(char *func_name, char *func_type)
 {
     generator_label("main");
     generator_create_frame();
     generator_def_var("TF", "n");
-    generator_read("TF", "n", ""); // 3 variable depends on function
-    generator_call(""); // name of function
+    generator_read("TF", "n", func_type); // 3 variable depends on function
+    generator_call(func_name); // name of function
     generator_pops_s("TF", "n");
     generator_write("TF", "n");
     generator_write("string", "\010");
@@ -409,4 +410,49 @@ void generator_chr()
     generator_label("chr_end");
     generator_pop_frame();
     generator_return();
+}
+
+void generator_code(char *func_name, char *len_dst, char *len_symb)
+{
+    char **func = {"reads", "readi", "readf", "write", "strlen", "substring"};
+
+    generator_header();
+    
+    for(int i = 0; i <= 5; i++)
+    {
+
+        if(strcmp(func[i], func_name) == 0)
+        {
+            switch(i)
+            {
+                case 0:
+                    generator_reads();
+                    char *type = "string";
+                    break;
+                case 1:
+                    generator_readi();
+                    char *type = "int";
+                    break;
+                case 2:
+                    gnerator_readf();
+                    char *type = "float";
+                    break;
+                case 3:
+                    generator_function_write();
+                    char *type = NULL;
+                    break;
+                case 4:
+                    generator_strlen(len_dst, len_symb);
+                    char *type = "int";
+                    break;
+                case 5:
+                    generator_substr();
+                    char *type = "string";
+                    break;
+            }
+        }
+    }
+
+    generator_main(func_name, type);
+
 }
