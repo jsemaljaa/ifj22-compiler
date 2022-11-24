@@ -25,28 +25,6 @@ void generator_write(char *dst, char *symb)
     printf("WRITE %s@%s\n", dst, symb);
 }
 
-//STRNUM //TODO
-// void generator_float_val(token_t *token, char *dst);
-// void generator_int_val(token_t *token, char *dst);
-// void generator_str_val(token_t *token, char *dst);
-
-void generator_substring(token_t *token, int i, int j)
-{
-    printf("SUBSTRING %s, %d, %d\n", token->attribute.string->str, i, j);
-}
-
-void generator_ord(token_t *token)
-{
-    printf("ORD %s\n", token->attribute.string->str);
-}
-
-
-void generator_chr(int i)
-{
-    printf("CHR %d\n", i);
-}
-
-
 /*
  * Frames, calling functions
  */
@@ -182,9 +160,9 @@ void generator_int_2_char(char *src, char *var, char *dst, char *symb)
     printf("INT2CHAR %s@%s %s@%s\n", src, var, dst, symb);
 }
 
-void generator_stri_2_int(char *src, char *var, char *dst, char *symb)
+void generator_stri_2_int(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
-    printf("STRI2INT %s@%s %s@%s\n", src, var, dst, symb);
+    printf("STRI2INT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
 // void generator_konverze_s(); //TODO
@@ -228,7 +206,7 @@ void generator_label(char *label_name)
 
 void generator_jump(char *label)
 {
-    prtinf("JUMP %s\n", label);
+    printf("JUMP %s\n", label);
 }
 
 void generator_jump_if_eq(char *label, char *dst1, char *symb1, char *dst2, char *symb2)
@@ -332,6 +310,11 @@ void generator_function_write()
     generator_return();
 }
 
+//STRNUM //TODO
+// void generator_float_val(token_t *token, char *dst);
+// void generator_int_val(token_t *token, char *dst);
+// void generator_str_val(token_t *token, char *dst);
+
 void generator_strlen(char *dst, char *symb)
 {
     generator_def_var("LF", "var");
@@ -388,7 +371,7 @@ void generator_ord()
     generator_GT("LF", "check", "LF", "%%1", "LF", "var");
     generator_jump_if_eq("ord_end", "LF", "check", "bool", "true");
     generator_sub("LF", "%%1", "LF", "%%1", "int", "1");
-    generator_stri2int("LF", "result", "LF", "%%0", "LF", "%%1");
+    generator_stri_2_int("LF", "result", "LF", "%%0", "LF", "%%1");
     generator_label("ord_end");
     generator_pop_frame();
     generator_return();
@@ -406,7 +389,7 @@ void generator_chr()
     generator_jump_if_eq("chr_end", "LF", "check", "bool", "true");
     generator_GT("LF", "check", "LF", "%%0", "int", "255");
     generator_jump_if_eq("chr_end", "LF", "check", "bool", "true");
-    generator_int2char("LF", "result", "LF", "%%0");
+    generator_int_2_char("LF", "result", "LF", "%%0");
     generator_label("chr_end");
     generator_pop_frame();
     generator_return();
@@ -414,7 +397,8 @@ void generator_chr()
 
 void generator_code(char *func_name, char *len_dst, char *len_symb)
 {
-    char **func = {"reads", "readi", "readf", "write", "strlen", "substring"};
+    char *func[] = {"reads", "readi", "readf", "write", "strlen", "substring"};
+    char *type;
 
     generator_header();
     
@@ -427,27 +411,27 @@ void generator_code(char *func_name, char *len_dst, char *len_symb)
             {
                 case 0:
                     generator_reads();
-                    char *type = "string";
+                    type = "string";
                     break;
                 case 1:
                     generator_readi();
-                    char *type = "int";
+                    type = "int";
                     break;
                 case 2:
-                    gnerator_readf();
-                    char *type = "float";
+                    generator_readf();
+                    type = "float";
                     break;
                 case 3:
                     generator_function_write();
-                    char *type = NULL;
+                    type = NULL;
                     break;
                 case 4:
                     generator_strlen(len_dst, len_symb);
-                    char *type = "int";
+                    type = "int";
                     break;
                 case 5:
                     generator_substr();
-                    char *type = "string";
+                    type = "string";
                     break;
             }
         }
