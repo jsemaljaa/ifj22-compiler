@@ -593,6 +593,8 @@ int variable_definition(){
 // 15. <var_def_expr> -> <function_call> <-- extension (!)
 // 16. <var_def_expr> -> <expression>;
 int var_def_expr(){
+    // here we are with an assign token, so to start an expression
+    // we should get next token
     GET_TOKEN();
     string_t expression;
     str_init(&expression);
