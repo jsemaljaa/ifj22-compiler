@@ -176,7 +176,6 @@ static int check_id_for_keyword(string_t *word);
 
 static string_t collecting_an_expression();
 
-
 #endif //PARSER_H
 
 

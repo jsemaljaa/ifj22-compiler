@@ -42,8 +42,9 @@ typedef enum {
 	LEEQ,           // <=
     TYPE_EQ,        // ===
 	NTYPE_EQ,	    // !==
-	STOP,		    // $
-	NONTERM
+	DOLLAR,		    // $
+	NONTERM,
+	STOP			// |
 } prec_symbs_t;
 
 typedef enum {
