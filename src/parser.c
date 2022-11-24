@@ -574,9 +574,7 @@ int variable_definition(){
     /* 
         check if we are inside of a function or no
         it matters cuz we need to know whether we should use 
-        local symtable or global symtable
-
-        (!) function <var_def_expr> itself checking if we are inside of a function or no
+        local symtable or global symtable 
     */
 
     code = variable();
@@ -588,14 +586,19 @@ int variable_definition(){
 
     code = var_def_expr();
     CHECK_ERROR(code);
+
+    //code = variable();
+    //CHECK_ERROR(code); check in symtable if there is already this variable and check if we are in a function
+    //GET_AND_CHECK_TOKEN(token.type == TOKEN_ASSIGN, SYNTAX_ERROR);
+    //code = var_def_expr();
+    //CHECK_ERROR(code);
 }
 
-// 15. <var_def_expr> -> <function_call> <-- extension (!)
+// 15. <var_def_expr> -> <function_call>
 // 16. <var_def_expr> -> <expression>;
 int var_def_expr(){
-    // here we are with an assign token, so to start an expression
-    // we should get next token
     GET_TOKEN();
+    
     string_t expression;
     str_init(&expression);
 
@@ -612,7 +615,6 @@ int var_def_expr(){
                 do{
                     GET_TOKEN();
                 } while(token.type != TOKEN_SEMICOLON);
-                return NO_ERRORS;
             }
         }
     } else {
@@ -620,8 +622,6 @@ int var_def_expr(){
         do{
             GET_TOKEN();
         } while(token.type != TOKEN_SEMICOLON);
-        
-        return NO_ERRORS;
     }
 }
 
@@ -629,6 +629,13 @@ static string_t collecting_an_expression(){
     // getting tokens and copying their attributes into a string
     string_t expression;
     str_init(&expression);
+    
+    /*
+        TOKEN_PLUS,
+        TOKEN_MINUS,
+        TOKEN_MUL,
+        TOKEN_DIV,
+    */
 
     while(token.type != TOKEN_SEMICOLON){
         switch (token.type){
@@ -666,10 +673,6 @@ static string_t collecting_an_expression(){
         str_add_char(&expression, ' ');
         GET_TOKEN();
     }
-
-    //"$a + $b * 10"
-
-    return expression;
 }
 
 //17. <function_call> -> ID( <list_of_call_parameters> );
@@ -763,7 +766,7 @@ int list_of_call_parameters_n(ht_item_t* function){
 }
 
 
-int check_id_for_keyword(string_t* word){
+int check_id_for_keyword(string_t *word){
     string_t keywList[KEYW_COUNT] = {
         {.length=4, .allocSize=0, .str="else"},
         {.length=5, .allocSize=0, .str="float"},
@@ -808,7 +811,7 @@ int variable(){
     if(token.type != TOKEN_ID) GET_AND_CHECK_TOKEN(token.type == TOKEN_ID, SYNTAX_ERROR);
 
     string_t varId;
-    if(str_init(&varId) == 1) return ALLOCATION_ERROR;
+    if(str_init(&varId) != 0) return ALLOCATION_ERROR;
     
     if(token.attribute.string->str[0] == '$'){
         int i = 1;

@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "generator.h"
+#include <string.h>
 #include "scanner.h"
 
 
@@ -24,13 +24,6 @@ void generator_write(char *dst, char *symb);
 // void generator_float_val(token_t *token, char *dst);
 // void generator_int_val(token_t *token, char *dst);
 // void generator_str_val(token_t *token, char *dst);
-
-void generator_substring(token_t *token, int i, int j);
-
-void generator_ord(token_t *token);
-
-void generator_chr(int i);
-
 
 /*
  * Prace s ramci, volani funkci
@@ -98,7 +91,7 @@ void generator_float_2_int(char *src, char *var, char *dst, char *symb);
 
 void generator_int_2_char(char *src, char *var, char *dst, char *symb);
 
-void generator_stri_2_int(char *src, char *var, char *dst, char *symb);
+void generator_stri_2_inr(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 // void generator_konverze_s();
 
 /*

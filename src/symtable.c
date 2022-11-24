@@ -41,6 +41,8 @@ ht_item_t *symt_add_symb(htable *table, string_t *key){
         exit_error(INTERNAL_ERROR);
     }
 
+
+    
     unsigned int pos = hash_func(key->str);
     ht_item_t *item = symt_search(table, key->str);
     
@@ -69,10 +71,6 @@ ht_item_t *symt_add_symb(htable *table, string_t *key){
 void symt_free(htable *table){
     if(table == NULL) 
         // TODO: return error from void ??
-
-        // i don't think that we should return error here
-        // that's a function that frees the table and if the table is empty
-        // it's not really an error so i think it's ok to just return
         return;
 
     ht_item_t *current, *next;
@@ -138,3 +136,37 @@ ht_item_t *symt_search(htable *table, char *key){
     // TODO: if no item was found 
     return NULL;
 }
+
+// bool *symt_rm_symb(htable *table, char *key){
+//     if(table == NULL || key == NULL){
+//         // TODO: errors processing
+//         return (bool *)false;
+//     }
+
+//     unsigned int pos = hash_func(key);
+
+//     ht_item_t *last = NULL, *current = (*table)[pos];
+
+//     while(current != NULL){
+//         if(!strcmp(key, current->key)){
+//             if(last == NULL) (*table)[pos] = (*table)[pos]->next;
+//             else last->next = current->next;
+
+//             free(current->key);
+
+//             if(current->type == var){
+//                 if(current->data.var->id.str != NULL)
+//                 str_free(current->data.var->id.str);
+//                 free(current->data);
+//             }
+
+//             free(current);
+//             return (bool *)true;
+//         }
+
+//         last = current;
+//         current = current->next;
+//     }
+
+//     return (bool *)false;
+// }
