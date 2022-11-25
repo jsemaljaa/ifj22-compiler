@@ -11,6 +11,9 @@
 #include "generator.h"
 #include "scanner.h"
 
+//TODO body if/while func
+//TODO 
+
 /*
  * Internal functions + header and main
  */
@@ -18,7 +21,7 @@
 void generator_header()
 {
     printf(".IFJcode21\n");
-    generator_def_var("GF", "$end_result$");
+    // generator_def_var("GF", "$end_result$");
     generator_jump("main\n");
 
 }
@@ -55,9 +58,29 @@ void generator_param(char *dst, char *var, char *type_symb, char *symb)
     generator_move(dst, var, type_symb, symb);
 }
 
-void generator_start_if(char *label, char *dst, char *symb)
+void generator_start_if(char *func_name, int func_tree, int func_num)
 {
-    generator_jump_if_eq(label, "GF", "$end_result$", "bool", "false");
+    generator_statement_jumpifeq(func_name, func_tree, func_num);
+}
+
+void generator_end_else_if(char *func_name, int func_tree, int func_num)
+{
+    generator_statement_jump(func_name, func_tree, func_num + 1);
+}
+
+// void generator_end_if(char *func_name, int func_tree, int func_num)
+// {
+    
+// }
+
+void generator_while_start(char *func_name, int func_tree, int func_num)
+{
+    generator_statement_jumpifeq(func_name, func_tree, func_num);
+}
+
+void generator_while_end(char *func_name, int func_tree, int func_num)
+{
+    generator_statement_jump(func_name, func_tree, func_num - 1);
 }
 
 void generator_readi(char *dst)
@@ -192,48 +215,44 @@ void generator_chr(char *dst)
 
 
 
-// void generator_code(char *func_name, char *len_symb, char *dst)
-// {
-//     char *func[] = {"reads", "readi", "readf", "write", "strlen", "substring"};
-//     char *type;
+void generator_code(char *func_name, char *len_symb, char *dst)
+{
+    char *func[] = {"reads", "readi", "readf", "write", "strlen", "substring"};
+    char *type;
 
-//     generator_header();
-    
-//     for(int i = 0; i <= 5; i++)
-//     {
+    for(int i = 0; i <= 5; i++)
+    {
 
-//         if(strcmp(func[i], func_name) == 0)
-//         {
-//             switch(i)
-//             {
-//                 case 0:
-//                     generator_reads(dst);
-//                     type = "string";
-//                     break;
-//                 case 1:
-//                     generator_readi(dst);
-//                     type = "int";
-//                     break;
-//                 case 2:
-//                     generator_readf(dst);
-//                     type = "float";
-//                     break;
-//                 case 3:
-//                     generator_function_write(dst);
-//                     type = NULL;
-//                     break;
-//                 case 4:
-//                     generator_strlen(dst, len_symb);
-//                     type = "int";
-//                     break;
-//                 case 5:
-//                     generator_substr(dst);
-//                     type = "string";
-//                     break;
-//             }
-//         }
-//     }
+        if(strcmp(func[i], func_name) == 0)
+        {
+            switch(i)
+            {
+                case 0:
+                    generator_reads(dst);
+                    type = "string";
+                    break;
+                case 1:
+                    generator_readi(dst);
+                    type = "int";
+                    break;
+                case 2:
+                    generator_readf(dst);
+                    type = "float";
+                    break;
+                case 3:
+                    generator_function_write(dst);
+                    type = NULL;
+                    break;
+                case 4:
+                    generator_strlen(dst, len_symb);
+                    type = "int";
+                    break;
+                case 5:
+                    generator_substr(dst);
+                    type = "string";
+                    break;
+            }
+        }
+    }
 
-//     generator_main(func_name, type, dst);
-
-// }
+}

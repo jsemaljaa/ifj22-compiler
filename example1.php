@@ -9,7 +9,6 @@ $a = readi();
 if ($a === null) {
 	write("Chyba pri nacitani celeho cisla!\n");
 } else {}
-
 if ($a < 0) {
 	write("Faktorial nelze spocitat\n");
 } else {

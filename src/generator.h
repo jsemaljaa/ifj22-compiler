@@ -11,6 +11,21 @@
 #include <string.h>
 #include "scanner.h"
 
+void generate_statement_jumpifeq(char *func_name, int func_tree, int func_num)
+{
+    printf("JUMPIFEQ %s_%d_%d GF@$end_result$ bool@false\n", func_name, func_tree, func_num);
+}
+
+void generate_statement_jump(char *func_name, int func_tree, int func_num)
+{
+    printf("JUMP %s_%d_%d GF@$end_result$ bool@false\n", func_name, func_tree, func_num);
+}
+
+// void generate_statement_label(char *func_name, int func_tree, int func_num)
+// {
+//     printf("LABEL %s_%d_%d GF@$end_result$ bool@false\n", func_name, func_tree, func_num);
+// }
+
 /*
  * Input-output instructions
  */
@@ -269,4 +284,4 @@ void generator_ord();
 
 void generator_chr();
 
-void generator_code(char *func_name, char *len_dst, char *len_symb);
+// void generator_code(char *func_name, char *len_dst, char *len_symb);

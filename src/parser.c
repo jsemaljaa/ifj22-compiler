@@ -152,7 +152,7 @@ int parse() {
     CHECK_ERROR(code);
 
     get_next_token(&token);     
-    if(token.type == TOKEN_END_OF_FILE) return true; // empty file
+    if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS; // empty file
     
     code = program();
 
@@ -170,10 +170,15 @@ int program(){
             // for some reason here list_of_statements returns code=2 in case of TOKEN_END_OF_FILE
             // even tho if we are at this line and token is END_OF_FILE
             // means that program is OK 
-            // code = 0;
-            CHECK_ERROR(code);
 
+            // if(token.type == TOKEN_END_OF_FILE) code = 0;
+
+            CHECK_ERROR(code);
             return NO_ERRORS;
+        
+        case TOKEN_END_OF_FILE:
+            code = NO_ERRORS;
+            return code;
         
         default:
             return SYNTAX_ERROR;
@@ -206,11 +211,9 @@ int prolog(){
 int list_of_statements(){
     while(true){
         GET_TOKEN();
-        // printf_token_debug(token);
         if(token.type == TOKEN_END_OF_FILE) {
             return NO_ERRORS;
         }
-
         code = statement();
         CHECK_ERROR(code);
 
@@ -248,16 +251,14 @@ int statement(){
         } else if(token.attribute.keyword == K_RETURN){}
     }
 
-    if(token.type == TOKEN_END_OF_FILE) {
-        return NO_ERRORS;
-    }
-
     code = list_of_statements();
     CHECK_ERROR(code);
 }
 
 int inside_if(){
     
+
+    // (STATEMENT) START
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
     GET_TOKEN();
     str_init(&expr);
@@ -270,19 +271,21 @@ int inside_if(){
         last token after collecting_an_expression() should be either ')' or ';' 
         depends on a situation
     */
+    // (STATEMENT) END 
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
     inIfExpr = false;
+    // (BODY) START
     inIf = true;
     code = list_of_statements();
 
     CHECK_ERROR(code);
 
+    // (BODY) END
     GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
-    GET_AND_CHECK_TOKEN(token.type == TOKEN_KEY_W, SYNTAX_ERROR);
-
-    if(token.attribute.keyword != K_ELSE) return SEM_STMT_FUNC_ERROR;
-
+    
+    
+    GET_TOKEN_CHECK_KEYW(K_ELSE, SEM_STMT_FUNC_ERROR);
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
 
     code = list_of_statements();
@@ -290,7 +293,7 @@ int inside_if(){
     CHECK_ERROR(code);
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
-
+    printf("slkfakfsafsa\n");
     inIf = false;
     str_free(&expr);
     return NO_ERRORS;
@@ -368,8 +371,7 @@ int function_definition(){
     // collect statements inside of a func into local symt and generate instructions for them
     
     code = list_of_statements();
-    CHECK_ERROR(code);
-    
+    CHECK_ERROR(code);  
 
     // when we're done with function definition, 
     // meaning that we've collected every statement inside of it
@@ -602,8 +604,6 @@ static string_t collecting_an_expression(){
     }
 
     while(token.type != expected){
-        printf("token at the start of expression\n");
-        printf_token_debug(token);
         switch (token.type){
         case TOKEN_ID:
             str_concat(&expression, token.attribute.string);
@@ -705,14 +705,13 @@ static string_t collecting_an_expression(){
         str_add_char(&expression, ' ');
     }
 
-    printf("--------- collected expression is: %s\n", expression.str);
     return expression;
 }
 
 //17. <function_call> -> ID( <list_of_call_parameters> );
 int function_call(){
     ht_item_t* item = symt_search(&globalSymt, token.attribute.string->str);
-    printf("\tfound a function call with id '%s'\n", item->key);
+    //  printf("\tfound a function call with id '%s'\n", item->key);
     if(item == NULL) {
         return SEM_DEF_FUNC_ERROR;
     } else if(item->type == func){        

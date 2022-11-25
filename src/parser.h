@@ -25,19 +25,14 @@
 #define GET_TOKEN()                 \
     ret = get_next_token(&token);   \
 
-#define CHECK_KEYW(KEYW)                                                        \
+#define CHECK_KEYW(KEYW, code)                                                        \
     if(!(token.type == TOKEN_KEY_W && token.attribute.keyword == (KEYW))) {     \
-        return false;                                                           \
+        return code;                                                           \
     }
 
-#define CHECK_TYPE(TYPE)                        \
-    if(!(token.type == TYPE)) return false;     \
-
-#define GET_TOKEN_CHECK_KEYW(KEYW)      \
-    do {                                \
-        GET_TOKEN();                    \
-        CHECK_KEYW(KEYW);               \
-    } while(true)                       \
+#define GET_TOKEN_CHECK_KEYW(KEYW, code)    \
+    GET_TOKEN();                            \
+    CHECK_KEYW(KEYW, code);                 \
 
 #define CHECK_TOKEN(expr, code)         \
     if(!(expr)) return code;            \
@@ -51,6 +46,7 @@
 
 #define CODE_GENERATE(gen, ...)                     \
     if(!gen(__VA_ARGS__)) return INTERNAL_ERROR;    \
+
 
 
 #define INTERNALS_COUNT 11
