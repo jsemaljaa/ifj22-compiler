@@ -29,4 +29,6 @@ int str_cmp_const_str(string_t *s1, const char *s2);
 char *str_get_str(string_t *s);
 int str_get_length(string_t *s);
 
+int str_concat(string_t *s1, string_t *s2);
+
 #endif // STR_H

@@ -110,3 +110,18 @@ int str_get_length(string_t *s)
 {
    return s->length;
 }
+
+int str_concat(string_t *s1, string_t *s2){
+   if(s1 == NULL || s2 == NULL) return STR_ERROR;
+
+   if(s1->allocSize <= s1->length + s2->length){
+      s1->allocSize = s1->allocSize + s2->allocSize;
+      if ((s1->str = (char*) realloc(s1->str, s1->allocSize + 1)) == NULL)
+         return STR_ERROR;
+   }
+
+   strcat(s1->str, s2->str);
+   s1->length = strlen(s1->str);
+
+   return STR_SUCCESS;
+}

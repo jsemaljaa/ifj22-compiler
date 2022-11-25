@@ -16,11 +16,42 @@
 #include <string.h>
 #include <stdbool.h>
 #include "expressions.h"
-#include "parser.h"
 #include "str.h"
 #include "symstack.h"
 #include "symtable.h"
 #include "scanner.h"
+#include "error.h"
+
+#define GET_TOKEN()                 \
+    ret = get_next_token(&token);   \
+
+#define CHECK_KEYW(KEYW)                                                        \
+    if(!(token.type == TOKEN_KEY_W && token.attribute.keyword == (KEYW))) {     \
+        return false;                                                           \
+    }
+
+#define CHECK_TYPE(TYPE)                        \
+    if(!(token.type == TYPE)) return false;     \
+
+#define GET_TOKEN_CHECK_KEYW(KEYW)      \
+    do {                                \
+        GET_TOKEN();                    \
+        CHECK_KEYW(KEYW);               \
+    } while(true)                       \
+
+#define CHECK_TOKEN(expr, code)         \
+    if(!(expr)) return code;            \
+
+#define GET_AND_CHECK_TOKEN(expr, code) \
+    GET_TOKEN();                        \
+    CHECK_TOKEN(expr, code);            \
+
+#define CHECK_ERROR(code)               \
+    if(code != 0) return code;          \
+
+#define CODE_GENERATE(gen, ...)                     \
+    if(!gen(__VA_ARGS__)) return INTERNAL_ERROR;    \
+
 
 #define INTERNALS_COUNT 11
 #define RET_DATATYPES_COUNT 7
