@@ -13,6 +13,3 @@ $(TARGET): src/ifj22.c src/error.c src/scanner.c src/str.c src/symstack.c src/sy
 
 clean:
 	rm -f *.o $(TARGET)
-
-# zip:
-# 	zip $(ZIPNAME) src/* Makefile rozdeleni rozsireni doc/dokumentace.pdf
