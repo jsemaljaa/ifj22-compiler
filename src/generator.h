@@ -6,267 +6,165 @@
  * @author Ekaterina Krupenko <xkrupe00@vutbr.cz>
  */
 
+#ifndef GENERATOR_H
+#define GENERATOR_H
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "scanner.h"
 
-void generate_statement_jumpifeq(char *func_name, int func_tree, int func_num)
-{
-    printf("JUMPIFEQ %s_%d_%d GF@$end_result$ bool@false\n", func_name, func_tree, func_num);
-}
 
-void generate_statement_jump(char *func_name, int func_tree, int func_num)
-{
-    printf("JUMP %s_%d_%d GF@$end_result$ bool@false\n", func_name, func_tree, func_num);
-}
+void generator_statement_jumpifeq(char *func_name, int func_tree, int func_num);
 
-// void generate_statement_label(char *func_name, int func_tree, int func_num)
-// {
-//     printf("LABEL %s_%d_%d GF@$end_result$ bool@false\n", func_name, func_tree, func_num);
-// }
+void generator_statement_jump(char *func_name, int func_tree, int func_num);
 
 /*
  * Input-output instructions
  */
 
-void generator_read(char *dst, char *var, char *var_type)
-{
-    printf("READ %s@%s int\n", dst, var);
-} 
+void generator_read(char *dst, char *var, char *var_type);
 
-void generator_print(char *dst, char *symb)
-{
-    printf("WRITE %s@%s\n", dst, symb);
-}
+void generator_write(char *dst, char *symb);
 
 /*
  * Frames, calling functions
  */
 
-void generator_move(char *dst, char *src, char *var, char *symb)
-{
-    printf("MOVE %s@%s %s@%s\n", dst, var, src, symb);
-}
+void generator_move(char *dst, char *src, char *var, char *symb);
 
-void generator_create_frame()
-{
-    printf("CREATEFRAME\n");
-}
+void generator_create_frame();
 
-void generator_push_frame()
-{
-    printf("PUSHFRAME\n");
-}
+void generator_push_frame();
 
-void generator_pop_frame()
-{
-    printf("POPFRAME\n");
-}
+void generator_pop_frame();
 
-void generator_def_var(char *dst, char *var)
-{
-    printf("DEFVAR %s@%s\n", dst, var);
-}
+void generator_def_var(char *dst, char *var);
 
-void generator_call(char *label_name)
-{
-    printf("CALL $%s\n", label_name);
-}
+void generator_call(char *label_name);
 
-void generator_return()
-{
-    printf("RETURN\n");
-}
+void generator_return();
 
 /*
  * Stack function
  */
 
-void generator_push_s(char *symb_type, char *symb)
-{
-    printf("PUSHS %s@%s\n", symb_type, symb);
-}
+void generator_push_s(char *symb_type, char *symb);
 
-void generator_pops_s(char *dst, char *var)
-{
-    printf("POPS %s@%s\n", dst, var);
-}
+void generator_pops_s(char *dst, char *var);
 
-void generator_clear_s()
-{
-    printf("CLEARS\n");
-}
+void generator_clear_s();
 
 /*
  * Arithmetic, relational Boolean and conversion instructions
  */
 
-void generator_add(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
-{
-    printf("ADD %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_add(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-void generator_sub(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
-{
-    printf("SUB %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_sub(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-void generator_mul(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
-{
-    printf("MUL %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_mul(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-void generator_div(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
-{
-    printf("DIV %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_div(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-// void generator_idiv(); //TODO
+// void generator_idiv();
 
-// void generator_aritmetic_s(); //TODO
+// void generator_aritmetic_s();
 
-void generator_LT(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
-{
-    printf("LT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_LT(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-void generator_GT(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
-{
-    printf("GT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_GT(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-void generator_EQ(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
-{
-    printf("EQ %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_EQ(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-// void generator_boolean_s(); //TODO
+// void generator_boolean_s();
 
-void generator_and(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
-{
-    printf("AND %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_and(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
-void generator_or(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
-{
-    printf("OR %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_or(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
-void generator_not(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
-{
-    printf("NOT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_not(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
-// void generator_boolean_ss(); //TODO
+// void generator_boolean_ss();
 
-void generator_int_2_float(char *src, char *var, char *dst, char *symb)
-{
-    printf("INT2FLOAT %s@%s %s@%s\n", src, var, dst, symb);
-}
+void generator_int_2_float(char *src, char *var, char *dst, char *symb);
 
-void generator_float_2_int(char *src, char *var, char *dst, char *symb)
-{
-    printf("FLOAT2INT %s@%s %s@%s\n", src, var, dst, symb);
-}
+void generator_float_2_int(char *src, char *var, char *dst, char *symb);
 
-void generator_int_2_char(char *src, char *var, char *dst, char *symb)
-{
-    printf("INT2CHAR %s@%s %s@%s\n", src, var, dst, symb);
-}
+void generator_int_2_char(char *src, char *var, char *dst, char *symb);
 
-void generator_stri_2_int(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
-{
-    printf("STRI2INT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_stri_2_inr(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
-// void generator_konverze_s(); //TODO
+// void generator_konverze_s();
 
 /*
- * Prace s retezci
+ * String op
  */
 
-void generator_concat(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
-{
-    printf("CONCAT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_concat(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
-void generator_getchar(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
-{
-    printf("GETCHAR %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_getchar(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
-void generator_setchar(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
-{
-    printf("SETCHAR %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
-}
+void generator_setchar(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
 /*
- * Prace s typy
+ * Type op
  */
 
-void generator_type(char *src, char *var, char *dst, char *symb)
-{
-    printf("TYPE %s@%s %s@%s\n", src, var, dst, symb);
-}
+void generator_type(char *src, char *var, char *dst, char *symb);
 
 /*
- * Instrukce pro rizeni toku programu
+ * Controlling program flow op
  */
 
-void generator_label(char *label_name)
-{
-    printf("LABEL %s\n", label_name);
-}
+void generator_label(char *label_name);
 
-void generator_jump(char *label)
-{
-    printf("JUMP %s\n", label);
-}
+void generator_jump(char *label);
 
-void generator_jump_if_eq(char *label, char *dst1, char *symb1, char *dst2, char *symb2)
-{
-    printf("LUMPIFEQ %s %s@%s %s@%s\n", label, dst1, symb1, dst2, symb2);
-}
+void generator_jump_if_eq(char *label, char *dst1, char *symb1, char *dst2, char *symb2);
 
-void generator_jump_if_neq(char *label, char *dst1, char *symb1, char *dst2, char *symb2)
-{
-    printf("LUMPIFNEQ %s %s@%s %s@%s\n", label, dst1, symb1, dst2, symb2);
-}
+void generator_jump_if_neq(char *label, char *dst1, char *symb1, char *dst2, char *symb2);
 
-void generator_jump_if_eq_s()
-{
-    printf("JUMPIFEQS\n");
-}
+void generator_jump_if_eq_s();
 
-void generator_jump_if_neq_s()
-{
-    printf("JUMPIFEQS\n");
-}
+void generator_jump_if_neq_s();
 
-void generator_exit(char *symb)
-{
-    printf("EXIT int@%s\n", symb);
-}
+void generator_exit(char *symb);
+
 
 /*
  * Debug instructions
  */
 
-void generator_break()
-{
-    generator_jump("BREAK\n");
-}
+void generator_break();
 
 // void generator_dprint(char *symb);
 
 /*
- * Internal functions + header and main
+ * Internal functions 
  */
 
 void generator_header();
 
-void generator_main();
+// void generator_start_main();
+
+// void generator_end_main();
+
+void generator_start_func(char *func_name);
+
+void generator_end_func();
+
+void generator_param(char *dst, char *var, char *type_symb, char *symb);
+
+void generator_start_if(char *func_name, int func_tree, int func_num);
+
+void generator_end_else_if(char *func_name, int func_tree, int func_num);
+
+void generator_while_start(char *func_name, int func_tree, int func_num);
+
+void generator_while_end(char *func_name, int func_tree, int func_num);
+
 
 void generator_readi();
 
@@ -284,4 +182,7 @@ void generator_ord();
 
 void generator_chr();
 
-// void generator_code(char *func_name, char *len_dst, char *len_symb);
+void generator_internal_func(char *func_name, char *type_symb, char *symb);
+
+
+#endif //GENERATOR_H

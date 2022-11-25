@@ -20,13 +20,6 @@ bool inIf, inIfExpr;
 bool inFunctionDefinition;
 string_t expr;
 
-static void clean_exit(int code){
-    symt_free(&globalSymt);
-    symt_free(&localSymt);
-    str_free(token.attribute.string);
-    exit_error(code);
-}
-
 static void printf_symtable_func_debug(ht_item_t* item){
     printf("--- HT_ITEM FUNCTION DATA ---\n");
     printf("Function key is: %s\n", item->key);
@@ -76,6 +69,15 @@ static void printf_token_debug(token_t token){
             break;
     }
     printf("--- END CURRENT TOKEN INFO ---\n");
+}
+
+
+static void clean_exit(int code){
+    symt_free(&globalSymt);
+    symt_free(&localSymt);
+    if(token.type == TOKEN_ID)
+        str_free(token.attribute.string);
+    exit_error(code);
 }
 
 static void printf_return_code_debug(int code, char* func){
@@ -166,6 +168,8 @@ int program(){
             code = prolog();
             CHECK_ERROR(code);
 
+            generator_header();
+
             code = list_of_statements();
             // for some reason here list_of_statements returns code=2 in case of TOKEN_END_OF_FILE
             // even tho if we are at this line and token is END_OF_FILE
@@ -211,6 +215,7 @@ int prolog(){
 int list_of_statements(){
     while(true){
         GET_TOKEN();
+        // printf_token_debug(token);
         if(token.type == TOKEN_END_OF_FILE) {
             return NO_ERRORS;
         }
@@ -287,11 +292,11 @@ int inside_if(){
     
     GET_TOKEN_CHECK_KEYW(K_ELSE, SEM_STMT_FUNC_ERROR);
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
-
+    // (BODY_ELSE) START
     code = list_of_statements();
 
     CHECK_ERROR(code);
-
+    // (BODY_ELSE) END
     GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
     printf("slkfakfsafsa\n");
     inIf = false;
@@ -394,7 +399,7 @@ int list_of_parameters(ht_item_t* item){
         code = parameter(item);
         CHECK_ERROR(code);
 
-        code = list_of_call_parameters_n(item);   
+        code = list_of_parameters_n(item);   
         CHECK_ERROR(code);
     }
 }
@@ -694,9 +699,6 @@ static string_t collecting_an_expression(){
             break;
 
         default:
-            printf("curr line is %d\n", __LINE__);
-            printf("expected is %d\n", expected);
-            printf_token_debug(token);
             str_free(&expression);
             clean_exit(SYNTAX_ERROR);
             break;
@@ -708,10 +710,11 @@ static string_t collecting_an_expression(){
     return expression;
 }
 
-//17. <function_call> -> ID( <list_of_call_parameters> );
+//17. <function_call> -> ID( <list_of_call_parameters> );   
 int function_call(){
     ht_item_t* item = symt_search(&globalSymt, token.attribute.string->str);
     //  printf("\tfound a function call with id '%s'\n", item->key);
+
     if(item == NULL) {
         return SEM_DEF_FUNC_ERROR;
     } else if(item->type == func){        
@@ -720,24 +723,26 @@ int function_call(){
         code = list_of_call_parameters(item);
         CHECK_ERROR(code);
 
+        // GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
+
     } else return INTERNAL_ERROR;
     return NO_ERRORS;
 }
 
 //20. <call_parameter> -> <variable>
 //21. <call_parameter> -> "string" // ?????
-int call_parameter(ht_item_t* function){
+int call_parameter(ht_item_t* function, string_t params){
     switch (token.type){
     case TOKEN_TYPE_STRING:
-        // printf("[string_call_param] %s\n", token.attribute.string->str);
+        generator_internal_func(function->key, "string", token.attribute.string->str);
         break;
     
     case TOKEN_TYPE_INT:
-        // printf("[int_call_param] %d\n", token.attribute.integer);
+        // generator_internal_func(function->key, "int", token.attribute.integer);
         break;
 
     case TOKEN_TYPE_FLOAT:
-        // printf("[float_call_param] %f\n", token.attribute.decimal);
+        // generator_internal_func(function->key, "float", token.attribute.decimal);
         break;
 
     case TOKEN_ID:
@@ -757,19 +762,24 @@ int call_parameter(ht_item_t* function){
 //18. <list_of_call_parameters> -> ε
 //19. <list_of_call_parameters> -> <call_parameter> <list_of_call_parameters_n>
 int list_of_call_parameters(ht_item_t* function){
+    string_t params;
+    str_init(&params);
+
     GET_TOKEN();
     if(token.type == TOKEN_RIGHT_PAR){
         if(!str_cmp_const_str(&function->data.func->argv, "")){
             GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
+
             // generate a function call for function with no parameters
+            
             return NO_ERRORS;
         } else return SEM_TYPE_ERROR;
     } else if (token.type == TOKEN_ID || token.type == TOKEN_TYPE_STRING || 
                token.type == TOKEN_TYPE_INT || token.type == TOKEN_TYPE_FLOAT){
-        code = call_parameter(function);
+        code = call_parameter(function, params);
         CHECK_ERROR(code);
         
-        code = list_of_call_parameters_n(function);
+        code = list_of_call_parameters_n(function, params);
         CHECK_ERROR(code);
     } else return SYNTAX_ERROR;
 
@@ -780,19 +790,20 @@ int list_of_call_parameters(ht_item_t* function){
 22. <list_of_call_parameters_n> -> , <call_parameter> <list_of_call_parameters_n>
 23. <list_of_call_parameters_n> -> ε 
 */
-int list_of_call_parameters_n(ht_item_t* function){
+int list_of_call_parameters_n(ht_item_t* function, string_t params){
     GET_TOKEN();
     if(token.type == TOKEN_RIGHT_PAR){
+
         // generate a function call
         
         return NO_ERRORS;
     } else if (token.type == TOKEN_COMMA){
         GET_TOKEN();
-        code = call_parameter(function);
+        code = call_parameter(function, params);
         CHECK_ERROR(code);
         
 
-        code = list_of_call_parameters_n(function);
+        code = list_of_call_parameters_n(function, params);
         CHECK_ERROR(code);
     }
 }

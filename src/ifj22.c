@@ -17,7 +17,8 @@ int main(int argc, char **argv)
     token_t token;
     string_t string, *str = &string;
     str_init(&string);
-    dyn_string_set(&string);
+    set_dynamic_string(&string);
+
     while (token.type != TOKEN_END_OF_FILE)
     {
         // TODO: parse() function is called outside the while loop, only once to get the very first token

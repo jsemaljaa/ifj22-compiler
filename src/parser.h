@@ -21,6 +21,7 @@
 #include "symtable.h"
 #include "scanner.h"
 #include "error.h"
+#include "generator.h"
 
 #define GET_TOKEN()                 \
     ret = get_next_token(&token);   \
@@ -44,8 +45,9 @@
 #define CHECK_ERROR(code)               \
     if(code != 0) return code;          \
 
-#define CODE_GENERATE(gen, ...)                     \
-    if(!gen(__VA_ARGS__)) return INTERNAL_ERROR;    \
+#define CODE_GENERATE(_gen, ...)                     \
+     if(!_gen(__VA_ARGS__)) return INTERNAL_ERROR;    \
+
 
 
 
@@ -154,13 +156,13 @@ static int list_of_call_parameters(ht_item_t* item);
 20. <call_parameter> -> <variable>
 21. <call_parameter> -> "string" // ?????
 */
-static int call_parameter(ht_item_t* item);
+static int call_parameter(ht_item_t* item, string_t params);
 
 /*
 22. <list_of_call_parameters_n> -> , <call_parameter> <list_of_call_parameters_n>
 23. <list_of_call_parameters_n> -> ε 
 */
-static int list_of_call_parameters_n(ht_item_t* item);
+static int list_of_call_parameters_n(ht_item_t* item, string_t params);
 
 /*
 24. <list_of_parameters> -> ε
