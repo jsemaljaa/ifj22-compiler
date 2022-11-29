@@ -8,7 +8,6 @@
 
 #include "generator.h"
 
-
 void generator_statement_jumpifeq(char *func_name, int func_tree, int func_num)
 {
     printf("JUMPIFEQ %s_%d_%d GF@$end_result$ bool@false\n", func_name, func_tree, func_num);
@@ -18,11 +17,6 @@ void generator_statement_jump(char *func_name, int func_tree, int func_num)
 {
     printf("JUMP %s_%d_%d GF@$end_result$ bool@false\n", func_name, func_tree, func_num);
 }
-
-// void generate_statement_label(char *func_name, int func_tree, int func_num)
-// {
-//     printf("LABEL %s_%d_%d GF@$end_result$ bool@false\n", func_name, func_tree, func_num);
-// }
 
 /*
  * Input-output instructions
@@ -120,9 +114,38 @@ void generator_div(char *src, char *var, char *dst1, char *symb1, char *dst2 , c
     printf("DIV %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-// void generator_idiv(); //TODO
+void generator_idiv(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
+    printf("IDIV %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
 
-// void generator_aritmetic_s(); //TODO
+void generator_add_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
+    printf("ADDS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
+
+void generator_sub_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
+    printf("SUBS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
+
+void generator_mul_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
+    printf("MULS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
+
+void generator_div_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
+    printf("DIVS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
+
+void generator_idiv_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
+    printf("IDIVS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
+
+
+
 
 void generator_LT(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
 {
@@ -139,6 +162,20 @@ void generator_EQ(char *src, char *var, char *dst1, char *symb1, char *dst2 , ch
     printf("EQ %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
+void generator_LT_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
+    printf("LTS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
+
+void generator_GT_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
+    printf("GTS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
+
+void generator_EQ_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
+    printf("EQS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
 // void generator_boolean_s(); //TODO
 
 void generator_and(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
@@ -156,7 +193,20 @@ void generator_not(char *src, char *var, char *dst1, char *symb1, char *dst2, ch
     printf("NOT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-// void generator_boolean_ss(); //TODO
+void generator_and_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
+{
+    printf("ANDS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
+
+void generator_or_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
+{
+    printf("ORS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
+
+void generator_not_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
+{
+    printf("NOTS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
 
 void generator_int_2_float(char *src, char *var, char *dst, char *symb)
 {
@@ -178,7 +228,25 @@ void generator_stri_2_int(char *src, char *var, char *dst1, char *symb1, char *d
     printf("STRI2INT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-// void generator_konverze_s(); //TODO
+void generator_int_2_float_S(char *src, char *var, char *dst, char *symb)
+{
+    printf("INT2FLOAT %s@%s %s@%s\n", src, var, dst, symb);
+}
+
+void generator_float_2_int_s(char *src, char *var, char *dst, char *symb)
+{
+    printf("FLOAT2INT %s@%s %s@%s\n", src, var, dst, symb);
+}
+
+void generator_int_2_char_s(char *src, char *var, char *dst, char *symb)
+{
+    printf("INT2CHAR %s@%s %s@%s\n", src, var, dst, symb);
+}
+
+void generator_stri_2_int_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
+{
+    printf("STRI2INT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
+}
 
 /*
  * String op
@@ -232,7 +300,7 @@ void generator_jump_if_neq(char *label, char *dst1, char *symb1, char *dst2, cha
     printf("LUMPIFNEQ %s %s@%s %s@%s\n", label, dst1, symb1, dst2, symb2);
 }
 
-void generator_jump_if_eq_s()
+void generator_jump_if_eq_s()                                                                                                                                                  
 {
     printf("JUMPIFEQS\n");
 }
@@ -253,7 +321,12 @@ void generator_exit(char *symb)
 
 void generator_break()
 {
-    generator_jump("BREAK\n");
+    printf("BREAK\n");
+}
+
+void generator_dprint(char * symb)
+{
+    printf("DPRINT %s\n", symb);
 }
 
 /*
@@ -268,18 +341,44 @@ void generator_header()
 
 }
 
-// void generator_start_main()
-// {
-//     generator_label("main");
-//     generator_create_frame();
-//     generator_push_frame();
-// }
+void generator_comment(char *comment)
+{
+    printf("# %s\n", comment);
+}
 
-// void generator_end_main()
-// {
-//     generator_pop_frame();
-//     generator_clear_s();
-// }
+char *generator_get_type(keyword_t type)
+{
+    switch(type)
+    {
+        case K_INT_N:
+            return "int";
+            break;
+        case K_FLOAT_N:
+            return "float";
+            break;
+        case K_STRING_N:
+            return "string";
+            break;
+        // case K_BOOL_N:
+        //     return "bool";
+        //     break;
+        default:
+            return "nil";
+            break;
+    }
+}
+
+void generator_end(char *func_name)
+{
+    generator_return();
+
+    char end_label[512];
+
+    strcat(end_label, "end_");
+    strcat(end_label, func_name);
+
+    generator_label(strcat("end_", end_label));
+}
 
 void generator_start_func(char *func_name)
 {
@@ -287,17 +386,29 @@ void generator_start_func(char *func_name)
     generator_push_frame();
 }
 
-void generator_end_func()
+void generator_end_function(char * func_name)
 {
-    generator_label("end_func");
+    char end_func[512];
+
+    strcat(end_func, "end_");
+    strcat(end_func, func_name);
+
+    generator_label(strcat("end_", end_func));
     generator_pop_frame();
     generator_return();
 }
 
-void generator_param(char *dst, char *var, char *type_symb, char *symb)
+void call_func(char *dst, char *name_func)
+{
+    generator_push_frame();
+    generator_call(name_func);
+    generator_pop_frame();
+}
+
+void generator_param(char *dst, char *var)
 {
     generator_def_var(dst, var);
-    generator_move(dst, var, type_symb, symb);
+    generator_pops_s(dst, var);
 }
 
 void generator_start_if(char *func_name, int func_tree, int func_num)
@@ -472,29 +583,57 @@ void generator_internal_func(char *func_name, char *type_symb, char *symb)
 
 }
 
-// void generator_operation(int op_type, char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
-// {
+void generator_operation(token_type_t operation_type, char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+{
 
-//     switch(op_type)
-//     {
-//         case 0: //TOKEN_PLUS
-//             generator_add(src, var, dst1, symb1, dst2, symb2);
-//             break;
-//         case 1: //TOKEN_MINUS
-//             generator_sub(src, var, dst1, symb1, dst2, symb2);
-//             break;
-//         case 2: //TOKEN_MUL
-//             generator_mul(src, var, dst1, symb1, dst2, symb2);
-//             break;
-//         case 3: //TOKEN_DIV
-//             generator_div(src, var, dst1, symb1, dst2, symb2);
-//             break;
-//         case 4: //TOKEN_EQUAL
-//             generator_EQ(src, var, dst1, symb1, dst2, symb2);
-//             break;
-//         case 5: //TOKEN_NOT_EQUAL
-//             generator_EQ(src, var, dst1, symb1, dst2, symb2);
-//             generator_NOT(src, var, dst1, symb1, dst2, symb2);
-//             break;            
-//     }
-// }
+    generator_jump_if_eq("error_end", dst1, symb1, "nil", "nil");
+    generator_jump_if_eq("error_end", dst2, symb2, "nil", "nil");
+
+    switch(operation_type)
+    {
+        case TOKEN_PLUS:
+            generator_add_s(src, var, dst1, symb1, dst2, symb2);
+            break;
+        case TOKEN_MINUS:
+            generator_sub_s(src, var, dst1, symb1, dst2, symb2);
+            break;
+        case TOKEN_MUL:
+            generator_mul_s(src, var, dst1, symb1, dst2, symb2);
+            break;
+        case TOKEN_DIV:
+            generator_div_s(src, var, dst1, symb1, dst2, symb2);
+            break;
+        // case TOKEN_IDIV: //question why scanner dont have IDIV token type
+        //     generator_void_check();
+        //     generator_params_check();
+        //     generator_idivs(src, var, dst1, symb1, dst2, symb2);
+        // break;
+        case TOKEN_EQUAL:
+            generator_EQ_s(src, var, dst1, symb1, dst2, symb2);
+            break;
+        case TOKEN_NOT_EQUAL:
+            generator_EQ_s(src, var, dst1, symb1, dst2, symb2);
+            generator_not_s(src, var, dst1, symb1, dst2, symb2);
+            break;
+        case TOKEN_LESS:
+            generator_LT_s(src, var, dst1, symb1, dst2, symb2);
+            break;
+        case TOKEN_GREATER:
+            generator_GT_s(src, var, dst1, symb1, dst2, symb2);
+            break;
+        case TOKEN_LESS_EQ:
+            generator_def_var(src, "&param1&");
+            generator_def_var(src, "&param2&");
+            generator_LT(src, "&param1&", dst1, symb1, dst2, symb2);
+            generator_EQ(src, "&param2&", dst1, symb1, dst2, symb2);
+            generator_or(src, var, src, "&param1&", src, "&param2&");
+            break;
+        case TOKEN_GREATER_EQ:
+            generator_def_var(src, "&param1&");
+            generator_def_var(src, "&param2&");
+            generator_GT(src, "&param1&", dst1, symb1, dst2, symb2);
+            generator_EQ(src, "&param2&", dst1, symb1, dst2, symb2);
+            generator_or(src, var, src, "&param1&", src, "&param2&");
+            break;
+    }
+}
