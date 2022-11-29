@@ -173,7 +173,7 @@ void generator_comment(char *comment);
 
 char *generator_get_type(keyword_t type);
 
-void generator_end(char *func_name);
+// void generator_end(char *func_name);
 
 void generator_start_func(char *func_name);
 
@@ -197,6 +197,8 @@ void generator_readf();
 
 void generator_reads();
 
+char *generator_str_convert(char *str);
+
 //STRNUM //TODO
 // void generator_float_val(token_t *token, char *dst);
 // void generator_int_val(token_t *token, char *dst);
@@ -210,7 +212,7 @@ void generator_ord();
 
 void generator_chr();
 
-void generator_internal_func(char *func_name, char *type_symb, char *symb);
+void generator_internal_func(char *func_name, int i, int j, char *symb, keyword_t type);
 
 void generator_operation(token_type_t operation_type, char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 

@@ -368,17 +368,17 @@ char *generator_get_type(keyword_t type)
     }
 }
 
-void generator_end(char *func_name)
-{
-    generator_return();
+// void generator_end(char *func_name)
+// {
+//     generator_return();
 
-    char end_label[512];
+//     char end_label[512];
 
-    strcat(end_label, "end_");
-    strcat(end_label, func_name);
+//     strcat(end_label, "end_");
+//     strcat(end_label, func_name);
 
-    generator_label(strcat("end_", end_label));
-}
+//     generator_label(strcat("end_", end_label));
+// }
 
 void generator_start_func(char *func_name)
 {
@@ -386,7 +386,7 @@ void generator_start_func(char *func_name)
     generator_push_frame();
 }
 
-void generator_end_function(char * func_name)
+void generator_end_func(char * func_name)
 {
     char end_func[512];
 
@@ -433,8 +433,7 @@ void generator_while_end(char *func_name, int func_tree, int func_num)
 
 void generator_readi()
 {
-    generator_label("readi");
-    generator_push_frame();
+    generator_start_func("readi");
     generator_def_var("LF", "var");
     generator_read("LF", "var", "int");
     generator_pop_frame();
@@ -443,8 +442,7 @@ void generator_readi()
 
 void generator_readf()
 {
-    generator_label("readf");
-    generator_push_frame();
+    generator_start_func("readf");
     generator_def_var("LF", "var");
     generator_read("LF", "var", "float");
     generator_pop_frame();
@@ -453,12 +451,59 @@ void generator_readf()
 
 void generator_reads()
 {
-    generator_label("reads");
-    generator_push_frame();
+    generator_start_func("reads");
     generator_def_var("LF", "var");
     generator_read("LF", "var", "string");
     generator_pop_frame();
     generator_return();
+}
+
+char *generator_str_convert(char *str)
+{
+    char *result_str = "";
+    char new_str[512] = "\0";
+    char buf[2];
+    int i = 0;
+
+    for(; i < strlen(str); i++)
+    {
+        switch(str[i])
+        {
+            case ' ':
+                strcat(new_str, "\\032");
+                break;
+            case '!':
+                strcat(new_str, "\\033");
+                break;
+            case '"':
+                strcat(new_str, "\\034");
+                break;
+            case '#':
+                strcat(new_str, "\\035");
+                break;
+            case '\\':
+                strcat(new_str, "\\092");
+                break;
+            case '\n':
+                strcat(new_str, "\\010");
+                break;
+            default:
+                buf[0] = str[i];
+                buf[1] = '\0';
+                strcat(new_str, buf);
+                break;
+        }
+    }
+
+    result_str = (char*) malloc((strlen(new_str))*sizeof(char));
+
+    if(!result_str)
+        return NULL;
+
+    for(int j = 0; j < strlen(new_str); j++)
+        result_str[j] = new_str[j];
+
+    return result_str;
 }
 
 //STRNUM //TODO
@@ -472,87 +517,100 @@ void generator_strlen(char *dst, char *symb)
     printf("STRLEN LF@$len$ %s@%s\n", dst, symb);
 }
 
-void generator_substr()
+//не понимаю надо ли конвертировать стринг
+void generator_substr(char *s, int i, int j)
 {
-    generator_label("substr\n");
-    generator_push_frame();
-    generator_def_var("LF", "$result$");
-    generator_move("LF", "string", "$result$", "");
+    generator_start_func("substr");
 
-    generator_jump_if_eq("error", "LF", "$param1$", "nil", "nil");
-    generator_jump_if_eq("error", "LF", "$param2$", "nil", "nil");
-    generator_jump_if_eq("error", "LF", "$param3$", "nil", "nil");
-    generator_def_var("LF", "$flag$");
-    generator_LT("LF", "$flag$", "LF", "$param2$", "int", "1");
-    generator_jump_if_eq("substr_end", "LF", "$flag$", "bool", "true");
-    generator_LT("LF", "$flag$", "LF", "$param3$", "int", "1");
-    generator_jump_if_eq("substr_end", "LF", "$flag$", "bool", "true");
-    generator_strlen("LF", "$param1$");
-    generator_GT("LF", "$flag$", "LF", "$param2$", "LF", "var");
-    generator_jump_if_eq("substr_end", "LF", "$flag$", "bool", "true");
-    generator_GT("LF", "$flag$", "LF", "$param3$", "LF", "var");
-    generator_jump_if_eq("substr_end", "LF", "$flag$", "bool", "true");
-    generator_LT("LF", "$flag$", "LF", "$param3$", "LF", "$param2$");
-    generator_jump_if_eq("substr_end", "LF", "$flag$", "bool", "true");
-    generator_sub("LF", "$param2$", "LF", "$param2$", "int", "1");
-    generator_def_var("LF", "tmp_char");
+    generator_def_var("LF", "$result$");
+    generator_def_var("LF", "$param$");
+    generator_def_var("LF", "$param1$");
+    generator_def_var("LF", "$param2$");
+    generator_def_var("LF", "$str$");
+
+    generator_def_var("LF", "$char$");
+    generator_move("LF", "$result$", "string", NULL);
+    printf("MOVE LF@$param1$ int@%d\n", i);
+    printf("MOVE LF@$param2$ int@%d\n", j);
+    printf("MOVE LF@$str$ string@%s\n", generator_str_convert(s));
+
+    generator_jump_if_eq("error_func", "LF", "$str$", "nil", "nil");
+    generator_jump_if_eq("error_func", "LF", "$param1$", "nil", "nil");
+    generator_jump_if_eq("error_func", "LF", "$param2$", "nil", "nil");
+
+    generator_LT("LF", "$param$", "LF", "$param1$", "int", "1");
+    generator_jump_if_eq("end_substr", "LF", "$param$", "bool", "true");
+    generator_LT("LF", "$param$", "LF", "$param2$", "int", "1");
+    generator_jump_if_eq("end_substr", "LF", "$param$", "bool", "true");
+    generator_strlen("LF", "$str$");
+    generator_GT("LF", "$param$", "LF", "$param1$", "LF", "$len$");
+    generator_jump_if_eq("end_substr", "LF", "$param$", "bool", "true");
+    generator_GT("LF", "$param$", "LF", "$param2$", "LF", "$len$");
+    generator_jump_if_eq("end_substr", "LF", "$param$", "bool", "true");
+    generator_LT("LF", "$param$", "LF", "$param2$", "LF", "$param1$");
+    generator_jump_if_eq("end_substr", "LF", "$param$", "bool", "true");
+
+    generator_sub("LF", "$param1$", "LF", "$param1$", "int", "1");
     generator_label("LOOP");
-    generator_getchar("LF", "tmp_char", "LF", "$param1$", "LF", "$param2$");
-    generator_concat("LF", "$result$", "LF", "$result$", "LF", "tmp_char");
-    generator_add("LF", "$param2$", "LF", "$param2$", "LF", "1");
-    generator_LT("LF", "$flag$", "LF", "$param2$", "LF", "$param3$");
-    generator_jump_if_eq("LOOP", "LF", "$flag$", "bool", "true");
-    generator_label("substr_end");
-    generator_pop_frame();
-    generator_return();
+    generator_getchar("LF", "$char$", "LF", "$str$", "LF", "$param1$");
+    generator_concat("LF", "$result$", "LF", "$result$", "LF", "$char$");
+    generator_add("LF", "$param1$", "LF", "$param1$", "int", "1");
+    generator_LT("LF", "$param$", "LF", "$param1$", "LF", "$param2$");
+    generator_jump_if_eq("LOOP", "LF", "$param$", "bool", "true");
+
+    generator_end_func("substr");
 }
 
-void generator_ord() 
+void generator_ord(char *c)
 {
-    generator_label("ord");
-    generator_push_frame();
-    generator_jump_if_eq("error", "LF", "$param1$", "nil", "nil");
-    generator_jump_if_eq("error", "LF", "$param2$", "nil", "nil");
+    generator_start_func("ord");
     generator_def_var("LF", "$result$");
+    generator_def_var("LF", "$param$");
+    generator_def_var("LF", "$str$");
+
     generator_move("LF", "$result$", "nil", "nil");
-    generator_strlen("LF", "$param1$");
-    generator_def_var("LF", "$flag$");
-    generator_LT("LF", "$flag$", "LF", "$param2$", "int", "1");
-    generator_jump_if_eq("ord_end", "LF", "$flag$", "bool", "true");
-    generator_GT("LF", "$flag$", "LF", "$param2$", "LF", "var");
-    generator_jump_if_eq("ord_end", "LF", "$flag$", "bool", "true");
-    generator_sub("LF", "$param2$", "LF", "$param2$", "int", "1");
-    generator_stri_2_int("LF", "$result$", "LF", "$param1$", "LF", "$param2$");
-    generator_label("ord_end");
-    generator_pop_frame();
-    generator_return();
+    generator_move("LF", "$str$", "string", generator_str_convert(c));
+
+
+    generator_jump_if_eq("error", "LF", "$str$", "nil", "nil");
+
+    generator_strlen("LF", "$str$");
+    generator_LT("LF", "$param$", "LF", "$len$", "int", "1");
+    generator_jump_if_eq("end_ord", "LF", "$flag$", "bool", "true");
+    generator_stri_2_int("LF", "$result$", "LF", "$str$", "int", "1");
+
+    generator_end_func("ord");
 }
 
-void generator_chr()
+void generator_chr(int i)
 {
     generator_label("chr");
     generator_push_frame();
-    generator_jump_if_eq("error", "LF", "$param1$", "nil", "nil");
     generator_def_var("LF", "$result$");
+    generator_def_var("LF", "$param$");
+    generator_def_var("LF", "$param1$");
+    printf("MOVE LF@$param$ int&%d\n", i);
+
     generator_move("LF", "$result$", "nil", "nil");
-    generator_def_var("LF", "$flag$");
-    generator_LT("dst", "$flag$", "LF", "$param1$", "int", "0");
-    generator_jump_if_eq("chr_end", "LF", "$flag$", "bool", "true");
-    generator_GT("LF", "$flag$", "LF", "$param1$", "int", "255");
-    generator_jump_if_eq("chr_end", "LF", "$flag$", "bool", "true");
-    generator_int_2_char("LF", "$result$", "LF", "$param1$");
-    generator_label("chr_end");
-    generator_pop_frame();
-    generator_return();
+
+    generator_jump_if_eq("error", "LF", "$param$", "nil", "nil");
+
+    generator_LT("LF", "$param1$", "LF", "$param$", "int", "0");
+    generator_jump_if_eq("end_chr", "LF", "$param1$", "bool", "true");
+    generator_GT("LF", "$param1$", "LF", "$param$", "int", "255");
+    generator_jump_if_eq("end_chr", "LF", "$param1$", "bool", "true");
+    generator_int_2_char("LF", "$result$", "LF", "$param$");
+
+    generator_end_func("chr");
 }
 
 
 
-void generator_internal_func(char *func_name, char *type_symb, char *symb)
+void generator_internal_func(char *func_name, int i, int j, char *symb, keyword_t type)
 {
-    char *func[] = {"reads", "readi", "readf", "write", "strlen", "substring"};
+    char *func[] = {"reads", "readi", "readf", "write", "strlen", "substring", "ord", "chr"};
 
-    for(int i = 0; i <= 5; i++)
+    for(int i = 0; i <= 7; i++)
     {
 
         if(strcmp(func[i], func_name) == 0)
@@ -569,13 +627,19 @@ void generator_internal_func(char *func_name, char *type_symb, char *symb)
                     generator_readf();
                     break;
                 case 3:
-                    generator_write(type_symb, symb);
+                    generator_write(generator_get_type(type), symb);
                     break;
                 case 4:
                     generator_strlen("string", symb);
                     break;
                 case 5:
-                    generator_substr();
+                    generator_substr(symb, i, j);
+                    break;
+                case 6:
+                    generator_ord(symb);
+                    break;
+                case 7:
+                    generator_chr(i);
                     break;
             }
         }
@@ -601,9 +665,10 @@ void generator_operation(token_type_t operation_type, char *src, char *var, char
             generator_mul_s(src, var, dst1, symb1, dst2, symb2);
             break;
         case TOKEN_DIV:
+            //написать функцию для того чтобы знать что оба параметра float
             generator_div_s(src, var, dst1, symb1, dst2, symb2);
             break;
-        // case TOKEN_IDIV: //question why scanner dont have IDIV token type
+        // case TOKEN_IDIV: //написать функцию для того чтобы знать что оба параметра int
         //     generator_void_check();
         //     generator_params_check();
         //     generator_idivs(src, var, dst1, symb1, dst2, symb2);
