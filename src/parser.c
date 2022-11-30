@@ -71,6 +71,12 @@ static void printf_token_debug(token_t token){
     printf("--- END CURRENT TOKEN INFO ---\n");
 }
 
+static void printf_return_code_debug(int code, char* func){
+    printf("\n--- START RETURN DEBUG ---\n");
+    printf("Returning [%d] from %s\n", code, func);
+    printf("--- END RETURN DEBUG ---\n");
+}
+
 
 static void clean_exit(int code){
     symt_free(&globalSymt);
@@ -80,11 +86,6 @@ static void clean_exit(int code){
     exit_error(code);
 }
 
-static void printf_return_code_debug(int code, char* func){
-    printf("\n--- START RETURN DEBUG ---\n");
-    printf("Returning [%d] from %s\n", code, func);
-    printf("--- END RETURN DEBUG ---\n");
-}
 
 int symt_add_internal_functions(){
     string_t internals[INTERNALS_COUNT] = {
@@ -150,43 +151,18 @@ int symt_add_internal_functions(){
 
 int parse() {
     symt_init(&globalSymt);
-    code = symt_add_internal_functions();
-    CHECK_ERROR(code);
-
-    get_next_token(&token);     
-    if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS; // empty file
+    CHECK_RULE(symt_add_internal_functions());
     
-    code = program();
+    GET_AND_CHECK_TOKEN(token.type == TOKEN_END_OF_FILE, SYNTAX_ERROR);
 
+    CHECK_RULE(prolog());
+
+    if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
+
+    CHECK_RULE(list_of_statements());
+
+    printf("returning with code %d\n", code);
     clean_exit(code);  
-}
-
-
-int program(){
-    switch (token.type){
-        case TOKEN_PROLOG:
-            code = prolog();
-            CHECK_ERROR(code);
-
-            generator_header();
-
-            code = list_of_statements();
-            // for some reason here list_of_statements returns code=2 in case of TOKEN_END_OF_FILE
-            // even tho if we are at this line and token is END_OF_FILE
-            // means that program is OK 
-
-            // if(token.type == TOKEN_END_OF_FILE) code = 0;
-
-            CHECK_ERROR(code);
-            return NO_ERRORS;
-        
-        case TOKEN_END_OF_FILE:
-            code = NO_ERRORS;
-            return code;
-        
-        default:
-            return SYNTAX_ERROR;
-        }
 }
 
 int prolog(){
@@ -216,12 +192,12 @@ int list_of_statements(){
     while(true){
         GET_TOKEN();
         // printf_token_debug(token);
+        
         if(token.type == TOKEN_END_OF_FILE) {
             return NO_ERRORS;
         }
-        code = statement();
-        CHECK_ERROR(code);
 
+        CHECK_RULE(statement());
         return NO_ERRORS;
     }
 }
@@ -236,39 +212,41 @@ int statement(){
     switch (token.type){
     case TOKEN_ID:
         if(token.attribute.string->str[0] == '$'){
-            code = variable_definition();
-            CHECK_ERROR(code);
+            CHECK_RULE(variable_definition());
+
         } else {
-            code = function_call(); // internal function OR user function call
-            CHECK_ERROR(code);
+            CHECK_RULE(function_call());   // internal function OR user function call
         }
+        break;
     case TOKEN_KEY_W:
         if(token.attribute.keyword == K_FUNCTION){
             // we can't have function definition inside of an other function definition
-            code = function_definition(); 
-            CHECK_ERROR(code);
-        } else if(token.attribute.keyword == K_IF){
-            code = inside_if();
-            CHECK_ERROR(code);  
-        } else if(token.attribute.keyword == K_WHILE){
-            code = inside_while();
-            CHECK_ERROR(code);
-        } else if(token.attribute.keyword == K_RETURN){}
-    }
+            CHECK_RULE(function_definition());
 
-    code = list_of_statements();
-    CHECK_ERROR(code);
+        } else if(token.attribute.keyword == K_IF){
+            CHECK_RULE(inside_if());
+        } else if(token.attribute.keyword == K_WHILE){
+            CHECK_RULE(inside_while());
+        } else if(token.attribute.keyword == K_RETURN){}
+        break;
+    default:
+        if(inIf || inWhile) return NO_ERRORS;
+        else return SYNTAX_ERROR;
+    }
+    
+    if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
+    CHECK_RULE(list_of_statements());   
 }
 
 int inside_if(){
-    
-
-    // (STATEMENT) START
+    // right now the token we have is IF keyword
+    // according to rules we should have the '(' token next
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
     GET_TOKEN();
     str_init(&expr);
     inIfExpr = true;
-    expr = collecting_an_expression();
+    code = collecting_an_expression(&expr);
+    if(code != NO_ERRORS) return code;
     /*
         check collected expression by calling a function from expressions.c interface
         if OK, then continue, otherwise return error
@@ -276,29 +254,22 @@ int inside_if(){
         last token after collecting_an_expression() should be either ')' or ';' 
         depends on a situation
     */
-    // (STATEMENT) END 
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
     inIfExpr = false;
-    // (BODY) START
     inIf = true;
-    code = list_of_statements();
+    
+    CHECK_RULE(list_of_statements());
 
-    CHECK_ERROR(code);
-
-    // (BODY) END
     GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
     
     
     GET_TOKEN_CHECK_KEYW(K_ELSE, SEM_STMT_FUNC_ERROR);
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
-    // (BODY_ELSE) START
-    code = list_of_statements();
 
-    CHECK_ERROR(code);
-    // (BODY_ELSE) END
+    CHECK_RULE(list_of_statements());
+
     GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
-    printf("slkfakfsafsa\n");
     inIf = false;
     str_free(&expr);
     return NO_ERRORS;
@@ -312,13 +283,14 @@ int inside_while(){
     GET_TOKEN();
     str_init(&expr);
     inWhileExpr = true;
-    expr = collecting_an_expression();    
+    code = collecting_an_expression(&expr);
+    if(code != NO_ERRORS) return code;
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
     inWhileExpr = false;
     inWhile = true;
-    code = list_of_statements();
-    CHECK_ERROR(code);
+    
+    CHECK_RULE(list_of_statements());
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
 
@@ -401,6 +373,7 @@ int list_of_parameters(ht_item_t* item){
 
         code = list_of_parameters_n(item);   
         CHECK_ERROR(code);
+
     }
 }
 
@@ -451,8 +424,7 @@ int parameter(ht_item_t* item){
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_ID, SYNTAX_ERROR);
     
-    code = variable();
-    CHECK_ERROR(code);
+    CHECK_RULE(variable());
 
     symt_add_symb(&localSymt, token.attribute.string);
 
@@ -485,6 +457,7 @@ int list_of_parameters_n(ht_item_t* item){
 
         code = list_of_parameters_n(item);
         CHECK_ERROR(code);
+
     }
 }
 
@@ -546,20 +519,18 @@ int variable_definition(){
         local symtable or global symtable 
     */
 
-    code = variable();
-    CHECK_ERROR(code);
+    CHECK_RULE(variable());
 
     // here we still have token ID, which is <variable> in the rule above
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_ASSIGN, SYNTAX_ERROR);
     
-    code = var_def_expr();
-    CHECK_ERROR(code);
+    CHECK_RULE(var_def_expr());
     
     return NO_ERRORS;
 }
 
-// 15. <var_def_expr> -> <function_call>
+// 15. <var_def_expr> -> <function_call> <-- FUNEXP EXTENSION !!!
 // 16. <var_def_expr> -> <expression>;
 int var_def_expr(){
     string_t expression;
@@ -576,30 +547,29 @@ int var_def_expr(){
 
     if(token.type == TOKEN_ID){ // function ID or variable ID
         if(token.attribute.string->str[0] == '$'){ // then we have variable ID
-            code = variable();
-            CHECK_ERROR(code);
+            CHECK_RULE(variable());
 
             // here we are checking a variable and then proceeding to collect an expression
         } else { // otherwise we have function ID
-            code = function_call();
-            CHECK_ERROR(code);
+            CHECK_RULE(function_call());
+
             return NO_ERRORS;
 
             // we don't have to go futher after this line
         }
     }
 
-    expression = collecting_an_expression();
-
+    code = collecting_an_expression(&expression);
+    if(code != NO_ERRORS) return code;
     // checking if expression is OK by calling the expressions.c interface here
     
     return NO_ERRORS;
 }
 
-static string_t collecting_an_expression(){
+static int collecting_an_expression(string_t *expression){
     // getting tokens and copying their attributes into a string
-    string_t expression;
-    str_init(&expression);
+    // string_t expression;
+    // str_init(&expression);
     token_type_t expected;
 
     if(inWhileExpr || inIfExpr){
@@ -611,103 +581,104 @@ static string_t collecting_an_expression(){
     while(token.type != expected){
         switch (token.type){
         case TOKEN_ID:
-            str_concat(&expression, token.attribute.string);
+            str_concat(expression, token.attribute.string);
             break;
         
         case TOKEN_PLUS:
-            str_add_char(&expression, '+');
+            str_add_char(expression, '+');
             break;
 
         case TOKEN_MINUS:
-            str_add_char(&expression, '-');
+            str_add_char(expression, '-');
             break;
         
         case TOKEN_MUL:
-            str_add_char(&expression, '*');
+            str_add_char(expression, '*');
             break;
         
         case TOKEN_DIV:
-            str_add_char(&expression, '/');
+            str_add_char(expression, '/');
             break;
 
         case TOKEN_CONC:
-            str_add_char(&expression, '.');
+            str_add_char(expression, '.');
             break;
         
         case TOKEN_TYPE_INT:
-            str_add_char(&expression, 'i');
+            str_add_char(expression, 'i');
             break;
         
         case TOKEN_TYPE_FLOAT:
-            str_add_char(&expression, 'f');
+            str_add_char(expression, 'f');
             break;
         
         case TOKEN_TYPE_STRING:
-            str_add_char(&expression, 's');
+            str_add_char(expression, 's');
             break;
 
         case TOKEN_EQUAL:
-            str_add_char(&expression, '=');
-            str_add_char(&expression, '=');
-            str_add_char(&expression, '=');
+            str_add_char(expression, '=');
+            str_add_char(expression, '=');
+            str_add_char(expression, '=');
             break;
 
         case TOKEN_NOT_EQUAL:
-            str_add_char(&expression, '!');
-            str_add_char(&expression, '=');
-            str_add_char(&expression, '=');
+            str_add_char(expression, '!');
+            str_add_char(expression, '=');
+            str_add_char(expression, '=');
             break;
         
         case TOKEN_LESS:
-            str_add_char(&expression, '<');
+            str_add_char(expression, '<');
             break;
 
         case TOKEN_GREATER:
-            str_add_char(&expression, '>');
+            str_add_char(expression, '>');
             break;
         
         case TOKEN_LESS_EQ:
-            str_add_char(&expression, '<');
-            str_add_char(&expression, '=');
+            str_add_char(expression, '<');
+            str_add_char(expression, '=');
             break;
         
         case TOKEN_GREATER_EQ:
-            str_add_char(&expression, '>');
-            str_add_char(&expression, '=');
+            str_add_char(expression, '>');
+            str_add_char(expression, '=');
             break;
         
         case TOKEN_LEFT_PAR:
-            str_add_char(&expression, '(');
+            str_add_char(expression, '(');
             break;
         
         case TOKEN_RIGHT_PAR:
-            if(!inWhile && !inIf){
-                str_add_char(&expression, ')');
+            if(!inWhileExpr && !inIfExpr){
+                str_add_char(expression, ')');
             } else {
-                str_free(&expression);
+                str_free(expression);
                 clean_exit(SYNTAX_ERROR);
             }
             break;
         
         case TOKEN_KEY_W:
             if(token.attribute.keyword == K_NULL){
-                str_add_char(&expression, 'n');
+                str_add_char(expression, 'n');
             } else {
-                str_free(&expression);
+                str_free(expression);
                 clean_exit(SYNTAX_ERROR);
             }
             break;
 
         default:
-            str_free(&expression);
+            str_free(expression);
             clean_exit(SYNTAX_ERROR);
             break;
         }
+
         GET_TOKEN();
-        str_add_char(&expression, ' ');
+        str_add_char(expression, ' ');
     }
 
-    return expression;
+    return NO_ERRORS;
 }
 
 //17. <function_call> -> ID( <list_of_call_parameters> );   
@@ -720,8 +691,7 @@ int function_call(){
     } else if(item->type == func){        
         GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
         
-        code = list_of_call_parameters(item);
-        CHECK_ERROR(code);
+        CHECK_RULE(list_of_statements());
 
         // GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
 
@@ -734,7 +704,7 @@ int function_call(){
 int call_parameter(ht_item_t* function, string_t params){
     switch (token.type){
     case TOKEN_TYPE_STRING:
-        generator_internal_func(function->key, "string", token.attribute.string->str);
+        // generator_internal_func(function->key, "string", token.attribute.string->str);
         break;
     
     case TOKEN_TYPE_INT:
@@ -746,8 +716,8 @@ int call_parameter(ht_item_t* function, string_t params){
         break;
 
     case TOKEN_ID:
-        code = variable();        
-        CHECK_ERROR(code);
+        CHECK_RULE(variable());
+
         break;
     default:
         return SYNTAX_ERROR;
@@ -778,9 +748,10 @@ int list_of_call_parameters(ht_item_t* function){
                token.type == TOKEN_TYPE_INT || token.type == TOKEN_TYPE_FLOAT){
         code = call_parameter(function, params);
         CHECK_ERROR(code);
-        
+
         code = list_of_call_parameters_n(function, params);
         CHECK_ERROR(code);
+
     } else return SYNTAX_ERROR;
 
     return NO_ERRORS;
@@ -801,8 +772,7 @@ int list_of_call_parameters_n(ht_item_t* function, string_t params){
         GET_TOKEN();
         code = call_parameter(function, params);
         CHECK_ERROR(code);
-        
-
+    
         code = list_of_call_parameters_n(function, params);
         CHECK_ERROR(code);
     }

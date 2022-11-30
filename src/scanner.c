@@ -7,8 +7,6 @@
  */
 
 #include <stdio.h>
-//#include <windows.h>
-//#include <unistd.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "str.h"

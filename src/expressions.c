@@ -7,6 +7,10 @@
 #include "symtable.h"
 #include "symstack.h"
 
+htable globalS;
+htable localS;
+token_t token;
+
 char prec_table[PREC_TABLE_SIZE][PREC_TABLE_SIZE] = {
         //id   (    )    *    /    +    -    .    >   >=    <   <=   ===  !==   $
         {'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>'}, // id
@@ -75,13 +79,13 @@ prec_symbs_t get_symbol(token_type_t token)
  * Function converts token type to data type.
  *
  */
-prec_datatypes_t get_data_type(token_t* token /*, from parser*/)
+prec_datatypes_t get_data_type(token_t token /*, from parser*/)
 {
-	//TData* symbol; // data from parser
-	switch (token->type)
+	ht_item_t* symbol;
+	switch (token.type)
 	{
 		case TOKEN_ID:
-			symbol = symt_search(); // TODO
+			symbol = symt_search(&globalS, token.attribute.string->str);
 			if (symbol == NULL)
 				return UNDEFINED_TYPE;
 			return symbol->type;
@@ -97,6 +101,40 @@ prec_datatypes_t get_data_type(token_t* token /*, from parser*/)
 		default:
 			return UNDEFINED_TYPE;
 		}
+}
+
+void shift_operation(){
+	/*
+	1. check if we have a NONTERMINAL on the top of the stack
+	   1.1 if yes then add a STOP sign before it
+	2. now we can add a symbol to stack 
+	*/
+	// check if type of top_stack is NONTERM to correct pushing STOP
+	if(head == NONTERM)
+	{
+		prec_stack_pop();
+		prec_stack_push(stop_symbol);
+		prec_stack_push();//adding this non terminal again
+		prec_stack_push();//adding an operator
+	}
+	else 
+	{
+		prec_stack_push(stop_symbol);
+		prec_stack_push();//adding non terminal 
+	}
+	
+}
+
+void reduce_operation(){
+	/*
+	1. count the number of operands until the STOP sign on the stack and what are they
+	2. call the get_rule function
+	3. reduce the operands and symbols until the stop sign according to rule(switch case)
+	*/
+}
+
+bool check_compatibility(){
+	
 }
 
 prec_rules_t get_rule(int num_of_symbols_in_rule, prec_stack_item_t* first, prec_stack_item_t* second, prec_stack_item_t* third){
@@ -144,21 +182,73 @@ prec_rules_t get_rule(int num_of_symbols_in_rule, prec_stack_item_t* first, prec
 	}
 	return NOT_RULE;
 }
-
-prec_index_t get_prec_table_index (){
-	switch ()
-	{
-		case :
-		
-			break;
-	
+/*
+prec_index_t get_prec_table_index (prec_symbs_t symbol){
+    switch (symbol) {
+        case ID:
+		   return ID;
+		case LEFT_BRACKET:
+			return LB_INDEX;
+		case RIGHT_BRACKET:
+			return RB_INDEX;
+		case MUL:
+			return MUL_INDEX;
+		case DIV:
+			return DIV_INDEX;
+		case PLUS:
+			return PLUS_INDEX;
+		case MINUS:
+			return MINUS_INDEX;
+		case CONC:
+			return CONC_INDEX;
+		case GREATER:
+			return GREATER_INDEX;
+		case GREQ:
+			return GREQ_INDEX;
+		case LESS:
+			return LESS_INDEX;
+		case LEEQ:
+			return LEEQ_INDEX;
+		case TYPE_EQ:
+			return TYPE_EQ_INDEX;
+		case NTYPE_EQ:
+	 		return NTYPE_EQ_INDEX;
 		default:
-			break;
-	}
-
+			return DOLLAR_INDEX;
+    }
 }
+*/
 
-int parse_expression(){
+int parse_expression(int number_of_symbols){
+	// here we already have an expression from parser looking like: a + b*10/(b+c)
+	prec_stack_t* prec_stack = prec_stack_init(number_of_symbols);
+	prec_stack_push(&prec_stack, S, UNDEFINED_TYPE); // REDO STACK PUSH
+	prec_stack_push(&prec_stack); // push the first symbol
+	
+	while (1) 
+	{
+		// stack_current =
+		// next =
+		if((prec_table[stack_current][next]) == '<')
+		{	
+			shift_operation(); // with putting of the STOP symbol to it(it is not a dollar sign)
+		}
+		else if((prec_table[stack_current][next]) == '>')
+		{
+			reduce_operation(); // checking the rule and reducing the stack according to the rule
+		}
+		else if((prec_table[stack_current][next]) == 'e')
+		{
+			return SYNTAX_ERROR; // ????
+		}
+		else if((prec_table[stack_current][next]) == '=')
+		{
+			equal_operation(); // the main function is to reduce everything between the ()
+		}
+		stack_current++;
+		next++;
+	}	
+		prec_stack_free(&prec_stack);
 
 
 }

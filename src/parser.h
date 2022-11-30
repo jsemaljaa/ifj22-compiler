@@ -23,8 +23,9 @@
 #include "error.h"
 #include "generator.h"
 
-#define GET_TOKEN()                 \
-    ret = get_next_token(&token);   \
+#define GET_TOKEN()                      \
+    code = get_next_token(&token);        \
+    if((code) != NO_ERRORS) return LEXICAL_ERROR; \
 
 #define CHECK_KEYW(KEYW, code)                                                        \
     if(!(token.type == TOKEN_KEY_W && token.attribute.keyword == (KEYW))) {     \
@@ -44,6 +45,10 @@
 
 #define CHECK_ERROR(code)               \
     if(code != 0) return code;          \
+
+#define CHECK_RULE(func)                \
+    code = (func);                      \
+    CHECK_ERROR(code);                  \
 
 #define CODE_GENERATE(_gen, ...)                     \
      if(!_gen(__VA_ARGS__)) return INTERNAL_ERROR;    \
@@ -96,104 +101,168 @@ static const char *list[] = {
     "END_OF_FILE", 
     "PROLOG"};
 
-typedef struct {
-    htable globalSymt;
-    htable localSymt;
-} parser_data_t;
 
-int parse();
+/*
+ * @brief Clean exit from parser
+ * @param code - code to return with
+ * @return nothing, ends the parser run with an error code
+*/
+static void clean_exit(int code);
 
+
+/*
+ * @brief Add internal functions to the symtable 
+ * @return If successful, returns NO_ERRORS, other error code otherwise
+*/
 static int symt_add_internal_functions();
 
-// 1. <program> -> <prolog> <list_of_statements>
+/*
+ * @brief Main function of a parser 
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
+*/
+int parse();
+
+/*
+ * @example 1. <program> -> <prolog> <list_of_statements>
+ * @brief Function to define rule 1
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
+*/
 static int program();
 
-//2. <prolog> -> <?php declare(strict_types=1);
+/*
+ * @example 2. <prolog> -> <?php declare(strict_types=1); 
+ * @brief Function to define rule 2 
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
+*/
 static int prolog();
 
-//3. <list_of_statements> -> EOF
-//4. <list_of_statements> -> <statement> <list_of_statements> 
+/*
+ * @example 3. <list_of_statements> -> EOF 
+ * @example 4. <list_of_statements> -> <statement> <list_of_statements> 
+ * @brief Function to define rules 3, 4
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
+*/
 static int list_of_statements();
 
 /*
-5. <statement> -> <function_definition>
-6. <statement> -> <variable_definition>
-7. <statement> -> <function_call>
-8. <statement> -> if ( <expression> ) { <list_of_statements> } else { <list_of_statements> }
-9. <statement> -> while ( <expression> ) { <list_of_statements> }
-10. <statement> -> return <return_expressions>;
+ * @example 5. <statement> -> <function_definition>
+ * @example 6. <statement> -> <variable_definition>
+ * @example 7. <statement> -> <function_call>
+ * @example 8. <statement> -> if ( <expression> ) { <list_of_statements> } else { <list_of_statements> }
+ * @example 9. <statement> -> while ( <expression> ) { <list_of_statements> }
+ * @example 10. <statement> -> return <return_expressions>;
+ * @brief Function to define rules 5 to 10 including
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
 */
 static int statement();
 
 /*
-11. <return_expressions> -> <expression>
-12. <return_expressions> -> <variable>
+ * @example 11. <return_expressions> -> <expression>
+ * @example 12. <return_expressions> -> <variable>
+ * @brief Function to define rules 11, 12
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
 */
 static int return_expressions();
 
-// 13. <function_definition> -> function ID( <list_of_parameters> ) : <list_of_datatypes_ret> { <list_of_statements> }
+/*
+ * @example 13. <function_definition> -> function ID( <list_of_parameters> ) : <list_of_datatypes_ret> { <list_of_statements> }
+ * @brief Function to define rule 13
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
+*/
 static int function_definition();
 
-//14. <variable_definition> -> <variable> = <var_def_expr>
+/*
+ * @example 14. <variable_definition> -> <variable> = <var_def_expr> 
+ * @brief Function to define rule 14
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
+*/
 static int variable_definition();
 
 /*
-15. <var_def_expr> -> <function_call>
-16. <var_def_expr> -> <expression>;
+ * @example 15. <var_def_expr> -> <function_call>
+ * @example 16. <var_def_expr> -> <expression>;
+ * @brief Function to define rules 15, 16
+ * @return Current error code if something went wrong, NO_ERRORS otherwise 
 */
 static int var_def_expr();
 
-//17. <function_call> -> ID( <list_of_call_parameters> );
+/*
+ * @example 17. <function_call> -> ID( <list_of_call_parameters> ); 
+ * @brief Function to define rule 17
+ * @return Current error code if something went wrong, NO_ERRORS otherwise 
+*/
 static int function_call();
 
 /*
-18. <list_of_call_parameters> -> ε
-19. <list_of_call_parameters> -> <call_parameter> <list_of_call_parameters_n>
+ * @example 18. <list_of_call_parameters> -> ε 
+ * @example 19. <list_of_call_parameters> -> <call_parameter> <list_of_call_parameters_n> 
+ * @brief Function to define rules 18, 19
+ * @return Current error code if something went wrong, NO_ERRORS otherwise  
 */
 static int list_of_call_parameters(ht_item_t* item);
 
 /*
-20. <call_parameter> -> <variable>
-21. <call_parameter> -> "string" // ?????
+ * @example 20. <call_parameter> -> <variable>
+ * @example 21. <call_parameter> -> "string" // ?????
+ * @brief Function to define rules 20, 21 
+ * @return Current error code if something went wrong, NO_ERRORS otherwise   
 */
 static int call_parameter(ht_item_t* item, string_t params);
 
 /*
-22. <list_of_call_parameters_n> -> , <call_parameter> <list_of_call_parameters_n>
-23. <list_of_call_parameters_n> -> ε 
+ * @example 22. <list_of_call_parameters_n> -> , <call_parameter> <list_of_call_parameters_n>
+ * @example 23. <list_of_call_parameters_n> -> ε 
+ * @brief Function to define rules 22, 23
+ * @return Current error code if something went wrong, NO_ERRORS otherwise    
 */
 static int list_of_call_parameters_n(ht_item_t* item, string_t params);
 
 /*
-24. <list_of_parameters> -> ε
-25. <list_of_parameters> -> <parameter> <list_of_parameters_n>
+ * @example 24. <list_of_parameters> -> ε 
+ * @example 25. <list_of_parameters> -> <parameter> <list_of_parameters_n>
+ * @brief Function to define rules 24, 25
+ * @return Current error code if something went wrong, NO_ERRORS otherwise     
 */
 static int list_of_parameters(ht_item_t* item);
 
-//26. <parameter> -> <list_of_datatypes> <variable>
+/*
+ * @example 26. <parameter> -> <list_of_datatypes> <variable>
+ * @brief Function to define rule 26
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
+*/
 static int parameter(ht_item_t* item);
 
 /*
-27. <list_of_datatypes> -> int
-28. <list_of_datatypes> -> bool
-29. <list_of_datatypes> -> float
-30. <list_of_datatypes> -> string
-31. <list_of_datatypes> -> nil
+ * @example 27. <list_of_datatypes> -> int
+ * @example 28. <list_of_datatypes> -> bool
+ * @example 29. <list_of_datatypes> -> float
+ * @example 30. <list_of_datatypes> -> string
+ * @example 31. <list_of_datatypes> -> nil
+ * @brief Function to define rules 27 to 31 including
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
 */
 static int list_of_datatypes(ht_item_t* item);
 
-//32. <variable> -> $ID
+/*
+ * @example 32. <variable> -> $ID 
+ * @brief Function to define rule 32
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
+*/
 static int variable();
 
 /*
-33. <list_of_parameters_n> -> ε
-34. <list_of_parameters_n> -> , <parameter> <list_of_parameters_n>
+ * @example 33. <list_of_parameters_n> -> ε
+ * @example 34. <list_of_parameters_n> -> , <parameter> <list_of_parameters_n>
+ * @brief Function do define rules 33, 34
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
 */
 static int list_of_parameters_n();
 
 /*
-35. <list_of_datatypes_ret> -> void
-36. <list_of_datatypes_ret> -> <list_of_datatypes>
+ * @example 35. <list_of_datatypes_ret> -> void
+ * @example 36. <list_of_datatypes_ret> -> <list_of_datatypes>
+ * @brief Function to define rules 35, 36
+ * @return Current error code if something went wrong, NO_ERRORS otherwise
 */
 static int list_of_datatypes_ret();
 
@@ -203,7 +272,7 @@ static int inside_while();
 
 static int check_id_for_keyword(string_t *word);
 
-static string_t collecting_an_expression();
+static int collecting_an_expression(string_t *expression);
 
 
 #endif //PARSER_H
