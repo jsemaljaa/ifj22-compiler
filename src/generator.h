@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "scanner.h"
+#include "symtable.h"
 
 
 void generator_statement_jumpifeq(char *func_name, int func_tree, int func_num);

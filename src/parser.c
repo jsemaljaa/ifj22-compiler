@@ -169,8 +169,7 @@ int prolog(){
 
     GET_TOKEN();
     
-    if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
-    else if(token.type != TOKEN_PROLOG) return SYNTAX_ERROR;
+    if(token.type == TOKEN_END_OF_FILE || token.type != TOKEN_PROLOG) return SYNTAX_ERROR;
     
     GET_AND_CHECK_TOKEN(token.type == TOKEN_ID, SYNTAX_ERROR);
     if(str_cmp_const_str(token.attribute.string, "declare")) return SYNTAX_ERROR;
@@ -227,7 +226,6 @@ int statement(){
         if(token.attribute.keyword == K_FUNCTION){
             // we can't have function definition inside of an other function definition
             CHECK_RULE(function_definition());
-
         } else if(token.attribute.keyword == K_IF){
             CHECK_RULE(inside_if());
         } else if(token.attribute.keyword == K_WHILE){

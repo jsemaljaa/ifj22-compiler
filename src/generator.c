@@ -405,6 +405,26 @@ void call_func(char *dst, char *name_func)
     generator_pop_frame();
 }
 
+void generator_get_args(symt_var_t var)
+{
+    generator_def_var("TF", "$var$");
+
+    if(!strcmp(generator_get_type(var.type), "int"))
+        printf("MOVE TF@%s int@%d\n", "$var$", var.attr->integer);
+
+        //generator_move(dst, "$var$", "int", var.attr->integer);
+
+    else if(!strcmp(generator_get_type(var.type), "float"))
+    printf("MOVE TF@%s float@%a\n", "$var$", var.attr->decimal);
+
+        //generator_move(dst, "$var$", "float", var.attr->decimal);
+
+    else if(!strcmp(generator_get_type(var.type), "string"))
+    printf("MOVE TF@%s string@%s\n", "$var$", var.attr->string->str);
+
+        //generator_move(dst, "$var$", "string", var.attr->string->str);
+}
+
 void generator_param(char *dst, char *var)
 {
     generator_def_var(dst, var);
