@@ -195,8 +195,7 @@ int prolog(){
 int list_of_statements(){
     while(true){
         GET_TOKEN();
-        printf_token_debug(token);
-        
+        // printf_token_debug(token);
         if(token.type == TOKEN_END_OF_FILE) {
             return NO_ERRORS;
         }
@@ -265,17 +264,16 @@ int inside_if(){
     inIf = true;
     
     CHECK_RULE(list_of_statements());
+    CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
 
-    GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
-    
-    
     GET_TOKEN_CHECK_KEYW(K_ELSE, SEM_STMT_FUNC_ERROR);
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
 
     CHECK_RULE(list_of_statements());
-
-    GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
+    
+    CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
     inIf = false;
+    
     str_free(&expr);
     return NO_ERRORS;
 }
@@ -297,7 +295,7 @@ int inside_while(){
     
     CHECK_RULE(list_of_statements());
 
-    GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
+    CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
 
     inWhile = false;
     str_free(&expr);
@@ -702,10 +700,12 @@ int function_call(){
         code = list_of_call_parameters(item);
         CHECK_ERROR(code);
 
+
         // we can return here with tokens (no errors):
         //          1) TOKEN_RIGHT_PAR
         //          2) TOKEN_SEMICOLON
-
+        CHECK_TOKEN(token.type != TOKEN_SEMICOLON, SYNTAX_ERROR);
+        GET_TOKEN();
     } else return INTERNAL_ERROR;
     return NO_ERRORS;
 }
@@ -743,15 +743,15 @@ int list_of_call_parameters(ht_item_t* function){
 int call_parameter(ht_item_t* function, string_t params){
     switch (token.type){
     case TOKEN_TYPE_STRING:
-        // generator_internal_func(function->key, "string", token.attribute.string->str);
+        printf("string call param\n");
         break;
     
     case TOKEN_TYPE_INT:
-        // generator_internal_func(function->key, "int", token.attribute.integer);
+        printf("int call param\n");
         break;
 
     case TOKEN_TYPE_FLOAT:
-        // generator_internal_func(function->key, "float", token.attribute.decimal);
+        printf("float call param\n");
         break;
 
     case TOKEN_ID:

@@ -21,3 +21,14 @@ Value: $i
 --- BEGIN CURRENT TOKEN INFO ---
 Token: RIGHT_BR 
 --- END CURRENT TOKEN INFO ---
+--- BEGIN CURRENT TOKEN INFO ---
+Token: ID 
+Value: write 
+--- END CURRENT TOKEN INFO ---
+string call param
+string call param
+--- BEGIN CURRENT TOKEN INFO ---
+Token: END_OF_FILE 
+--- END CURRENT TOKEN INFO ---
+returning with code 0
+0 - Program finished without errors.
