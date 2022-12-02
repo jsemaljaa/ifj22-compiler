@@ -31,7 +31,6 @@ typedef enum datatype {
     INTEGER_N_DT,   //?I
     FLOAT_N_DT,     //?F
     STRING_N_DT     //?S
-
 } symt_datatype_t;
 
 typedef struct var_attr {

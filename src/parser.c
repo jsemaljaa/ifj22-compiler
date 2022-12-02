@@ -152,11 +152,11 @@ int symt_add_internal_functions(){
 int parse() {
     symt_init(&globalSymt);
     CHECK_RULE(symt_add_internal_functions());
-    
-    GET_AND_CHECK_TOKEN(token.type == TOKEN_END_OF_FILE, SYNTAX_ERROR);
+
+    // GET_AND_CHECK_TOKEN(token.type == TOKEN_END_OF_FILE, SYNTAX_ERROR);
 
     CHECK_RULE(prolog());
-
+    
     if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
 
     CHECK_RULE(list_of_statements());
@@ -167,6 +167,11 @@ int parse() {
 
 int prolog(){
 
+    GET_TOKEN();
+    
+    if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
+    else if(token.type != TOKEN_PROLOG) return SYNTAX_ERROR;
+    
     GET_AND_CHECK_TOKEN(token.type == TOKEN_ID, SYNTAX_ERROR);
     if(str_cmp_const_str(token.attribute.string, "declare")) return SYNTAX_ERROR;
     
@@ -182,7 +187,7 @@ int prolog(){
     
     GET_AND_CHECK_TOKEN(token.type == TOKEN_RIGHT_PAR, SYNTAX_ERROR);
     GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
-
+    
     return NO_ERRORS;
 }
 
@@ -191,7 +196,7 @@ int prolog(){
 int list_of_statements(){
     while(true){
         GET_TOKEN();
-        // printf_token_debug(token);
+        printf_token_debug(token);
         
         if(token.type == TOKEN_END_OF_FILE) {
             return NO_ERRORS;
@@ -373,7 +378,6 @@ int list_of_parameters(ht_item_t* item){
 
         code = list_of_parameters_n(item);   
         CHECK_ERROR(code);
-
     }
 }
 
@@ -421,6 +425,7 @@ int parameter(ht_item_t* item){
             break;
     }
     
+    if(str_add_char(&item->data.func->argv, ' ') == 1) return INTERNAL_ERROR;
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_ID, SYNTAX_ERROR);
     
@@ -511,7 +516,7 @@ int list_of_datatypes_ret(ht_item_t* item){
 }
 
 
-// 14. <variable_definition> -> <variable> = <var_def_expr>
+// 14. <variable_definition> -> <variable> = <expr>
 int variable_definition(){
     /* 
         check if we are inside of a function or no
@@ -550,13 +555,16 @@ int var_def_expr(){
             CHECK_RULE(variable());
 
             // here we are checking a variable and then proceeding to collect an expression
-        } else { // otherwise we have function ID
+        } 
+        /*
+        else { // otherwise we have function ID
             CHECK_RULE(function_call());
 
             return NO_ERRORS;
 
-            // we don't have to go futher after this line
+            // we don't need to go futher after this line
         }
+        */
     }
 
     code = collecting_an_expression(&expression);
@@ -691,9 +699,13 @@ int function_call(){
     } else if(item->type == func){        
         GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
         
-        CHECK_RULE(list_of_statements());
+        code = list_of_call_parameters(item);
+        CHECK_ERROR(code);
 
-        // GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
+        // we can return here with tokens (no errors):
+        //          1) TOKEN_RIGHT_PAR
+        //          2) TOKEN_SEMICOLON
+        //          
 
     } else return INTERNAL_ERROR;
     return NO_ERRORS;

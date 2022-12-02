@@ -13,8 +13,11 @@ int main(int argc, char **argv)
     int code;
 
     code = parse();
-    printf("Code is %d\n", code);
-    printf("Is there an error? %s\n", code != NO_ERRORS ? "Yes" : "No");
+    //printf("Code is %d\n", code);
+    //printf("Is there an error? %s\n", code != NO_ERRORS ? "Yes" : "No");
+    
+    str_free(&string);
+    exit_error(code);
     return code != NO_ERRORS ? code : NO_ERRORS;
 
 }

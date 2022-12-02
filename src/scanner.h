@@ -74,7 +74,6 @@ typedef union
     double decimal;    /// Decimal value.
     string_t *string;  /// String or identifier value.
     keyword_t keyword; /// Keyword, one of the KEYWORD_... constant
-
 } token_attribute_t;
 
 typedef struct
