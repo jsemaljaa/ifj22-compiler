@@ -214,6 +214,8 @@ int list_of_statements(){
 //10. <statement> -> return <return_expressions>;
 int statement(){
     switch (token.type){
+    case TOKEN_END_OF_FILE:
+        return NO_ERRORS;
     case TOKEN_ID:
         if(token.attribute.string->str[0] == '$'){
             CHECK_RULE(variable_definition());
@@ -703,9 +705,36 @@ int function_call(){
         // we can return here with tokens (no errors):
         //          1) TOKEN_RIGHT_PAR
         //          2) TOKEN_SEMICOLON
-        //          
 
     } else return INTERNAL_ERROR;
+    return NO_ERRORS;
+}
+
+//18. <list_of_call_parameters> -> ε
+//19. <list_of_call_parameters> -> <call_parameter> <list_of_call_parameters_n>
+int list_of_call_parameters(ht_item_t* function){
+    string_t params;
+    str_init(&params);
+
+    GET_TOKEN();
+    if(token.type == TOKEN_RIGHT_PAR){
+        if(!str_cmp_const_str(&function->data.func->argv, "")){
+            GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
+
+            // generate a function call for function with no parameters
+            
+            return NO_ERRORS;
+        } else return SEM_TYPE_ERROR;
+    } else if (token.type == TOKEN_ID || token.type == TOKEN_TYPE_STRING || 
+               token.type == TOKEN_TYPE_INT || token.type == TOKEN_TYPE_FLOAT){
+        code = call_parameter(function, params);
+        CHECK_ERROR(code);
+
+        code = list_of_call_parameters_n(function, params);
+        CHECK_ERROR(code);
+
+    } else return SYNTAX_ERROR;
+
     return NO_ERRORS;
 }
 
@@ -735,34 +764,6 @@ int call_parameter(ht_item_t* function, string_t params){
     }
     
     // string check
-
-    return NO_ERRORS;
-}
-
-//18. <list_of_call_parameters> -> ε
-//19. <list_of_call_parameters> -> <call_parameter> <list_of_call_parameters_n>
-int list_of_call_parameters(ht_item_t* function){
-    string_t params;
-    str_init(&params);
-
-    GET_TOKEN();
-    if(token.type == TOKEN_RIGHT_PAR){
-        if(!str_cmp_const_str(&function->data.func->argv, "")){
-            GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
-
-            // generate a function call for function with no parameters
-            
-            return NO_ERRORS;
-        } else return SEM_TYPE_ERROR;
-    } else if (token.type == TOKEN_ID || token.type == TOKEN_TYPE_STRING || 
-               token.type == TOKEN_TYPE_INT || token.type == TOKEN_TYPE_FLOAT){
-        code = call_parameter(function, params);
-        CHECK_ERROR(code);
-
-        code = list_of_call_parameters_n(function, params);
-        CHECK_ERROR(code);
-
-    } else return SYNTAX_ERROR;
 
     return NO_ERRORS;
 }
