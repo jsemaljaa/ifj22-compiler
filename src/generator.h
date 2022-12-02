@@ -68,9 +68,18 @@ void generator_mul(char *src, char *var, char *dst1, char *symb1, char *dst2 , c
 
 void generator_div(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-// void generator_idiv();
+void generator_idiv(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-// void generator_aritmetic_s();
+void generator_add_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
+
+void generator_sub_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
+
+void generator_mul_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
+
+void generator_div_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
+
+void generator_idiv_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
+
 
 void generator_LT(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
@@ -78,7 +87,11 @@ void generator_GT(char *src, char *var, char *dst1, char *symb1, char *dst2 , ch
 
 void generator_EQ(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
-// void generator_boolean_s();
+void generator_LT_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
+
+void generator_GT_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
+
+void generator_EQ_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
 void generator_and(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
@@ -86,7 +99,11 @@ void generator_or(char *src, char *var, char *dst1, char *symb1, char *dst2, cha
 
 void generator_not(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
-// void generator_boolean_ss();
+void generator_and_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
+
+void generator_or_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
+
+void generator_not_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
 void generator_int_2_float(char *src, char *var, char *dst, char *symb);
 
@@ -94,9 +111,15 @@ void generator_float_2_int(char *src, char *var, char *dst, char *symb);
 
 void generator_int_2_char(char *src, char *var, char *dst, char *symb);
 
-void generator_stri_2_inr(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
+void generator_stri_2_int(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
-// void generator_konverze_s();
+void generator_int_2_float_S(char *src, char *var, char *dst, char *symb);
+
+void generator_float_2_int_s(char *src, char *var, char *dst, char *symb);
+
+void generator_int_2_char_s(char *src, char *var, char *dst, char *symb);
+
+void generator_stri_2_int_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2);
 
 /*
  * String op
@@ -115,7 +138,7 @@ void generator_setchar(char *src, char *var, char *dst1, char *symb1, char *dst2
 void generator_type(char *src, char *var, char *dst, char *symb);
 
 /*
- * Controlling program flow op
+ * Controlling program flow
  */
 
 void generator_label(char *label_name);
@@ -132,14 +155,13 @@ void generator_jump_if_neq_s();
 
 void generator_exit(char *symb);
 
-
 /*
  * Debug instructions
  */
 
 void generator_break();
 
-// void generator_dprint(char *symb);
+void generator_dprint(char * symb);
 
 /*
  * Internal functions 
@@ -147,15 +169,19 @@ void generator_break();
 
 void generator_header();
 
-// void generator_start_main();
+void generator_comment(char *comment);
 
-// void generator_end_main();
+char *generator_get_type(keyword_t type);
+
+// void generator_end(char *func_name);
 
 void generator_start_func(char *func_name);
 
-void generator_end_func();
+void generator_end_function(char * func_name);
 
-void generator_param(char *dst, char *var, char *type_symb, char *symb);
+void call_func(char *dst, char *name_func);
+
+void generator_param(char *dst, char *var);
 
 void generator_start_if(char *func_name, int func_tree, int func_num);
 
@@ -165,14 +191,18 @@ void generator_while_start(char *func_name, int func_tree, int func_num);
 
 void generator_while_end(char *func_name, int func_tree, int func_num);
 
-
 void generator_readi();
 
 void generator_readf();
 
 void generator_reads();
 
-void generator_function_write();
+char *generator_str_convert(char *str);
+
+//STRNUM //TODO
+// void generator_float_val(token_t *token, char *dst);
+// void generator_int_val(token_t *token, char *dst);
+// void generator_str_val(token_t *token, char *dst);
 
 void generator_strlen(char *dst, char *symb);
 
@@ -182,7 +212,9 @@ void generator_ord();
 
 void generator_chr();
 
-void generator_internal_func(char *func_name, char *type_symb, char *symb);
+void generator_internal_func(char *func_name, int i, int j, char *symb, keyword_t type);
+
+void generator_operation(token_type_t operation_type, char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
 
 #endif //GENERATOR_H
