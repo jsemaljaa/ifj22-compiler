@@ -17,10 +17,6 @@
 #include "symtable.h"
 
 
-void generator_statement_jumpifeq(char *func_name, int func_tree, int func_num);
-
-void generator_statement_jump(char *func_name, int func_tree, int func_num);
-
 /*
  * Input-output instructions
  */
@@ -80,7 +76,6 @@ void generator_mul_s(char *src, char *var, char *dst1, char *symb1, char *dst2 ,
 void generator_div_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
 void generator_idiv_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
-
 
 void generator_LT(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
 
@@ -170,27 +165,29 @@ void generator_dprint(char * symb);
 
 void generator_header();
 
-void generator_comment(char *comment);
-
 char *generator_get_type(keyword_t type);
 
-// void generator_end(char *func_name);
+float generator_get_float(keyword_t type, int i, float f, char *s);
+
+int generator_get_int(keyword_t type, int i, float f, char *s);
+
+void generator_get_new_var(symt_var_t var);
 
 void generator_start_func(char *func_name);
 
-void generator_end_function(char * func_name);
+void generator_end_func(char * func_name);
 
 void call_func(char *dst, char *name_func);
 
-void generator_param(char *dst, char *var);
+char *generator_str_convert(char *str);
 
-void generator_start_if(char *func_name, int func_tree, int func_num);
+void generator_start_if(int if_max_index);
 
-void generator_end_else_if(char *func_name, int func_tree, int func_num);
+void generator_end_if();
 
-void generator_while_start(char *func_name, int func_tree, int func_num);
+void generator_start_while(int max_index);
 
-void generator_while_end(char *func_name, int func_tree, int func_num);
+void generator_end_while(char *func_name, int func_tree, int func_num);
 
 void generator_readi();
 
@@ -198,24 +195,16 @@ void generator_readf();
 
 void generator_reads();
 
-char *generator_str_convert(char *str);
+void generator_strlen(char *str);
 
-//STRNUM //TODO
-// void generator_float_val(token_t *token, char *dst);
-// void generator_int_val(token_t *token, char *dst);
-// void generator_str_val(token_t *token, char *dst);
+void generator_substr(symt_var_t s, symt_var_t i, symt_var_t j);
 
-void generator_strlen(char *dst, char *symb);
+void generator_ord(symt_var_t c);
 
-void generator_substr();
+void generator_chr(symt_var_t i);
 
-void generator_ord();
+void generator_internal_func(char *func_name, symt_var_t var, symt_var_t symb1, symt_var_t symb2);
 
-void generator_chr();
-
-void generator_internal_func(char *func_name, int i, int j, char *symb, keyword_t type);
-
-void generator_operation(token_type_t operation_type, char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2);
-
+void generator_operation(token_type_t operation_type, symt_var_t var, symt_var_t symb1, symt_var_t symb2);
 
 #endif //GENERATOR_H
