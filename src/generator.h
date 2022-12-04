@@ -185,9 +185,15 @@ void generator_start_if(int if_max_index);
 
 void generator_end_if();
 
-void generator_start_while(int max_index);
+void generator_start_while(int max_while_count);
 
-void generator_end_while(char *func_name, int func_tree, int func_num);
+void generator_start_loop_while();
+
+void generator_loop_condition();
+
+void generator_stop_loop_while();
+
+void generator_end_while();
 
 void generator_readi();
 
