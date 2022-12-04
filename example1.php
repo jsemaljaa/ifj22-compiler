@@ -6,7 +6,6 @@ declare(strict_types=1);
 write("Zadejte cislo pro vypocet faktorialu\n");
 $a = readi();
 
-
 if ($a === null) {
 	write("Chyba pri nacitani celeho cisla!\n");
 } else {}

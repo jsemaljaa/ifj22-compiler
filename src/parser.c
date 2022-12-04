@@ -307,6 +307,8 @@ int inside_while(){
 int function_definition(){
     GET_AND_CHECK_TOKEN(token.type == TOKEN_ID, SYNTAX_ERROR);
 
+    generator_start_func(token.attribute.string->str);
+
     // check whether function with the same id is already defined and in global symtable or no
     ht_item_t *tmp = symt_search(&globalSymt, token.attribute.string->str);
     if(tmp != NULL) return SEM_DEF_FUNC_ERROR;
