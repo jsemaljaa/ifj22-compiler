@@ -12,6 +12,7 @@ if ($a === null) {
 if ($a < 0) {
 	write("Faktorial nelze spocitat\n");
 } else {
+	$perem = $a * $b - $c + 2;
 	$vysl = 1;
 	while ($a > 0) {
 		$vysl = $vysl * $a;

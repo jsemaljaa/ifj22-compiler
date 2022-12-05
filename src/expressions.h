@@ -1,3 +1,13 @@
+/*
+ * IFJ2022/project/expressions.h 
+ * 
+ * @brief Precedence analysis implementation declarations
+ * 
+ * @author Vinogradova Alina <xvinog00@vutbr.cz>
+ * @author Mazurava Maryia <xmazur08@vutbr.cz>
+ */
+
+
 #ifndef EXPRESSIONS_H
 #define EXPRESSIONS_H
 
@@ -9,10 +19,9 @@
 #include "error.h"
 #include "symtable.h"
 
-
 #define PREC_TABLE_SIZE 15
 
-int parse_expression();
+int parse_expression(htable *table);
 
 
 /**
@@ -41,8 +50,8 @@ typedef enum {
  */
 typedef enum {
 	ID,	            // id
-	LEFT_BRACKET,	// (
-	RIGHT_BRACKET,	// )
+	LEFT_PAR,		// (
+	RIGHT_PAR,		// )
 	MUL,	        // *
 	DIV,			// /
 	PLUS,		    // +

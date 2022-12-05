@@ -1,44 +1,60 @@
+/*
+ * IFJ2022/project/expressions.c 
+ * 
+ * @brief Precedence analysis implementation
+ * 
+ * @author Vinogradova Alina <xvinog00@vutbr.cz>
+ * @author Mazurava Maryia <xmazur08@vutbr.cz>
+ */
+
+
 #include "expressions.h"
 #include "symstack.h"
 #include "parser.h"
 
-htable globalS;
-htable localS;
+prec_stack_t stack;
 token_t token;
 
 int code;
 
 char prec_table[PREC_TABLE_SIZE][PREC_TABLE_SIZE] = {
-        //id   (    )    *    /    +    -    .    >   >=    <   <=   ===  !==   $
-        {'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>'}, // id
+        //id   (    )    *    /    +    -    .    >   >=    <   <=   ===  !==   $    i    f    s
+        {'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 'e', 'e', 'e'}, // id
 
-        {'<', '<', '=', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e'}, // (
+        {'<', '<', '=', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e', '<', '<', '<'}, // (
 
-        {'<', 'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>'}, // )
+        {'<', 'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 'e', 'e', 'e'}, // )
 
-        {'<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>'}, // *
+        {'<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // *
 
-        {'<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>'}, // /
+        {'<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // /
 
-        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>'}, // +
+        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // +
 
-        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>'}, // -
+        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // -
 
-        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>'}, // .
+        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 'e', 'e', '<'}, // .
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>'}, // >
+        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // >
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>'}, // >=
+        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // >=
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>'}, // <
+        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // <
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>'}, // <=
+        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // <=
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>'}, // ===
+        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>', '<', '<', 'e'}, // ===
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>'}, // !==
+        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>', '<', '<', 'e'}, // !==
 
-        {'<', '<', 'e', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e'}, // $
+        {'<', '<', 'e', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e', '<', '<', '<'}, // $
+
+		{'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>', 'e', 'e', 'e'}, // i
+
+        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>', 'e', 'e', 'e'}, // f
+
+        {'<', '<', 'e', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e', 'e', 'e', 'e'}, // s
+
 
 };
 
@@ -47,10 +63,10 @@ prec_symbs_t get_symbol(token_t token)
 	switch (token.type) {
 		case TOKEN_ID:
 			return ID;
-		case TOKEN_LEFT_BR:
-			return LEFT_BRACKET;
-		case TOKEN_RIGHT_BR:
-			return RIGHT_BRACKET;
+		case TOKEN_LEFT_PAR:
+			return LEFT_PAR;
+		case TOKEN_RIGHT_PAR:
+			return RIGHT_PAR;
 		case TOKEN_MUL:
 			return MUL;
 		case TOKEN_DIV:
@@ -69,7 +85,12 @@ prec_symbs_t get_symbol(token_t token)
 			return LESS;
 		case TOKEN_LESS_EQ:
 			return LEEQ;
+		case TOKEN_EQUAL:
+			return TYPE_EQ;
+		case TOKEN_NOT_EQUAL:
+			return NTYPE_EQ;
 		default:
+			printf_token_debug(token);
 			return ERROR;
 		}
 }
@@ -78,15 +99,26 @@ prec_symbs_t get_symbol(token_t token)
  * Function converts token type to data type.
  *
  */
-prec_datatypes_t get_data_type(token_t token /*, from parser*/)
+prec_datatypes_t get_data_type(token_t token, htable *table)
 {
 	ht_item_t* symbol;
 	switch (token.type)
 	{
 		case TOKEN_ID:
-			symbol = symt_search(&globalS, token.attribute.string->str);
+			symbol = symt_search(table, token.attribute.string->str);
 			if (symbol == NULL)
 				return UNDEFINED_TYPE;
+			switch (symbol->type)
+			{
+			case INTEGER_DT:
+				return INT_TYPE;
+			case FLOAT_DT:
+				return FLOAT_TYPE;
+			case STRING_DT:
+				return STRING_TYPE;
+			default:
+				return UNDEFINED_TYPE;
+			}
 			return symbol->type;
 
 		case TOKEN_TYPE_INT:
@@ -144,7 +176,7 @@ prec_rules_t get_rule(int num_of_symbols_in_rule, prec_stack_item_t* first, prec
 		return NOT_RULE;
 
 	case 3: // E -> (E)
-		if (first->symb == LEFT_BRACKET && second->symb == NONTERM && third->symb == RIGHT_BRACKET)
+		if (first->symb == LEFT_PAR && second->symb == NONTERM && third->symb == RIGHT_PAR)
 			return BRACKETS_R;
 		if (first->symb == NONTERM && third->symb == NONTERM)
 		{
@@ -180,87 +212,77 @@ prec_rules_t get_rule(int num_of_symbols_in_rule, prec_stack_item_t* first, prec
 	}
 	return NOT_RULE;
 }
-/*
-prec_index_t get_prec_table_index (prec_symbs_t symbol){
-    switch (symbol) {
-        case ID:
-		   return ID;
-		case LEFT_BRACKET:
-			return LB_INDEX;
-		case RIGHT_BRACKET:
-			return RB_INDEX;
-		case MUL:
-			return MUL_INDEX;
-		case DIV:
-			return DIV_INDEX;
-		case PLUS:
-			return PLUS_INDEX;
-		case MINUS:
-			return MINUS_INDEX;
-		case CONC:
-			return CONC_INDEX;
-		case GREATER:
-			return GREATER_INDEX;
-		case GREQ:
-			return GREQ_INDEX;
-		case LESS:
-			return LESS_INDEX;
-		case LEEQ:
-			return LEEQ_INDEX;
-		case TYPE_EQ:
-			return TYPE_EQ_INDEX;
-		case NTYPE_EQ:
-	 		return NTYPE_EQ_INDEX;
-		default:
-			return DOLLAR_INDEX;
-    }
-}
-*/
-
-int parse_expression(){
-
-	int number_of_symbols = 0;
 
 
-	//here we already have an expression from parser looking like: a + b*10/(b+c)
- 	prec_stack_t* prec_stack = prec_stack_init();
- 	prec_stack_push(&prec_stack, "$", UNDEFINED_DT); // REDO STACK PUSH, push a dollar sign
- 	prec_stack_push(&prec_stack); // push the first symbol
-	prec_stack_item_t* current;
-	prec_stack_item_t* next;
-   // ID is always going to the stack with the STOP sign before
- 	while (token.type != TOKEN_LEFT_BR || token.type != TOKEN_SEMICOLON)
- 	{
-		GET_TOKEN();
- 		current = symbol_stack_top(&prec_stack); // TODO this func in symstack
-		next->symb = get_symbol(token);
-		next->datatype = get_data_type(token);
-		next->next = NULL;
+int parse_expression(htable *table){
+	// token here is a start of the expression
+	
+ 	prec_stack_init(&stack);
+ 	
+	prec_stack_push(&stack, STOP, UNDEFINED_DT); // push a dollar sign
+
+	prec_symbs_t tokenSymb = get_symbol(token);
+	prec_datatypes_t tokenDatatype = get_data_type(token, table);
+
+	prec_stack_push(&stack, tokenSymb, tokenDatatype); // push the first symbol
+
+
+	prec_stack_item_t *headStack;
+
+	bool exit = false;
+
+    // ID is always going to the stack with the STOP sign before
+ 	while (1)
+ 	{	
+ 		headStack = prec_stack_head(&stack);
 		
+		GET_TOKEN();
+		if(token.type == TOKEN_SEMICOLON || token.type == TOKEN_LEFT_BR) return NO_ERRORS;
+
+		tokenSymb = get_symbol(token);
+		tokenDatatype = get_data_type(token, table);
+		prec_stack_push(&stack, tokenSymb, tokenDatatype);
 		// if(get_symb(token) == ERROR) return SYNTAX_ERROR;
 
-		if((prec_table[current][next]) == '<')
+		printf("input: %d \tstack: %d\t", tokenSymb, headStack->symb);
+
+
+		if((prec_table[tokenSymb][headStack->symb]) == '<')
 		{
-			shift_operation(); // with putting of the STOP symbol to it(it is not a dollar sign)
+			printf("found symbol <\n");
+			exit = true;
+			// shift_operation(); // with putting of the STOP symbol to it(it is not a dollar sign)
             // small function, we can write it up here
 		}
-		else if((prec_table[current][next]) == '>')
+		else if((prec_table[tokenSymb][headStack->symb]) == '>')
 		{
+			printf("found symbol >\n");
+			exit = true;
          // count the number of symbols after the stop sign
-         	rule = get_rule();
-			reduce_operation(); // reducing the stack according to the rule
+         	//rule = get_rule();
+			//reduce_operation(); // reducing the stack according to the rule
 		}
-		else if((prec_table[current][next]) == 'e')
+		else if((prec_table[tokenSymb][headStack->symb]) == 'e')
 		{
-			return SYNTAX_ERROR; // ????
+			printf("found symbol e\n");
+			exit = true;
+
+			// return SYNTAX_ERROR; // ????
 		}
-		else if((prec_table[current][next]) == '=')
+		else if((prec_table[tokenSymb][headStack->symb]) == '=')
 		{
-			equal_operation(); // the main function is to reduce everything between the () ???????
+			printf("found symbol =\n");
+			exit = true;
+			// equal_operation(); // the main function is to reduce everything between the () ???????
+		} else {
+			printf("\nerror\n");
+			printf("input: %d \tstack: %d\t", tokenSymb, headStack->symb);
+			prec_stack_free(&stack);
+			return SYNTAX_ERROR;
 		}
-		current++;
+	
 	}
-		prec_stack_free(&prec_stack);
 
 
+	prec_stack_free(&stack);
 }
