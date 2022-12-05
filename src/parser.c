@@ -19,11 +19,11 @@ bool inWhile, inWhileExpr;
 bool inIf, inIfExpr;
 bool inFunctionDefinition;
 string_t expr;
+int symbolsCnt;
 
 static void printf_symtable_func_debug(ht_item_t* item){
     printf("--- HT_ITEM FUNCTION DATA ---\n");
     printf("Function key is: %s\n", item->key);
-    printf("\t- Is function defined? %s\n", (item->data.func->defined) ? "Yes" : "No");
     printf("\t- Arguments: %s\n", item->data.func->argv.str);
     printf("\t- Return type: %s\n", item->data.func->ret.str);
     printf("---END HT_ITEM FUNCTION DATA ---\n");
@@ -42,7 +42,7 @@ static void printf_symtable_var_debug(ht_item_t* item){
 
 }
 
-static void printf_token_debug(token_t token){
+void printf_token_debug(token_t token){
     printf("--- BEGIN CURRENT TOKEN INFO ---\n");
     printf("Token: %s \n", list[token.type]);
     switch (token.type){
@@ -121,8 +121,6 @@ int symt_add_internal_functions(){
         }
         
         item->type = func;
-        item->data.func->defined = true;
-
         if(str_init(&item->data.func->argv) == 1 || str_init(&item->data.func->ret) == 1){
             return INTERNAL_ERROR;
         }
@@ -196,6 +194,7 @@ int list_of_statements(){
     while(true){
         GET_TOKEN();
         // printf_token_debug(token);
+        
         if(token.type == TOKEN_END_OF_FILE) {
             return NO_ERRORS;
         }
@@ -234,8 +233,11 @@ int statement(){
         } else if(token.attribute.keyword == K_RETURN){}
         break;
     default:
-        if(inIf || inWhile) return NO_ERRORS;
-        else return SYNTAX_ERROR;
+        if(inIf || inWhile || inFunctionDefinition) return NO_ERRORS;
+        else {
+            // printf_token_debug(token);
+            return SYNTAX_ERROR;
+        }
     }
     
     if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
@@ -246,11 +248,14 @@ int inside_if(){
     // right now the token we have is IF keyword
     // according to rules we should have the '(' token next
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
-    GET_TOKEN();
-    str_init(&expr);
-    inIfExpr = true;
-    code = collecting_an_expression(&expr);
-    if(code != NO_ERRORS) return code;
+    
+    
+    // CHECK_RULE(parse_expression());
+    do {
+        GET_TOKEN();
+    } while(token.type != TOKEN_RIGHT_PAR);
+
+
     /*
         check collected expression by calling a function from expressions.c interface
         if OK, then continue, otherwise return error
@@ -260,21 +265,20 @@ int inside_if(){
     */
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
-    inIfExpr = false;
+        
     inIf = true;
-    
+
     CHECK_RULE(list_of_statements());
     CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
-
+    
     GET_TOKEN_CHECK_KEYW(K_ELSE, SEM_STMT_FUNC_ERROR);
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
+
 
     CHECK_RULE(list_of_statements());
     
     CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
     inIf = false;
-    
-    str_free(&expr);
     return NO_ERRORS;
 }
 
@@ -283,14 +287,14 @@ int inside_while(){
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
     // here we should collect an expression inside of a WHILE statement, then check if it's okay and after check for the TOKEN_RIGHT_PAR
     // if(!expression_check()) return false;
-    GET_TOKEN();
-    str_init(&expr);
-    inWhileExpr = true;
-    code = collecting_an_expression(&expr);
-    if(code != NO_ERRORS) return code;
+
+    // CHECK_RULE(parse_expression());
+    do {
+        GET_TOKEN();
+    } while(token.type != TOKEN_RIGHT_PAR);
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
-    inWhileExpr = false;
+    
     inWhile = true;
     
     CHECK_RULE(list_of_statements());
@@ -298,7 +302,6 @@ int inside_while(){
     CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
 
     inWhile = false;
-    str_free(&expr);
     return NO_ERRORS;
 }
 
@@ -349,17 +352,17 @@ int function_definition(){
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
     inFunctionDefinition = true;
-
     // collect statements inside of a func into local symt and generate instructions for them
     
     code = list_of_statements();
     CHECK_ERROR(code);  
 
+    CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
+
     // when we're done with function definition, 
     // meaning that we've collected every statement inside of it
     // and we've generated all the instructions in this function (not sure about that tho)
     // we should clear the local symtable
-    item->data.func->defined = true;
     symt_free(&localSymt);
     return NO_ERRORS;
 }
@@ -516,7 +519,7 @@ int list_of_datatypes_ret(ht_item_t* item){
 }
 
 
-// 14. <variable_definition> -> <variable> = <expr>
+// 14. <variable_definition> -> <variable> = <var_def_expr>
 int variable_definition(){
     /* 
         check if we are inside of a function or no
@@ -531,168 +534,69 @@ int variable_definition(){
     GET_AND_CHECK_TOKEN(token.type == TOKEN_ASSIGN, SYNTAX_ERROR);
     
     CHECK_RULE(var_def_expr());
-    
     return NO_ERRORS;
+}
+
+static int collecting_an_expression(string_t *expression){
+
 }
 
 // 15. <var_def_expr> -> <function_call> <-- FUNEXP EXTENSION !!!
 // 16. <var_def_expr> -> <expression>;
 int var_def_expr(){
-    string_t expression;
-    str_init(&expression);
+    
+    // ASSIGN token here
+    GET_TOKEN();
+    if(token.type == TOKEN_ID && token.attribute.string->str[0] != '$'){
+        CHECK_RULE(function_call());
+        
+        return NO_ERRORS;
+    } else {
+        while(token.type != TOKEN_SEMICOLON) GET_TOKEN();
+        
+        return NO_ERRORS;
+        //CHECK_RULE(parse_expression());
+    }
+    
+
 
     // after this GET_TOKEN() we either have an ID token (of a function)
     // or the start of expression
     
     // two cases: <function_call> and <expression>
-    GET_TOKEN();
+    // GET_TOKEN();
+
     // at this line we have either TOKEN_ID (variable or function)
     // or some different type of token which is start of an expression
 
 
-    if(token.type == TOKEN_ID){ // function ID or variable ID
-        if(token.attribute.string->str[0] == '$'){ // then we have variable ID
-            CHECK_RULE(variable());
 
-            // here we are checking a variable and then proceeding to collect an expression
-        } 
-        /*
-        else { // otherwise we have function ID
-            CHECK_RULE(function_call());
 
-            return NO_ERRORS;
+    // if(token.type == TOKEN_ID){ // function ID or variable ID
+    //     if(token.attribute.string->str[0] == '$'){ // then we have variable ID
+    //         CHECK_RULE(variable());
 
-            // we don't need to go futher after this line
-        }
-        */
-    }
+    //         // here we are checking a variable and then proceeding to collect an expression
+    //     } 
+    //     /*
+    //     else { // otherwise we have function ID
+    //         CHECK_RULE(function_call());
 
-    code = collecting_an_expression(&expression);
-    if(code != NO_ERRORS) return code;
+    //         return NO_ERRORS;
+
+    //         // we don't need to go futher after this line
+    //     }
+    //     */
+    // }
+
     // checking if expression is OK by calling the expressions.c interface here
     
-    return NO_ERRORS;
-}
-
-static int collecting_an_expression(string_t *expression){
-    // getting tokens and copying their attributes into a string
-    // string_t expression;
-    // str_init(&expression);
-    token_type_t expected;
-
-    if(inWhileExpr || inIfExpr){
-        expected = TOKEN_RIGHT_PAR;
-    } else {
-        expected = TOKEN_SEMICOLON;    
-    }
-
-    while(token.type != expected){
-        switch (token.type){
-        case TOKEN_ID:
-            str_concat(expression, token.attribute.string);
-            break;
-        
-        case TOKEN_PLUS:
-            str_add_char(expression, '+');
-            break;
-
-        case TOKEN_MINUS:
-            str_add_char(expression, '-');
-            break;
-        
-        case TOKEN_MUL:
-            str_add_char(expression, '*');
-            break;
-        
-        case TOKEN_DIV:
-            str_add_char(expression, '/');
-            break;
-
-        case TOKEN_CONC:
-            str_add_char(expression, '.');
-            break;
-        
-        case TOKEN_TYPE_INT:
-            str_add_char(expression, 'i');
-            break;
-        
-        case TOKEN_TYPE_FLOAT:
-            str_add_char(expression, 'f');
-            break;
-        
-        case TOKEN_TYPE_STRING:
-            str_add_char(expression, 's');
-            break;
-
-        case TOKEN_EQUAL:
-            str_add_char(expression, '=');
-            str_add_char(expression, '=');
-            str_add_char(expression, '=');
-            break;
-
-        case TOKEN_NOT_EQUAL:
-            str_add_char(expression, '!');
-            str_add_char(expression, '=');
-            str_add_char(expression, '=');
-            break;
-        
-        case TOKEN_LESS:
-            str_add_char(expression, '<');
-            break;
-
-        case TOKEN_GREATER:
-            str_add_char(expression, '>');
-            break;
-        
-        case TOKEN_LESS_EQ:
-            str_add_char(expression, '<');
-            str_add_char(expression, '=');
-            break;
-        
-        case TOKEN_GREATER_EQ:
-            str_add_char(expression, '>');
-            str_add_char(expression, '=');
-            break;
-        
-        case TOKEN_LEFT_PAR:
-            str_add_char(expression, '(');
-            break;
-        
-        case TOKEN_RIGHT_PAR:
-            if(!inWhileExpr && !inIfExpr){
-                str_add_char(expression, ')');
-            } else {
-                str_free(expression);
-                clean_exit(SYNTAX_ERROR);
-            }
-            break;
-        
-        case TOKEN_KEY_W:
-            if(token.attribute.keyword == K_NULL){
-                str_add_char(expression, 'n');
-            } else {
-                str_free(expression);
-                clean_exit(SYNTAX_ERROR);
-            }
-            break;
-
-        default:
-            str_free(expression);
-            clean_exit(SYNTAX_ERROR);
-            break;
-        }
-
-        GET_TOKEN();
-        str_add_char(expression, ' ');
-    }
-
-    return NO_ERRORS;
 }
 
 //17. <function_call> -> ID( <list_of_call_parameters> );   
 int function_call(){
     ht_item_t* item = symt_search(&globalSymt, token.attribute.string->str);
-    //  printf("\tfound a function call with id '%s'\n", item->key);
+    // printf("\tfound a function call with id '%s'\n", item->key);
 
     if(item == NULL) {
         return SEM_DEF_FUNC_ERROR;
@@ -701,15 +605,14 @@ int function_call(){
         
         code = list_of_call_parameters(item);
         CHECK_ERROR(code);
-
-
+        
         // we can return here with tokens (no errors):
         //          1) TOKEN_RIGHT_PAR
         //          2) TOKEN_SEMICOLON
-        CHECK_TOKEN(token.type != TOKEN_SEMICOLON, SYNTAX_ERROR);
-        GET_TOKEN();
+        GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
+
+        return NO_ERRORS;
     } else return INTERNAL_ERROR;
-    return NO_ERRORS;
 }
 
 //18. <list_of_call_parameters> -> ε
@@ -719,12 +622,13 @@ int list_of_call_parameters(ht_item_t* function){
     str_init(&params);
 
     GET_TOKEN();
-    if(token.type == TOKEN_RIGHT_PAR){
-        if(!str_cmp_const_str(&function->data.func->argv, "")){
-            GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
 
+    if(token.type == TOKEN_RIGHT_PAR){
+        // printf("\t-%s\n", function->data.func->argv.str);
+        if(!str_cmp_const_str(&function->data.func->argv, "")){
+            // GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
             // generate a function call for function with no parameters
-            
+
             return NO_ERRORS;
         } else return SEM_TYPE_ERROR;
     } else if (token.type == TOKEN_ID || token.type == TOKEN_TYPE_STRING || 
@@ -734,6 +638,8 @@ int list_of_call_parameters(ht_item_t* function){
 
         code = list_of_call_parameters_n(function, params);
         CHECK_ERROR(code);
+
+        return NO_ERRORS;
 
     } else return SYNTAX_ERROR;
 
@@ -745,20 +651,19 @@ int list_of_call_parameters(ht_item_t* function){
 int call_parameter(ht_item_t* function, string_t params){
     switch (token.type){
     case TOKEN_TYPE_STRING:
-        printf("string call param\n");
+        // printf("string call param\n");
         break;
     
     case TOKEN_TYPE_INT:
-        printf("int call param\n");
+        // printf("int call param\n");
         break;
 
     case TOKEN_TYPE_FLOAT:
-        printf("float call param\n");
+        // printf("float call param\n");
         break;
 
     case TOKEN_ID:
         CHECK_RULE(variable());
-
         break;
     default:
         return SYNTAX_ERROR;
@@ -776,6 +681,7 @@ int call_parameter(ht_item_t* function, string_t params){
 */
 int list_of_call_parameters_n(ht_item_t* function, string_t params){
     GET_TOKEN();
+    
     if(token.type == TOKEN_RIGHT_PAR){
 
         // generate a function call

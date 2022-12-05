@@ -12,11 +12,10 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "expressions.h"
 #include "scanner.h"
 #include "str.h"
 #include "symtable.h"
-#include "expressions.h"
-
 
 /*
  * @brief Data structure representing a stack of symbols 
@@ -32,6 +31,7 @@ typedef struct precStack {
     int actualSize;
     prec_stack_item_t *top;
 } prec_stack_t;
+
 
 /*
  * @brief Stack initialization 

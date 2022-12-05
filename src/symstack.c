@@ -15,7 +15,7 @@
 
 prec_stack_t *prec_stack_init(int size){
     prec_stack_t *stack = (prec_stack_t *)malloc(sizeof(prec_stack_t));
-
+    
     if(stack == NULL) exit_error(ALLOCATION_ERROR);
 
     stack->maxSize = size;

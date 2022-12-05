@@ -1,7 +1,19 @@
 #ifndef EXPRESSIONS_H
 #define EXPRESSIONS_H
 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "str.h"
+#include "parser.h"
+#include "error.h"
+#include "symtable.h"
+
+
 #define PREC_TABLE_SIZE 15
+
+int parse_expression();
+
 
 /**
  * Rules for analysis.
@@ -43,7 +55,8 @@ typedef enum {
     TYPE_EQ,        // ===
 	NTYPE_EQ,	    // !==
 	STOP,		    // $
-	NONTERM
+	NONTERM,
+	ERROR
 } prec_symbs_t;
 
 typedef enum {
@@ -53,6 +66,7 @@ typedef enum {
 	UNDEFINED_TYPE
 } prec_datatypes_t;
 
+ /*
 typedef enum {
 	ID_INDEX,	      // 0. id
 	RB_INDEX,		  // 1. (
@@ -70,6 +84,6 @@ typedef enum {
 	NTYPE_EQ_INDEX,   // 13. !==
 	DOLLAR_INDEX	  // 14. $ 
 } prec_index_t; 
-
+*/
 
 #endif // EXPRESSIONS_H
