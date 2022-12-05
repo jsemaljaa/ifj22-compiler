@@ -165,7 +165,7 @@ void generator_header();
 
 char *generator_get_type(symt_datatype_t type);
 
-// bool generator_check_var(ht_item_t var);
+bool generator_check_var(ht_item_t *var);
 
 void generator_get_new_var(ht_item_t *var);
 
@@ -176,6 +176,8 @@ void generator_end_func(ht_item_t *func);
 void call_func(ht_item_t *func);
 
 char *generator_str_convert(char *str);
+
+ht_item_t *generator_default_val(token_t token);
 
 // void generator_start_if();
 
@@ -199,14 +201,14 @@ void generator_reads();
 
 void generator_strlen(char *str);
 
-void generator_substr(ht_item_t *s);
+void generator_substr(ht_item_t *s, ht_item_t *i, ht_item_t *j) ;
 
 void generator_ord(ht_item_t *c);
 
 void generator_chr(ht_item_t *i);
 
-void generator_internal_func(char *func_name, ht_item_t *var); // , ht_item_t symb1, ht_item_t symb2);
+void generator_internal_func(char *func_name, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2); // , ht_item_t symb1, ht_item_t symb2);
 
-void generator_operation(token_type_t operation, ht_item_t *var);
+void generator_operation(token_type_t operation, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2);
 
 #endif // GENERATOR_H
