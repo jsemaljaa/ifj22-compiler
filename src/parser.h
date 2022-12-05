@@ -157,6 +157,8 @@ static int list_of_statements();
 */
 static int statement();
 
+static int return_statement();
+
 /*
  * @example 11. <return_expressions> -> <expression>
  * @example 12. <return_expressions> -> <variable>

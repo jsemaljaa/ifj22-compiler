@@ -193,8 +193,8 @@ int prolog(){
 int list_of_statements(){
     while(true){
         GET_TOKEN();
-        // printf_token_debug(token);
-        
+        printf_token_debug(token);
+
         if(token.type == TOKEN_END_OF_FILE) {
             return NO_ERRORS;
         }
@@ -230,7 +230,9 @@ int statement(){
             CHECK_RULE(inside_if());
         } else if(token.attribute.keyword == K_WHILE){
             CHECK_RULE(inside_while());
-        } else if(token.attribute.keyword == K_RETURN){}
+        } else if(token.attribute.keyword == K_RETURN){
+            CHECK_RULE(return_statement());
+        }
         break;
     default:
         if(inIf || inWhile || inFunctionDefinition) return NO_ERRORS;
@@ -242,6 +244,14 @@ int statement(){
     
     if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
     CHECK_RULE(list_of_statements());   
+}
+
+int return_statement(){
+    while(token.type != TOKEN_SEMICOLON) {
+        GET_TOKEN();
+    }
+
+    return NO_ERRORS;
 }
 
 int inside_if(){
@@ -273,7 +283,6 @@ int inside_if(){
     
     GET_TOKEN_CHECK_KEYW(K_ELSE, SEM_STMT_FUNC_ERROR);
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
-
 
     CHECK_RULE(list_of_statements());
     
@@ -359,6 +368,8 @@ int function_definition(){
 
     CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
 
+
+    generator_end_func(item->key);
     // when we're done with function definition, 
     // meaning that we've collected every statement inside of it
     // and we've generated all the instructions in this function (not sure about that tho)

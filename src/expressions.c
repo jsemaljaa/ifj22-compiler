@@ -226,12 +226,13 @@ int parse_expression(){
  	prec_stack_t* prec_stack = prec_stack_init();
  	prec_stack_push(&prec_stack, "$", UNDEFINED_DT); // REDO STACK PUSH, push a dollar sign
  	prec_stack_push(&prec_stack); // push the first symbol
+	prec_stack_item_t* current;
+	prec_stack_item_t* next;
    // ID is always going to the stack with the STOP sign before
  	while (token.type != TOKEN_LEFT_BR || token.type != TOKEN_SEMICOLON)
  	{
 		GET_TOKEN();
- 		prec_stack_item_t* current = symbol_stack_top(&prec_stack); // TODO this func in symstack
-		prec_stack_item_t* next;
+ 		current = symbol_stack_top(&prec_stack); // TODO this func in symstack
 		next->symb = get_symbol(token);
 		next->datatype = get_data_type(token);
 		next->next = NULL;
