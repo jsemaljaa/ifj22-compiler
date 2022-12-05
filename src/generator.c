@@ -1,23 +1,29 @@
 /*
  * IFJ2022/project/generator.c
- * 
+ *
  * @brief Target language generation
- * 
+ *
  * @author Ekaterina Krupenko <xkrupe00@vutbr.cz>
  */
 
 #include "generator.h"
 
 //в последствии заменить на индекс как часть структуры симтейбла
-int index_count = 0;
+int if_count;
+int func_count;
+int while_count;
+int var_count;
+int param_count;
+int loop_count;
 
 /*
  * Input-output instructions
- */ 
+ */
+
 void generator_read(char *dst, char *var, char *var_type)
 {
     printf("READ %s@%s int\n", dst, var);
-} 
+}
 
 void generator_write(char *dst, char *symb)
 {
@@ -86,86 +92,85 @@ void generator_clear_s()
  * Arithmetic, relational Boolean and conversion instructions
  */
 
-void generator_add(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_add(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("ADD %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_sub(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_sub(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("SUB %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_mul(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_mul(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("MUL %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_div(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_div(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("DIV %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_idiv(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_idiv(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("IDIV %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_add_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_add_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("ADDS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_sub_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_sub_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("SUBS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_mul_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_mul_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("MULS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_div_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_div_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("DIVS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_idiv_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_idiv_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("IDIVS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_LT(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_LT(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("LT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_GT(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_GT(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("GT %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_EQ(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_EQ(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("EQ %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_LT_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_LT_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("LTS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_GT_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_GT_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("GTS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
 
-void generator_EQ_s(char *src, char *var, char *dst1, char *symb1, char *dst2 , char *symb2)
+void generator_EQ_s(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
     printf("EQS %s@%s %s@%s %s@%s\n", src, var, dst1, symb1, dst2, symb2);
 }
-// void generator_boolean_s(); //TODO
 
 void generator_and(char *src, char *var, char *dst1, char *symb1, char *dst2, char *symb2)
 {
@@ -289,7 +294,7 @@ void generator_jump_if_neq(char *label, char *dst1, char *symb1, char *dst2, cha
     printf("LUMPIFNEQ %s %s@%s %s@%s\n", label, dst1, symb1, dst2, symb2);
 }
 
-void generator_jump_if_eq_s()                                                                                                                                                  
+void generator_jump_if_eq_s()
 {
     printf("JUMPIFEQS\n");
 }
@@ -313,79 +318,129 @@ void generator_break()
     printf("BREAK\n");
 }
 
-void generator_dprint(char * symb)
+void generator_dprint(char *symb)
 {
     printf("DPRINT %s\n", symb);
 }
 
 /*
- * Internal functions 
+ * Internal functions
  */
 
 void generator_header()
 {
     printf(".IFJcode21\n");
+
+    if_count = 0;
+    func_count = 0;
+    while_count = 0;
+    var_count = 0;
+    param_count = 0;
+    loop_count = 0;
 }
 
-char *generator_get_type(keyword_t type)
+char *generator_get_type(symt_datatype_t type)
 {
-    switch(type)
+    switch (type)
     {
-        case K_INT_N:
-            return "int";
-            break;
-        case K_FLOAT_N:
-            return "float";
-            break;
-        case K_STRING_N:
-            return "string";
-            break;
+    case K_INT:
+    case K_INT_N:
+        return "int";
+        break;
+    case K_FLOAT:
+    case K_FLOAT_N:
+        return "float";
+        break;
+    case K_STRING:
+    case K_STRING_N:
+        return "string";
+        break;
         // case K_BOOL_N:
         //     return "bool";
         //     break;
-        default:
-            return "nil";
-            break;
+    case K_NULL:
+        return "nil";
+    default:
+        return "";
+        break;
     }
 }
 
-void generator_get_new_var(symt_var_t var)
+// bool generator_check_var(ht_item_t var)
+// {
+//     if(!var.index)
+//     {
+//         switch(var.attr->keyword)
+//         {
+//             case K_IF:
+//             case K_ELSE:
+//                 if_count++;
+//                 var.index = if_count;
+//                 break;
+//             case K_FUNCTION:
+//                 func_count++;
+//                 var.index = func_count;
+//                 break;
+//             case K_RETURN:
+//                 break;
+//             case K_WHILE:
+//                 while_count++;
+//                 var.index = while_count;
+//                 break;
+//             case K_INT:
+//             case K_FLOAT:
+//             case K_STRING:
+//             case K_INT_N:
+//             case K_FLOAT_N:
+//             case K_STRING_N:
+//             case K_NULL:
+//                 var_count++;
+//                 var.index = var_count;
+//                 generator_get_new_var(var);
+//                 break;
+//         }
+//     }
+// }
+
+void generator_get_new_var(ht_item_t *var)
 {
-    if(!strcmp("int", generator_get_type(var.type)))
+    if (!strcmp("int", generator_get_type(var->data.var->type)))
     {
-        printf("DEFVAR TF@$var%d\n", index_count); // var.index_count
-        printf("MOVE TF@$var%d int@%d\n", index_count, var.attr->integer);
+        printf("DEFVAR TF@$%s\n", var->key); // var.index
+        printf("MOVE TF@$%s int@%d\n", var->key, var->data.var->attr->integer);
     }
-    else if(!strcmp("float", generator_get_type(var.type)))
+    else if (!strcmp("float", generator_get_type(var->data.var->type)))
     {
-        printf("DEFVAR TF@$var%d\n", index_count); // var.index_count
-        printf("MOVE TF@$var%d int@%a\n", index_count, var.attr->decimal);
+        printf("DEFVAR TF@$%s\n", var->key); // var.index
+        printf("MOVE TF@$%s float@%a\n", var->key, var->data.var->attr->decimal);
     }
-    else if(!strcmp("string", generator_get_type(var.type)))
+    else if (!strcmp("string", generator_get_type(var->data.var->type)))
     {
-        printf("DEFVAR TF@$var%d\n", index_count); // var.index_count
-        printf("MOVE TF@$var%d int@%s\n", index_count, generator_str_convert(var.attr->string->str));
+        printf("DEFVAR TF@$%s\n", var->key); // var.index
+        printf("MOVE TF@$%s string@%s\n", var->key, generator_str_convert(var->data.var->attr->string->str));
     }
 }
 
-void generator_start_func(char *func_name)
-{   
-    printf("LABEL !func%d", index_count); // funk index_count
+void generator_start_func(ht_item_t *func)
+{
+    func_count++;
+    printf("LABEL !%s\n", func->key); // funk index
     generator_push_frame();
 }
 
-void generator_end_func(char * func_name)
+void generator_end_func(ht_item_t *func)
 {
-    printf("LABEL !end_func%d", index_count); // end_funk index_count = current func index_count
+    // TODO продумать индекс закрытия функции
+    printf("LABEL !end_%s\n", func->key); // end_funk index = current func index
 
     generator_pop_frame(); // здесь перестают существовать наши пременные все каунтеры = 0
     generator_return();
 }
 
-void call_func(char *dst, char *name_func)
+void call_func(ht_item_t *func)
 {
     // generator_push_frame();
-    printf("CALL !func%d", index_count); //func_index_count
+    printf("CALL !%s\n", func->key); // func.index
     // generator_pop_frame();
 }
 
@@ -396,91 +451,94 @@ char *generator_str_convert(char *str)
     char buf[2];
     int i = 0;
 
-    for(; i < strlen(str); i++)
+    for (; i < strlen(str); i++)
     {
-        switch(str[i])
+        switch (str[i])
         {
-            case ' ':
-                strcat(new_str, "\\032");
-                break;
-            case '!':
-                strcat(new_str, "\\033");
-                break;
-            case '"':
-                strcat(new_str, "\\034");
-                break;
-            case '#':
-                strcat(new_str, "\\035");
-                break;
-            case '\\':
-                strcat(new_str, "\\092");
-                break;
-            case '\n':
-                strcat(new_str, "\\010");
-                break;
-            default:
-                buf[0] = str[i];
-                buf[1] = '\0';
-                strcat(new_str, buf);
-                break;
+        case ' ':
+            strcat(new_str, "\\032");
+            break;
+        case '!':
+            strcat(new_str, "\\033");
+            break;
+        case '"':
+            strcat(new_str, "\\034");
+            break;
+        case '#':
+            strcat(new_str, "\\035");
+            break;
+        case '\\':
+            strcat(new_str, "\\092");
+            break;
+        case '\n':
+            strcat(new_str, "\\010");
+            break;
+        default:
+            buf[0] = str[i];
+            buf[1] = '\0';
+            strcat(new_str, buf);
+            break;
         }
     }
 
-    result_str = (char*) malloc((strlen(new_str))*sizeof(char));
+    result_str = (char *)malloc((strlen(new_str)) * sizeof(char));
 
-    if(!result_str)
+    if (!result_str)
         return NULL;
 
-    for(int j = 0; j < strlen(new_str); j++)
+    for (int j = 0; j < strlen(new_str); j++)
         result_str[j] = new_str[j];
 
     return result_str;
 }
 
-void generator_start_if(int if_max_index_count)
-{
-    printf("LABEL !if_func%d\n", index_count); //if index_count
-    generator_push_frame();
-}
+// void generator_start_if()
+// {
+//     if_count++;
+//     // printf("LABEL !%s\n", if_func->key);
+//     // printf("LABEL !if_func%d\n", if_count);
+//     generator_push_frame();
+// }
 
-void generator_end_if()
-{
-    printf("LABEL !end_if_func%d\n", index_count);
-    generator_pop_frame();
-    generator_return();
-}
+// void generator_end_if()
+// {
+//     // printf("LABEL !end_%s\n", end_if_func->key);
+//     // printf("LABEL !end_if_func%d\n", if_count);
+//     generator_pop_frame();
+//     generator_return();
+// }
 
-void generator_start_while(int max_while_count)
-{
-    printf("LABEL !while_func%d\n", index_count);
-    generator_push_frame();
+// void generator_start_while(int max_while)
+// {
+//     printf("LABEL !while_func%d\n", while_count);
+//     generator_push_frame();
 
-    printf("DEFVAR TF@$loop%d\n", index_count); // while count
-    printf("MOVE TF@$loop%d bool@true\n", index_count); //while count
-}
+//     printf("DEFVAR TF@$loop%d\n", while_count);         // while count
+//     printf("MOVE TF@$loop%d bool@true\n", while_count); // while count
+// }
 
-void generator_start_loop_while()
-{
-    printf("LABEL !loop_while%d\n", index_count); //loop index = while index on start
+// void generator_start_loop_while()
+// {
+//     printf("LABEL !loop_while%d\n", loop_count); // loop index = while index on start
+// }
 
-}
+// void generator_loop_condition()
+// {
+//     printf("MOVE TF@loop%d bool@false\n", while_count);
+// }
 
-void generator_loop_condition()
-{
-    printf("MOVE TF@loop%d bool@false", index_count);
-}
+// void generator_stop_loop_while()
+// {
+//     printf("JUMPIFEQ !loop_while%d TF@loop%d bool@false\n", loop_count, while_count);
+// }
 
-void generator_stop_loop_while()
-{
-    printf("JUMPIFEQ !loop_while TF@loop%d bool@false", index_count);
-}
-
-void generator_end_while()
-{
-    printf("LABEL !end_while_func%d\n", index_count);
-    generator_pop_frame();
-    generator_return();
-}
+// void generator_end_while()
+// {
+//     // TODO продумать индекс закрытия while
+//     printf("LABEL !end_while_func%d\n", while_count);
+//     generator_pop_frame();
+//     generator_return();
+// }
 
 void generator_readi()
 {
@@ -518,14 +576,15 @@ void generator_reads()
     generator_return();
 }
 
-void generator_strlen(char * str)
+void generator_strlen(char *str)
 {
     generator_def_var("LF", "$len");
+    printf("MOVE LF@$str string@\n");
     printf("STRLEN LF@$len LF@%s\n", str);
 }
 
 //не понимаю надо ли конвертировать стринг
-void generator_substr(symt_var_t s, symt_var_t i, symt_var_t j)
+void generator_substr(ht_item_t *s)
 {
     printf("!substr\n");
     generator_push_frame();
@@ -538,9 +597,10 @@ void generator_substr(symt_var_t s, symt_var_t i, symt_var_t j)
     generator_def_var("LF", "$char");
 
     generator_move("LF", "$result", "string", NULL);
-    printf("MOVE LF@$str_param1 int@%d\n", i.attr->integer);
-    printf("MOVE LF@$str_param2 int@%d\n", j.attr->integer);
-    printf("MOVE LF@$str string@%s\n", generator_str_convert(s.attr->string->str));
+    printf("MOVE LF@$str string@%s\n", generator_str_convert(s->data.var->attr->string->str));
+    printf("MOVE LF@$str_param1 int@%d\n", s->next->data.var->attr->integer);
+    printf("MOVE LF@$str_param2 int@%d\n", s->next->next->data.var->attr->integer);
+
 
     generator_jump_if_eq("error_func", "LF", "$str", "nil", "nil");
     generator_jump_if_eq("error_func", "LF", "$str_param1", "nil", "nil");
@@ -571,7 +631,7 @@ void generator_substr(symt_var_t s, symt_var_t i, symt_var_t j)
     generator_return();
 }
 
-void generator_ord(symt_var_t c)
+void generator_ord(ht_item_t *c)
 {
     printf("!ord\n");
     generator_push_frame();
@@ -581,12 +641,11 @@ void generator_ord(symt_var_t c)
     generator_def_var("LF", "$str");
 
     generator_move("LF", "$result", "nil", "nil");
-    generator_move("LF", "$str", "string", generator_str_convert(c.attr->string->str));
-
+    generator_move("LF", "$str", "string", generator_str_convert(c->data.var->attr->string->str));
 
     generator_jump_if_eq("error", "LF", "$str", "nil", "nil");
 
-    generator_strlen("$str");
+    generator_strlen(generator_str_convert(c->data.var->attr->string->str));
     generator_LT("LF", "$param", "LF", "$len", "int", "1");
     generator_jump_if_eq("!end_ord", "LF", "$param", "bool", "true");
     generator_stri_2_int("LF", "$result", "LF", "$str", "int", "1");
@@ -596,7 +655,7 @@ void generator_ord(symt_var_t c)
     generator_return();
 }
 
-void generator_chr(symt_var_t i)
+void generator_chr(ht_item_t *i)
 {
     printf("!chr\n");
     generator_push_frame();
@@ -604,7 +663,7 @@ void generator_chr(symt_var_t i)
     generator_def_var("LF", "$result");
     generator_def_var("LF", "$param");
     generator_def_var("LF", "$params");
-    printf("MOVE LF@$param int&%d\n", i.attr->integer);
+    printf("MOVE LF@$param int&%d\n", i->data.var->attr->integer);
 
     generator_move("LF", "$result", "nil", "nil");
 
@@ -621,129 +680,121 @@ void generator_chr(symt_var_t i)
     generator_return();
 }
 
-
-
-void generator_internal_func(char *func_name, symt_var_t var, symt_var_t symb1, symt_var_t symb2)
+void generator_internal_func(char *func_name, ht_item_t *var) // , ht_item_t symb1, ht_item_t symb2)
 {
     char *func[] = {"reads", "readi", "readf", "write", "strlen", "substring", "ord", "chr"};
 
-    for(int i = 0; i <= 7; i++)
+    for (int i = 0; i <= 7; i++)
     {
 
-        if(!strcmp(func[i], func_name))
+        if (!strcmp(func[i], func_name))
         {
-            switch(i)
+            switch (i)
             {
-                case 0:
-                    generator_reads();
-                    break;
-                case 1:
-                    generator_readi();
-                    break;
-                case 2:
-                    generator_readf();
-                    break;
-                case 3:
-                    // if(var. index_count == 0) then...
-                    if(!strcmp(generator_get_type(var.type), "int"))
-                        printf("WRITE string@%d", var.attr->integer);
-                    else if(!strcmp(generator_get_type(var.type), "float"))
-                        printf("WRITE string@%a", var.attr->decimal);
-                    else if(!strcmp(generator_get_type(var.type), "string"))
-                        printf("WRITE string@%s", generator_str_convert(var.attr->string->str));
-                    break;
-                case 4:
-                    // if(var. index_count != 0) then...
-                    generator_strlen(var.attr->string->str);
-                    break;
-                case 5:
-                    generator_substr(var, symb1, symb2);
-                    break;
-                case 6:
-                    generator_ord(var);
-                    break;
-                case 7:
-                    generator_chr(var);
-                    break;
+            case 0:
+                generator_reads();
+                break;
+            case 1:
+                generator_readi();
+                break;
+            case 2:
+                generator_readf();
+                break;
+            case 3:
+                // if(var.index == 0) then...
+                if (!strcmp(generator_get_type(var->data.var->type), "int"))
+                    printf("WRITE int@%d\n", var->data.var->attr->integer);
+                else if (!strcmp(generator_get_type(var->data.var->type), "float"))
+                    printf("WRITE float@%a\n", var->data.var->attr->decimal);
+                else if (!strcmp(generator_get_type(var->data.var->type), "string"))
+                    printf("WRITE string@%s\n", generator_str_convert(var->data.var->attr->string->str));
+                // else
+                break;
+            case 4:
+                // if(var.index != 0) then...
+                generator_strlen(var->data.var->attr->string->str);
+                break;
+            case 5:
+                generator_substr(var);
+                break;
+            case 6:
+                generator_ord(var);
+                break;
+            case 7:
+                generator_chr(var);
+                break;
             }
         }
     }
-
 }
 
-void generator_operation(token_type_t operation_type, symt_var_t var, symt_var_t symb1, symt_var_t symb2)
+void generator_operation(token_type_t operation, ht_item_t *var)
 {
-    // if(var.index_count == 0)
+    // if(var.index == 0)
     //     generator_get_new_var(var);
-    // else if(symb1.index_count == 0)
+    // else if(symb1.index == 0)
     //     generator_get_new_var(symb1);
-    // else if(symb1.index_count == 0)
+    // else if(symb1.index == 0)
     //     generator_get_new_var(symb1);
 
-    switch(operation_type)
+    switch (operation)
     {
-        case TOKEN_PLUS:
-            printf("ADDS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, synb1.index_count, symb2.index_count
-            break;
-        case TOKEN_MINUS:
-            printf("SUBS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, synb1.index_count, symb2.index_count
-            break;
-        case TOKEN_MUL:
-            printf("MULS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, synb1.index_count, symb2.index_count
-            break;
-        case TOKEN_DIV:
-            if(!strcmp("float", generator_get_type(symb1.type)) && !strcmp("float", generator_get_type(symb2.type)))
-                printf("DIVS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, symb1.index_count, symb2.index_count
-            
-            else if(!strcmp("int", generator_get_type(symb1.type)) && !strcmp("float", generator_get_type(symb2.type)))
-            {
-                printf("INT2FLOAT TF@$var%d int@%d\n", index_count, symb1.attr->integer);
-                printf("DIVS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, symb1.index_count, symb2.index_count
-            }
-            else if(!strcmp("float", generator_get_type(symb1.type)) && !strcmp("int", generator_get_type(symb2.type)))
-            {
-                printf("INT2FLOAT TF@$var%d int@%d\n", index_count, symb2.attr->integer);
-                printf("DIVS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, symb1.index_count, symb2.index_count
-            }
-            else if(!strcmp("int", generator_get_type(symb1.type)) && !strcmp("int", generator_get_type(symb2.type)))
-                printf("IDIVS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, symb1.index_count, symb2.index_count
-            break;
-        case TOKEN_EQUAL:
-            printf("EGS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, symb1.index_count, symb2.index_count
-            break;
-        case TOKEN_NOT_EQUAL:
-            printf("EQS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, symb1.index_count, symb2.index_count
-            printf("NOTS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, symb1.index_count, symb2.index_count
-            break;
-        case TOKEN_LESS:
-            printf("LTS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, symb1.index_count, symb2.index_count
-            break;
-        case TOKEN_GREATER:
-            printf("GTS TF@$var%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //var.index_count, symb1.index_count, symb2.index_count
-            break;
-        case TOKEN_LESS_EQ:
-            printf("DEFVAR TF@$param%d\n", index_count); //index_count1
-            printf("DEFVAR TF@$param%d\n", index_count); //index_count2
-            printf("LTS TF@$param%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //param.1, symb1.index_count, symb2.index_count
-            printf("EQS TF@$param%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //param.2, symb1.index_count, symb2.index_count
-            printf("ORS TF@$var%d TF@$param%d TF@$param%d\n", index_count, index_count, index_count); //var.index_count, param.1, param.2
-            // generator_def_var(src, "&param1&");
-            // generator_def_var(src, "&param2&");
-            // generator_LT(src, "&param1&", dst1, symb1, dst2, symb2);
-            // generator_EQ(src, "&param2&", dst1, symb1, dst2, symb2);
-            // generator_or(src, var, src, "&param1&", src, "&param2&");
-            break;
-        case TOKEN_GREATER_EQ:
-            printf("DEFVAR TF@$param%d\n", index_count); //index_count1
-            printf("DEFVAR TF@$param%d\n", index_count); //index_count2
-            printf("GTS TF@$param%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //param.1, symb1.index_count, symb2.index_count
-            printf("EQS TF@$param%d TF@$var%d TF@$var%d\n", index_count, index_count, index_count); //param.2, symb1.index_count, symb2.index_count
-            printf("ORS TF@$var%d TF@$param%d TF@$param%d\n", index_count, index_count, index_count); //var.index_count, param.1, param.2
-            // generator_def_var(src, "&param1&");
-            // generator_def_var(src, "&param2&");
-            // generator_GT(src, "&param1&", dst1, symb1, dst2, symb2);
-            // generator_EQ(src, "&param2&", dst1, symb1, dst2, symb2);
-            // generator_or(src, var, src, "&param1&", src, "&param2&");
-            break;
+    case TOKEN_PLUS:
+        printf("ADDS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, synb1.index, symb2.index
+        break;
+    case TOKEN_MINUS:
+        printf("SUBS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, synb1.index, symb2.index
+        break;
+    case TOKEN_MUL:
+        printf("MULS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, synb1.index, symb2.index
+        break;
+    case TOKEN_DIV:
+        if (!strcmp("float", generator_get_type(var->next->data.var->type)) && !strcmp("float", generator_get_type(var->next->next->data.var->type)))
+            printf("DIVS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, symb1.index, symb2.index
+
+        else if (!strcmp("int", generator_get_type(var->next->data.var->type)) && !strcmp("float", generator_get_type(var->next->next->data.var->type)))
+        {
+            printf("INT2FLOAT TF@$var%d int@%d\n", var_count, var->next->data.var->attr->integer);
+            printf("DIVS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, symb1.index, symb2.index
+        }
+        else if (!strcmp("float", generator_get_type(var->next->data.var->type)) && !strcmp("int", generator_get_type(var->next->next->data.var->type)))
+        {
+            printf("INT2FLOAT TF@$var%d int@%d\n", var_count, var->next->next->data.var->attr->integer);
+            printf("DIVS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, symb1.index, symb2.index
+        }
+        else if (!strcmp("int", generator_get_type(var->next->data.var->type)) && !strcmp("int", generator_get_type(var->next->next->data.var->type)))
+            printf("IDIVS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, symb1.index, symb2.index
+        break;
+    case TOKEN_EQUAL:
+        printf("EGS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, symb1.index, symb2.index
+        break;
+    case TOKEN_NOT_EQUAL:
+        printf("EQS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key);  // var.index, symb1.index, symb2.index
+        printf("NOTS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, symb1.index, symb2.index
+        break;
+    case TOKEN_LESS:
+        printf("LTS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, symb1.index, symb2.index
+        break;
+    case TOKEN_GREATER:
+        printf("GTS TF@$%s TF@$%s TF@$%s\n", var->key, var->next->key, var->next->next->key); // var.index, symb1.index, symb2.index
+        break;
+    case TOKEN_LESS_EQ:
+        param_count++;
+        printf("DEFVAR TF@$param%d\n", param_count); // param_count - 1
+        param_count++;
+        printf("DEFVAR TF@$param%d\n", param_count);                                                // param_count
+        printf("LTS TF@$param%d TF@$%s TF@$%s\n", param_count - 1, var->next->key, var->next->next->key);     // param_count - 1, symb1.index, symb2.index
+        printf("EQS TF@$param%d TF@$%s TF@$%s\n", param_count, var->next->key, var->next->next->key);         // param_count, symb1.index, symb2.index
+        printf("ORS TF@$%s TF@$$param%d TF@$$param%d\n", var->key, param_count - 1, param_count); // var.index, param_count - 1, param_count
+        break;
+    case TOKEN_GREATER_EQ:
+        param_count++;
+        printf("DEFVAR TF@$param%d\n", param_count); // param_count - 1
+        param_count++;
+        printf("DEFVAR TF@$param%d\n", param_count);                                                // param_count
+        printf("GTS TF@$param%d TF@$%s TF@$%s\n", param_count - 1, var->next->key, var->next->next->key);     // param_count - 1, symb1.index, symb2.index
+        printf("EQS TF@$param%d TF@$%s TF@$%s\n", param_count, var->next->key, var->next->next->key);         // param_count, symb1.index, symb2.index
+        printf("ORS TF@$%s TF@$param%d TF@$param%d\n", var->key, param_count - 1, param_count); // var.index, param_count - 1, param_count
+        break;
     }
 }
