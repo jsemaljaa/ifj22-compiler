@@ -179,19 +179,17 @@ char *generator_str_convert(char *str);
 
 ht_item_t *generator_default_val(token_t token);
 
-// void generator_start_if();
+void generator_start_if();
 
-// void generator_end_if();
+void generator_end_if();
 
-// void generator_start_while(int max_while);
+void generator_start_while(int max_while);
 
-// void generator_start_loop_while();
+void generator_loop_condition();
 
-// void generator_loop_condition();
+//void generator_stop_loop_while();
 
-// void generator_stop_loop_while();
-
-// void generator_end_while();
+void generator_end_while();
 
 void generator_readi();
 
@@ -199,16 +197,13 @@ void generator_readf();
 
 void generator_reads();
 
-void generator_strlen(char *str);
-
-void generator_substr(ht_item_t *s, ht_item_t *i, ht_item_t *j) ;
-
 void generator_ord(ht_item_t *c);
 
 void generator_chr(ht_item_t *i);
 
-void generator_internal_func(char *func_name, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2); // , ht_item_t symb1, ht_item_t symb2);
+void generator_internal_func(char *func_name, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2);
 
 void generator_operation(token_type_t operation, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2);
+
 
 #endif // GENERATOR_H

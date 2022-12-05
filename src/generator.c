@@ -17,7 +17,7 @@ int param_count;
 int loop_count;
 
 char *vars_id[MAX_HT_SIZE];
-int id_num = 0;
+int id_num;
 
 /*
  * Input-output instructions
@@ -340,6 +340,7 @@ void generator_header()
     var_count = 0;
     param_count = 0;
     loop_count = 0;
+    id_num = 0;
 }
 
 char *generator_get_type(symt_datatype_t type)
@@ -380,7 +381,7 @@ bool generator_check_var(ht_item_t *var)
             return false;
         }
     }
-    // записать var->key
+
     vars_id[id_num] = (char *)malloc((strlen(var->key)) * sizeof(char));
 
     if(!vars_id[id_num])
@@ -617,14 +618,14 @@ void generator_start_if()
 {
     if_count++;
     // printf("LABEL !%s\n", if_func->key);
-    // printf("LABEL !if_func%d\n", if_count);
+    printf("LABEL !if_func%d\n", if_count);
     generator_push_frame();
 }
 
 void generator_end_if()
 {
     // printf("LABEL !end_%s\n", end_if_func->key);
-    // printf("LABEL !end_if_func%d\n", if_count);
+    printf("LABEL !end_if_func%d\n", if_count);
     generator_pop_frame();
     generator_return();
 }
@@ -636,11 +637,8 @@ void generator_start_while(int max_while)
 
     printf("DEFVAR TF@$loop%d\n", while_count);         // while count
     printf("MOVE TF@$loop%d bool@true\n", while_count); // while count
-}
 
-void generator_start_loop_while()
-{
-    printf("LABEL !loop_while%d\n", loop_count); // loop index = while index on start
+    printf("LABEL !loop_while%d\n", loop_count);
 }
 
 void generator_loop_condition()
@@ -648,13 +646,14 @@ void generator_loop_condition()
     printf("MOVE TF@loop%d bool@false\n", while_count);
 }
 
-void generator_stop_loop_while()
-{
-    printf("JUMPIFEQ !loop_while%d TF@loop%d bool@false\n", loop_count, while_count);
-}
+// void generator_stop_loop_while()
+// {
+//     printf("JUMPIFEQ !loop_while%d TF@loop%d bool@false\n", loop_count, while_count);
+// }
 
 void generator_end_while()
 {
+    printf("JUMPIFEQ !loop_while%d TF@loop%d bool@false\n", loop_count, while_count);
     // TODO продумать индекс закрытия while
     printf("LABEL !end_while_func%d\n", while_count);
     generator_pop_frame();
