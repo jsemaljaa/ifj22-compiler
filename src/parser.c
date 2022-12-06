@@ -566,13 +566,13 @@ static int var_def_expr(){
         CHECK_RULE(function_call());
         return NO_ERRORS;
     } else {
-        if(inIf || inWhile || inFunctionDefinition){
-            code = parse_expression(&localSymt);
-        } else {
-            code = parse_expression(&globalSymt);
-        }
-        // while(token.type != TOKEN_SEMICOLON) GET_TOKEN();
-        CHECK_ERROR(code);
+        // if(inIf || inWhile || inFunctionDefinition){
+        //     code = parse_expression(&localSymt);
+        // } else {
+        //     code = parse_expression(&globalSymt);
+        // }
+        while(token.type != TOKEN_SEMICOLON) GET_TOKEN();
+        // CHECK_ERROR(code);
         
         return NO_ERRORS;
     }
@@ -622,6 +622,8 @@ static int function_call(){
     } else if(item->type == func){        
         GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
         inFunctionCall = true;
+        generator_start_func(item);
+
         code = list_of_call_parameters(item);
         CHECK_ERROR(code);
         
@@ -630,6 +632,7 @@ static int function_call(){
         //          2) TOKEN_SEMICOLON
         GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
         inFunctionCall = false;
+        generator_end_func(item);
         return NO_ERRORS;
     } else return INTERNAL_ERROR;
 }
@@ -647,7 +650,7 @@ static int list_of_call_parameters(ht_item_t* function){
         if(!str_cmp_const_str(&function->data.func->argv, "")){
             // GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
             // generate a function call for function with no parameters
-            generator_internal_func(function->key, NULL, NULL, NULL);
+
             return NO_ERRORS;
         } else return SEM_TYPE_ERROR;
     } else if (token.type == TOKEN_ID || token.type == TOKEN_TYPE_STRING || 
@@ -668,17 +671,21 @@ static int list_of_call_parameters(ht_item_t* function){
 //20. <call_parameter> -> <variable>
 //21. <call_parameter> -> "string" // ?????
 static int call_parameter(ht_item_t* function, string_t params){
+    ht_item_t *arg;
     switch (token.type){
     case TOKEN_TYPE_STRING:
-        // printf("string call param\n");
+        arg = generator_default_val(token);
+        generator_get_arg(function->key, arg);
         break;
     
     case TOKEN_TYPE_INT:
-        // printf("int call param\n");
+        arg = generator_default_val(token);
+        generator_get_arg(function->key, arg);
         break;
 
     case TOKEN_TYPE_FLOAT:
-        // printf("float call param\n");
+        arg = generator_default_val(token);
+        generator_get_arg(function->key, arg);
         break;
 
     case TOKEN_ID:
@@ -700,9 +707,7 @@ static int list_of_call_parameters_n(ht_item_t* function, string_t params){
     GET_TOKEN();
     
     if(token.type == TOKEN_RIGHT_PAR){
-
-        // generate a function call
-        
+                
         return NO_ERRORS;
     } else if (token.type == TOKEN_COMMA){
         GET_TOKEN();

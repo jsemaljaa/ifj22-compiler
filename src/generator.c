@@ -278,29 +278,39 @@ char *generator_str_convert(char *str)
 
 ht_item_t *generator_default_val(token_t token)
 {
-    ht_item_t *item;
     char buf[MAX_HT_SIZE];
-
     tmp.varCount++;
-
     sprintf(buf, "%d", tmp.varCount);
 
+    ht_item_t *item = malloc(sizeof(ht_item_t));
+    if(item == NULL) return NULL;
+    
+    ////// segfault start
+    item->data.var = malloc(sizeof(symt_var_t));
+    if(item->data.var == NULL) return NULL;
+    ///// segfault end
+    if(str_init(item->data.var->attr->string)) return NULL;
+
+    printf("token type is %d\n", token.type);
     switch(token.type)
     {
         case TOKEN_TYPE_INT:
             strcat(buf, "int");
             item->data.var->type = INTEGER_DT;
             item->data.var->attr->integer = token.attribute.integer;
+            printf("type int\n");
             break;
         case TOKEN_TYPE_FLOAT:
             strcat(buf, "float");
             item->data.var->type = FLOAT_DT;
             item->data.var->attr->decimal= token.attribute.decimal;
+            printf("type float\n");
             break;
         case TOKEN_TYPE_STRING:
             strcat(buf, "string");
             item->data.var->type = STRING_DT;
-            item->data.var->attr->string->str = token.attribute.string->str;
+            item->data.var->attr->string = token.attribute.string;
+            printf("type string\n");
             break;
         default:
 
@@ -312,9 +322,11 @@ ht_item_t *generator_default_val(token_t token)
     if(!item->key)
         return NULL;
 
-    for(int i = 0; i < strlen(buf); i++)
-        item->key[i] = buf[i];
+    // for(int i = 0; i < strlen(buf); i++)
+    //     item->key[i] = buf[i];
 
+    strcpy(item->key, buf);
+    
     return item;   
 }
 
