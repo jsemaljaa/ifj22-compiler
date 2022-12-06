@@ -15,6 +15,15 @@
 #include "scanner.h"
 #include "symtable.h"
 
+struct count{
+    int ifCount;
+    int whileCount;
+    int varCount;
+    int loopCount;
+    int maxArgs;        
+    char *varsId[MAX_HT_SIZE];
+};
+
 /*
  * Input-output instructions
  */
@@ -163,6 +172,8 @@ void generator_dprint(char *symb);
 
 void generator_header();
 
+void generator_get_arg(char *id,  ht_item_t *arg);
+
 char *generator_get_type(symt_datatype_t type);
 
 bool generator_check_var(ht_item_t *var);
@@ -187,7 +198,7 @@ void generator_start_while(int max_while);
 
 void generator_loop_condition();
 
-//void generator_stop_loop_while();
+// void generator_stop_loop_while();
 
 void generator_end_while();
 
@@ -197,11 +208,15 @@ void generator_readf();
 
 void generator_reads();
 
-void generator_ord(ht_item_t *c);
+void generator_strlen(char *str);
 
-void generator_chr(ht_item_t *i);
+void generator_substr();
 
-void generator_internal_func(char *func_name, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2);
+void generator_ord();
+
+void generator_chr();
+
+void generator_internal_func(char *func_name);
 
 void generator_operation(token_type_t operation, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2);
 
