@@ -17,7 +17,13 @@ void prec_stack_free(prec_stack_t *stack){
 }
 
 bool prec_stack_is_empty(prec_stack_t *stack){
-    return (stack->head == NULL) ? true : false;
+    prec_stack_item_t *head = prec_stack_head(stack); // head should be a NONTERM
+    prec_stack_item_t *term = prec_stack_first_terminal(stack); // first term should be the DOLLAR
+
+    bool isNonterm = head->symb == NONTERM;
+    bool isDollar = term->symb == DOLLAR;
+
+    return isNonterm && isDollar;
 }
 
 bool prec_stack_push(prec_stack_t *stack, prec_symbs_t symb, prec_datatypes_t datatype){
@@ -50,10 +56,8 @@ prec_stack_item_t *prec_stack_head(prec_stack_t *stack){
 
 prec_stack_item_t *prec_stack_first_terminal(prec_stack_t *stack){
     prec_stack_item_t *item;
-    while(item != NULL){
+    for(item = stack->head; item != NULL; item = item->next){
         if(item->symb < STOP) return item;
-        item = item->next;
     }
-
     return NULL;
 }

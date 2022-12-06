@@ -289,12 +289,12 @@ void generator_jump(char *label)
 
 void generator_jump_if_eq(char *label, char *dst1, char *symb1, char *dst2, char *symb2)
 {
-    printf("LUMPIFEQ %s %s@%s %s@%s\n", label, dst1, symb1, dst2, symb2);
+    printf("JUMPIFEQ %s %s@%s %s@%s\n", label, dst1, symb1, dst2, symb2);
 }
 
 void generator_jump_if_neq(char *label, char *dst1, char *symb1, char *dst2, char *symb2)
 {
-    printf("LUMPIFNEQ %s %s@%s %s@%s\n", label, dst1, symb1, dst2, symb2);
+    printf("JUMPIFNEQ %s %s@%s %s@%s\n", label, dst1, symb1, dst2, symb2);
 }
 
 void generator_jump_if_eq_s()
@@ -332,7 +332,7 @@ void generator_dprint(char *symb)
 
 void generator_header()
 {
-    printf(".IFJcode21\n");
+    printf(".IFJcode22\n");
 
     if_count = 0;
     func_count = 0;

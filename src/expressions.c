@@ -12,48 +12,57 @@
 #include "symstack.h"
 #include "parser.h"
 
+#define POP_TIMES(n)				\
+	for(int i = 0; i < n; i++){		\
+		prec_stack_pop(&stack);		\
+	}								\
+
+#define PUSH_STOP_SIGN()								\
+	prec_stack_push(&stack, STOP, UNDEFINED_TYPE);		\
+
 prec_stack_t stack;
 token_t token;
 
 int code;
 
 char prec_table[PREC_TABLE_SIZE][PREC_TABLE_SIZE] = {
-        //id   (    )    *    /    +    -    .    >   >=    <   <=   ===  !==   $    i    f    s
-        {'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 'e', 'e', 'e'}, // id
+        //id   (    )    *    /    +    -    .    >   >=    <   <=   ===  !==   i    f    s    $
+        {'e', 'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 'e', 'e', 'e', '>'}, // id
 
-        {'<', '<', '=', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e', '<', '<', '<'}, // (
+        {'<', '<', '=', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e'}, // (
 
-        {'<', 'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 'e', 'e', 'e'}, // )
+        {'<', 'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 'e', 'e', 'e', '>'}, // )
 
-        {'<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // *
+        {'<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e', '>'}, // *
 
-        {'<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // /
+        {'<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e', '>'}, // /
 
-        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // +
+        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e', '>'}, // +
 
-        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // -
+        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e', '>'}, // -
 
-        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', 'e', 'e', '<'}, // .
+        {'<', '<', '>', '<', '<', '>', '>', '>', '>', '>', '>', '>', '>', '>', 'e', 'e', '<', '>'}, // .
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // >
+        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '<', 'e', '>'}, // >
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // >=
+        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '<', 'e', '>'}, // >=
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // <
+        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '<', 'e', '>'}, // <
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '>', '<', '<', 'e'}, // <=
+        {'<', '<', '>', '<', '<', '<', '<', '<', '>', '>', '>', '>', '>', '>', '<', '<', 'e', '>'}, // <=
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>', '<', '<', 'e'}, // ===
+        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e', '>'}, // ===
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>', '<', '<', 'e'}, // !==
+        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e', '>'}, // !==
 
-        {'<', '<', 'e', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e', '<', '<', '<'}, // $
+		{'e', 'e', '<', '<', '<', '<', '<', 'e', '<', '<', '<', '<', '<', '<', 'e', 'e', 'e', '>'}, // i
 
-		{'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>', 'e', 'e', 'e'}, // i
+        {'e', 'e', '<', '<', '<', '<', '<', 'e', '<', '<', '<', '<', '<', '<', 'e', 'e', 'e', '>'}, // f
 
-        {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>', 'e', 'e', 'e'}, // f
+        {'e', 'e', 'e', 'e', 'e', 'e', 'e', '<', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e'}, // s
 
-        {'<', '<', 'e', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e', 'e', 'e', 'e'}, // s
+        {'<', '<', 'e', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e'}, // $
+
 
 
 };
@@ -89,6 +98,12 @@ prec_symbs_t get_symbol(token_t token)
 			return TYPE_EQ;
 		case TOKEN_NOT_EQUAL:
 			return NTYPE_EQ;
+		case TOKEN_TYPE_INT:
+			return INT_T;
+		case TOKEN_TYPE_FLOAT:
+			return FLOAT_T;
+		case TOKEN_TYPE_STRING:
+			return STRING_T;
 		default:
 			printf_token_debug(token);
 			return ERROR;
@@ -134,35 +149,6 @@ prec_datatypes_t get_data_type(token_t token, htable *table)
 		}
 }
 
-void shift_operation(){
-	/*
-	1. check if we have a NONTERMINAL on the top of the stack
-	   1.1 if yes then add a STOP sign before it
-	2. now we can add a symbol to stack
-	*/
-	// check if type of top_stack is NONTERM to correct pushing STOP
-	// if(head == NONTERM)
-	// {
-	// 	prec_stack_pop();
-	// 	prec_stack_push(stop_symbol);
-	// 	prec_stack_push();//adding this non terminal again
-	// 	prec_stack_push();//adding an operator
-	// }
-	// else
-	// {
-	// 	prec_stack_push(stop_symbol);
-	// 	prec_stack_push();//adding non terminal
-	// }
-
-}
-
-void reduce_operation(){
-	/*
-
-	 reduce the operands and symbols until the stop sign according to rule(switch case)
-	*/
-}
-
 bool compatibility_test(){
 
 }
@@ -176,8 +162,8 @@ prec_rules_t get_rule(int num_of_symbols_in_rule, prec_stack_item_t* first, prec
 		return NOT_RULE;
 
 	case 3: // E -> (E)
-		if (first->symb == LEFT_PAR && second->symb == NONTERM && third->symb == RIGHT_PAR)
-			return BRACKETS_R;
+		//if (first->symb == LEFT_PAR && second->symb == NONTERM && third->symb == RIGHT_PAR)
+			//return BRACKETS_R;
 		if (first->symb == NONTERM && third->symb == NONTERM)
 		{
 			switch (second->symb)
@@ -204,8 +190,6 @@ prec_rules_t get_rule(int num_of_symbols_in_rule, prec_stack_item_t* first, prec
 				return TYPE_EQ_R;
 			case NTYPE_EQ: 		// E -> E !== E
 				return NTYPE_EQ_R;
-			case EQ_R: 			// E -> E = E
-				return EQ_R;
 			}
 		}
 		return NOT_RULE;
@@ -213,74 +197,173 @@ prec_rules_t get_rule(int num_of_symbols_in_rule, prec_stack_item_t* first, prec
 	return NOT_RULE;
 }
 
+int reduce_operation(prec_stack_item_t *headStack, prec_rules_t rule){
+	switch (rule)
+	{
+	case NOT_RULE:
+		/* code */
+		break;
+	
+	case ID_R:
+		POP_TIMES(2);
+		PUSH_STOP_SIGN();
+		prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
+		return NO_ERRORS;
+
+	case MUL_R:
+	case DIV_R:
+	case PLUS_R:
+	case MINUS_R:
+		POP_TIMES(4);
+		PUSH_STOP_SIGN();
+		prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
+		return NO_ERRORS;
+
+	default:
+		break;
+	}
+
+	return NO_ERRORS;
+}
+
+int start_reducing(prec_stack_item_t *headStack){
+
+	if (headStack->symb == NONTERM){
+		headStack = prec_stack_first_terminal(&stack);
+	}
+
+	int symbolsCount = 0;
+	prec_stack_item_t *tmp = headStack;
+	
+	while (tmp->symb != STOP){
+		symbolsCount++;
+		tmp = tmp->next;
+	}
+
+	prec_rules_t rule = get_rule(symbolsCount, headStack, headStack->next, headStack->next->next);
+
+	code = reduce_operation(headStack, rule);
+	CHECK_ERROR(code);
+
+	return NO_ERRORS;
+}
 
 int parse_expression(htable *table){
 	// token here is a start of the expression
 	
  	prec_stack_init(&stack);
  	
-	prec_stack_push(&stack, STOP, UNDEFINED_DT); // push a dollar sign
+	prec_stack_push(&stack, DOLLAR, UNDEFINED_TYPE); // push a dollar sign
 
 	prec_symbs_t tokenSymb = get_symbol(token);
 	prec_datatypes_t tokenDatatype = get_data_type(token, table);
 
+	if (tokenSymb == ID) PUSH_STOP_SIGN();
 	prec_stack_push(&stack, tokenSymb, tokenDatatype); // push the first symbol
 
-
-	prec_stack_item_t *headStack;
+	prec_stack_item_t *headStack = prec_stack_head(&stack);
 
 	bool exit = false;
+	bool endInput;
 
-    // ID is always going to the stack with the STOP sign before
- 	while (1)
+ 	while (!prec_stack_is_empty(&stack))
  	{	
+		printf("stack: ");
+		prec_stack_item_t *debug = prec_stack_head(&stack);
+		while(debug != NULL){
+			printf("%d ", debug->symb);
+			debug = debug->next;
+		}
+		printf("\n");
+
+		exit = prec_stack_is_empty(&stack); 
  		headStack = prec_stack_head(&stack);
-		
 		GET_TOKEN();
-		if(token.type == TOKEN_SEMICOLON || token.type == TOKEN_LEFT_BR) return NO_ERRORS;
+		// if(token.type == TOKEN_SEMICOLON || token.type == TOKEN_LEFT_BR) return NO_ERRORS;
+		endInput = token.type == TOKEN_SEMICOLON || token.type == TOKEN_LEFT_BR;
+		
+		if(endInput){			
+			while(!prec_stack_is_empty(&stack)){
+				headStack = prec_stack_head(&stack);
+				code = start_reducing(headStack);
+				CHECK_ERROR(code);
 
-		tokenSymb = get_symbol(token);
-		tokenDatatype = get_data_type(token, table);
-		prec_stack_push(&stack, tokenSymb, tokenDatatype);
-		// if(get_symb(token) == ERROR) return SYNTAX_ERROR;
+				prec_stack_item_t *tmp1 = prec_stack_head(&stack);
+				prec_stack_item_t *tmp2 = prec_stack_first_terminal(&stack);
 
-		printf("input: %d \tstack: %d\t", tokenSymb, headStack->symb);
+				// printf("head: %d\tterm: %d\n", tmp1->symb, tmp2->symb);
+			}
 
-
-		if((prec_table[tokenSymb][headStack->symb]) == '<')
-		{
-			printf("found symbol <\n");
-			exit = true;
-			// shift_operation(); // with putting of the STOP symbol to it(it is not a dollar sign)
-            // small function, we can write it up here
-		}
-		else if((prec_table[tokenSymb][headStack->symb]) == '>')
-		{
-			printf("found symbol >\n");
-			exit = true;
-         // count the number of symbols after the stop sign
-         	//rule = get_rule();
-			//reduce_operation(); // reducing the stack according to the rule
-		}
-		else if((prec_table[tokenSymb][headStack->symb]) == 'e')
-		{
-			printf("found symbol e\n");
-			exit = true;
-
-			// return SYNTAX_ERROR; // ????
-		}
-		else if((prec_table[tokenSymb][headStack->symb]) == '=')
-		{
-			printf("found symbol =\n");
-			exit = true;
-			// equal_operation(); // the main function is to reduce everything between the () ???????
+			return NO_ERRORS;
 		} else {
-			printf("\nerror\n");
+			tokenSymb = get_symbol(token);
+			tokenDatatype = get_data_type(token, table);
+			
+			if(get_symbol(token) == ERROR) return SYNTAX_ERROR;
+
 			printf("input: %d \tstack: %d\t", tokenSymb, headStack->symb);
-			prec_stack_free(&stack);
-			return SYNTAX_ERROR;
+
+			if((prec_table[headStack->symb][tokenSymb]) == '<') // shift
+			{
+				if (tokenSymb == ID) PUSH_STOP_SIGN();
+				prec_stack_push(&stack, tokenSymb, tokenDatatype);
+				
+				if (headStack->symb == NONTERM){
+					POP_TIMES(1);
+					PUSH_STOP_SIGN();
+					prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
+
+					headStack = prec_stack_first_terminal(&stack);
+				}
+
+
+				printf("found symbol <\n");
+				exit = true;
+				// shift_operation(); // with putting of the STOP symbol to it(it is not a dollar sign)
+				// small function, we can write it up here
+			}
+			else if((prec_table[headStack->symb][tokenSymb]) == '>') // reduce
+			{ 	
+				code = start_reducing(headStack);
+				CHECK_ERROR(code);
+
+				prec_stack_push(&stack, tokenSymb, tokenDatatype);
+
+				printf("found symbol >\n");
+				exit = true;
+			// count the number of symbols after the stop sign
+				//rule = get_rule();
+				//reduce_operation(); // reducing the stack according to the rule
+			}
+			else if((prec_table[headStack->symb][tokenSymb]) == 'e')
+			{
+				printf("found symbol e\n");
+				exit = true;
+
+				return SYNTAX_ERROR;   
+			}
+			else if((prec_table[headStack->symb][tokenSymb]) == '=')
+			{
+				POP_TIMES(3);
+				prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
+				printf("found symbol =\n");
+				exit = true;
+				// equal_operation(); // the main function is to reduce everything between the () ???????
+			} else {
+				printf("\nerror\n");
+				printf("input: %d \tstack: %d\t", tokenSymb, headStack->symb);
+				prec_stack_free(&stack);
+				return SYNTAX_ERROR;
+			}
+
 		}
-	
+		// printf("stack after iteration: ");
+		// prec_stack_item_t *debug = prec_stack_head(&stack);
+		// while(debug != NULL){
+		// 	printf("%d ", debug->symb);
+		// 	debug = debug->next;
+		// }
+		// printf("\n");
 	}
 
 
