@@ -152,7 +152,7 @@ int parse() {
     CHECK_RULE(symt_add_internal_functions());
 
     // GET_AND_CHECK_TOKEN(token.type == TOKEN_END_OF_FILE, SYNTAX_ERROR);
-    generator_header();
+    // generator_header();
     CHECK_RULE(prolog());
     
     if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
@@ -276,7 +276,7 @@ static int inside_if(){
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
         
     inIf = true;
-    generator_start_if();
+    // generator_start_if();
 
     CHECK_RULE(list_of_statements());
     CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
@@ -288,7 +288,7 @@ static int inside_if(){
     
     CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
     inIf = false;
-    generator_end_if();
+    // generator_end_if();
 
     return NO_ERRORS;
 }
@@ -306,14 +306,14 @@ static int inside_while(){
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_BR, SYNTAX_ERROR);
     
     inWhile = true;
-    generator_start_while(1);
+    // generator_start_while(1);
 
     CHECK_RULE(list_of_statements());
 
     CHECK_TOKEN(token.type == TOKEN_RIGHT_BR, SYNTAX_ERROR);
 
     inWhile = false;
-    generator_end_while();
+    // generator_end_while();
 
     return NO_ERRORS;
 }
@@ -348,7 +348,7 @@ static int function_definition(){
     if(str_init(&item->data.func->argv) == 1 || str_init(&item->data.func->ret) == 1){
         return INTERNAL_ERROR;
     }
-    generator_start_func(item);
+    // generator_start_func(item);
     symt_init(&localSymt);
 
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
@@ -374,7 +374,7 @@ static int function_definition(){
     // meaning that we've collected every statement inside of it
     // and we've generated all the instructions in this function (not sure about that tho)
     // we should clear the local symtable
-    generator_end_func(item);
+    // generator_end_func(item);
     symt_free(&localSymt);
     return NO_ERRORS;
 }
@@ -548,10 +548,6 @@ static int variable_definition(){
     return NO_ERRORS;
 }
 
-static int collecting_an_expression(string_t *expression){
-
-}
-
 // 15. <var_def_expr> -> <function_call> <-- FUNEXP EXTENSION !!!
 // 16. <var_def_expr> -> <expression>;
 static int var_def_expr(){
@@ -566,50 +562,17 @@ static int var_def_expr(){
         CHECK_RULE(function_call());
         return NO_ERRORS;
     } else {
-        // if(inIf || inWhile || inFunctionDefinition){
-        //     code = parse_expression(&localSymt);
-        // } else {
-        //     code = parse_expression(&globalSymt);
-        // }
-        while(token.type != TOKEN_SEMICOLON) GET_TOKEN();
-        // CHECK_ERROR(code);
+        if(inIf || inWhile || inFunctionDefinition){
+            code = parse_expression(&localSymt, 0);
+        } else {
+            code = parse_expression(&globalSymt, 0);
+        }
+        CHECK_ERROR(code);
+        
+        // while(token.type != TOKEN_SEMICOLON) GET_TOKEN();
         
         return NO_ERRORS;
-    }
-    
-
-
-    // after this GET_TOKEN() we either have an ID token (of a function)
-    // or the start of expression
-    
-    // two cases: <function_call> and <expression>
-    // GET_TOKEN();
-
-    // at this line we have either TOKEN_ID (variable or function)
-    // or some different type of token which is start of an expression
-
-
-
-
-    // if(token.type == TOKEN_ID){ // function ID or variable ID
-    //     if(token.attribute.string->str[0] == '$'){ // then we have variable ID
-    //         CHECK_RULE(variable());
-
-    //         // here we are checking a variable and then proceeding to collect an expression
-    //     } 
-    //     /*
-    //     else { // otherwise we have function ID
-    //         CHECK_RULE(function_call());
-
-    //         return NO_ERRORS;
-
-    //         // we don't need to go futher after this line
-    //     }
-    //     */
-    // }
-
-    // checking if expression is OK by calling the expressions.c interface here
-    
+    }   
 }
 
 //17. <function_call> -> ID( <list_of_call_parameters> );   
@@ -622,7 +585,7 @@ static int function_call(){
     } else if(item->type == func){        
         GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
         inFunctionCall = true;
-        generator_start_func(item);
+        // generator_start_func(item);
 
         code = list_of_call_parameters(item);
         CHECK_ERROR(code);
@@ -632,7 +595,7 @@ static int function_call(){
         //          2) TOKEN_SEMICOLON
         GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
         inFunctionCall = false;
-        generator_end_func(item);
+        // generator_end_func(item);
         return NO_ERRORS;
     } else return INTERNAL_ERROR;
 }
@@ -674,18 +637,18 @@ static int call_parameter(ht_item_t* function, string_t params){
     ht_item_t *arg;
     switch (token.type){
     case TOKEN_TYPE_STRING:
-        arg = generator_default_val(token);
-        generator_get_arg(function->key, arg);
+        // arg = generator_default_val(token);
+        // generator_get_arg(function->key, arg);
         break;
     
     case TOKEN_TYPE_INT:
-        arg = generator_default_val(token);
-        generator_get_arg(function->key, arg);
+        // arg = generator_default_val(token);
+        // generator_get_arg(function->key, arg);
         break;
 
     case TOKEN_TYPE_FLOAT:
-        arg = generator_default_val(token);
-        generator_get_arg(function->key, arg);
+        // arg = generator_default_val(token);
+        // generator_get_arg(function->key, arg);
         break;
 
     case TOKEN_ID:

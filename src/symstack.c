@@ -58,6 +58,6 @@ prec_stack_item_t *prec_stack_first_terminal(prec_stack_t *stack){
     prec_stack_item_t *item;
     for(item = stack->head; item != NULL; item = item->next){
         if(item->symb < STOP) return item;
-    }
+    }  
     return NULL;
 }

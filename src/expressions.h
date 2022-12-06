@@ -19,9 +19,9 @@
 #include "error.h"
 #include "symtable.h"
 
-#define PREC_TABLE_SIZE 18
+#define PREC_TABLE_SIZE 15
 
-int parse_expression(htable *table);
+int parse_expression(htable *table, int from);
 
 /**
  * Rules for analysis.
@@ -61,9 +61,6 @@ typedef enum {
 	LEEQ,           // <=
     TYPE_EQ,        // ===
 	NTYPE_EQ,	    // !==
-	INT_T,			// int number
-	FLOAT_T,		// float number
-	STRING_T,		// string
 	DOLLAR,		    // $
 	STOP,
 	NONTERM,
