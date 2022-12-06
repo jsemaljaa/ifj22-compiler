@@ -37,15 +37,14 @@ int get_next_token(token_t *token)
     char c;
     // vymazeme obsah atributu a v pripade identifikatoru
     // budeme postupne do nej vkladat jeho nazev
-    //
 
     while (1)
     {
         // nacteni dalsiho znaku
         // TODO: connect with setstdinFile
         c = (char)getc(stdin);
+
         // printf("c = %c\n", c);
-        //printf("current symbol is %c\n", c);
         switch (state)
         {
         case STATE_START:
@@ -162,7 +161,7 @@ int get_next_token(token_t *token)
             {
                 str_add_char(str, c);
                 state = STATE_IDENTIFIER_OR_KEYWORD;
-                // printf("%s\n", token->attribute.string);
+                // printf("%s\n", token->attribute.string->str);
             }
 
             else

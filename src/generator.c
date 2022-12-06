@@ -25,6 +25,7 @@ bool generator_get_arg(char *id,  ht_item_t *arg)
 {
     tmp.maxArgs++;
 
+
     if(generator_check_var)
         generator_get_new_var(arg);
     else{
@@ -43,8 +44,10 @@ bool generator_get_arg(char *id,  ht_item_t *arg)
     if(!strcmp(id, "write"))
         printf("WRITE TF@%s\n", tmp.varsId[tmp.varCount]);
 
+
     else if(!strcmp(id, "strlen"))
         generator_strlen(tmp.varsId[tmp.varCount]);
+
 }
 
 char *generator_get_type(symt_datatype_t type)

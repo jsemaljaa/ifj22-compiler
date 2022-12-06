@@ -39,8 +39,6 @@ typedef struct var_attr {
 } symt_var_t;
 
 typedef struct func_attr {
-    bool defined;
-    bool called;
     string_t ret;           // dynamic string for return type
     string_t argv;          // dynamic string for parameters
 } symt_func_t;
