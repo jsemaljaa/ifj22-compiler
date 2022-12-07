@@ -21,11 +21,7 @@
 
 #define PREC_TABLE_SIZE 15
 
-int parse_expression(htable *table, int from);
-
-/**
- * Rules for analysis.
- */
+// Rules for analysis.
 typedef enum {
 	NOT_RULE,		// 0. rule doesn't exist
 	ID_R,           // 1. E -> id     
@@ -43,9 +39,8 @@ typedef enum {
 	NTYPE_EQ_R   	// 13. E -> E !== E
 } prec_rules_t;
 
-/*
- * Symbols for precendece analysis.
- */
+
+// Symbols for precendece analysis.
 typedef enum {
 	ID,	            // id
 	LEFT_PAR,		// (
@@ -67,6 +62,7 @@ typedef enum {
 	ERROR
 } prec_symbs_t;
 
+// Datatypes
 typedef enum {
 	INT_TYPE,
     FLOAT_TYPE,
@@ -74,5 +70,22 @@ typedef enum {
 	UNDEFINED_TYPE
 } prec_datatypes_t;
 
+// Converts datatypes of tokens to datatypes in structure prec_datatypes_t.
+prec_datatypes_t get_data_type();
+
+// Finds appropriate rule to reduce the expression.
+prec_rules_t get_rule();
+
+// Reduces operands and operators according to the rule
+int reduce_operation();
+
+// Function collecting all the necessary information to reduce the expression: number of operands and rule.
+int start_reducing();
+
+// Converts tokens to symbols of precedence table with prec_symbs_t datatype. 
+prec_symbs_t get_symbol();
+
+// The main function, where precedence rules must be found.
+int parse_expression();
 
 #endif // EXPRESSIONS_H

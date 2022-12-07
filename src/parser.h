@@ -24,7 +24,7 @@
 
 #define GET_TOKEN()                      \
     code = get_next_token(&token);        \
-    if((code) != NO_ERRORS) return LEXICAL_ERROR; \
+    if((code) != NO_ERRORS) return code; \
 
 #define CHECK_KEYW(KEYW, code)                                                        \
     if(!(token.type == TOKEN_KEY_W && token.attribute.keyword == (KEYW))) {     \
@@ -109,7 +109,7 @@ void printf_token_debug(token_t token);
  * @param code - code to return with
  * @return nothing, ends the parser run with an error code
 */
-static void clean_exit(int code);
+static int clean_exit(int code);
 
 /*
  * @brief Add internal functions to the symtable 

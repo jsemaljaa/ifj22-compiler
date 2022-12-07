@@ -17,12 +17,14 @@
 		prec_stack_pop(&stack);		\
 	}								\
 
-#define PUSH_STOP_SIGN()								\
+#define PUSH_STOP_SIGN()										\
 	prec_stack_push(&stack, STOP, UNDEFINED_TYPE);		\
 
 prec_stack_t stack;
 token_t token;
 
+int resInt;
+float resFloat;
 int code;
 /* src:
  * 		0 from expression
@@ -31,16 +33,7 @@ int code;
 int src;
 
 
-void printf_stack(){
-	printf("stack: ");
-	prec_stack_item_t *debug = prec_stack_head(&stack);
-	while(debug != NULL){
-		printf("%d ", debug->symb);
-		debug = debug->next;
-	}
-	printf("\n");
-}
-
+// Precedence table
 char prec_table[PREC_TABLE_SIZE][PREC_TABLE_SIZE] = {
         //id   (    )    *    /    +    -    .    >   >=    <   <=   ===  !==   $
         {'e', 'e', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>', '>'}, // id
@@ -72,10 +65,18 @@ char prec_table[PREC_TABLE_SIZE][PREC_TABLE_SIZE] = {
         {'<', '<', '>', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '>'}, // !==
 
         {'<', '<', 'e', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', '<', 'e'}, // $
-
-
-
 };
+
+
+void printf_stack(){
+	printf("stack: ");
+	prec_stack_item_t *debug = prec_stack_head(&stack);
+	while(debug != NULL){
+		printf("%d ", debug->symb);
+		debug = debug->next;
+	}
+	printf("\n");
+}
 
 prec_symbs_t get_symbol(token_t token)
 {
@@ -112,21 +113,16 @@ prec_symbs_t get_symbol(token_t token)
 		case TOKEN_NOT_EQUAL:
 			return NTYPE_EQ;
 		default:
-			// printf_token_debug(token);
 			return ERROR;
 		}
 }
 
-/**
- * Function converts token type to data type.
- *
- */
 prec_datatypes_t get_data_type(token_t token, htable *table)
 {
-	ht_item_t* symbol;
+	ht_item_t* symbol = malloc(sizeof(ht_item_t));
 	switch (token.type)
 	{
-		case TOKEN_ID:
+		case TOKEN_ID:	
 			symbol = symt_search(table, token.attribute.string->str);
 			if (symbol == NULL)
 				return UNDEFINED_TYPE;
@@ -156,19 +152,15 @@ prec_datatypes_t get_data_type(token_t token, htable *table)
 		}
 }
 
-
-
 prec_rules_t get_rule(int num_of_symbols_in_rule, prec_stack_item_t* first, prec_stack_item_t* second, prec_stack_item_t* third){
 	switch (num_of_symbols_in_rule)
 	{
 	case 1: // E -> id
-		if (first->symb == ID)
+		if (first->symb == ID || first->datatype == INT_TYPE || first->datatype == FLOAT_TYPE || first->datatype == STRING_TYPE)
 			return ID_R;
 		return NOT_RULE;
 
-	case 3: // E -> (E)
-		//if (first->symb == LEFT_PAR && second->symb == NONTERM && third->symb == RIGHT_PAR)
-			//return BRACKETS_R;
+	case 3: 
 		if (first->symb == NONTERM && third->symb == NONTERM)
 		{
 			switch (second->symb)
@@ -202,40 +194,42 @@ prec_rules_t get_rule(int num_of_symbols_in_rule, prec_stack_item_t* first, prec
 	return NOT_RULE;
 }
 
+
+
 int reduce_operation(prec_stack_item_t *headStack, prec_rules_t rule){
+	prec_stack_item_t *item;
 	switch (rule)
 	{
 	case NOT_RULE:
 		return SYNTAX_ERROR;
 	
 	case ID_R:
-		// printf("----\n");
-		// printf_stack();
-		// printf("----\n");
+		item = prec_stack_head(&stack);
 		POP_TIMES(2);
-		prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
+		prec_stack_push(&stack, NONTERM, item->datatype);
 		return NO_ERRORS;
 
 	case MUL_R:
 	case DIV_R:
 	case PLUS_R:
 	case MINUS_R:
-		if(src != 0) return SEM_OTHER_ERROR;
+		// if(src != 0) return SEM_OTHER_ERROR;
 		POP_TIMES(4);
 		prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
 		return NO_ERRORS;
-	
 	case GREATER_R:
 	case GREQ_R:
 	case LESS_R:
 	case LEEQ_R:
 	case TYPE_EQ_R:
 	case NTYPE_EQ_R:
-		if(src != 1) return SEM_OTHER_ERROR;
-
+		//if(src != 1) return SEM_OTHER_ERROR; 
+		POP_TIMES(4);
+		prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
+		return NO_ERRORS;
 	default:
 		break;
-	}
+	}    
 
 	return NO_ERRORS;
 }
@@ -244,6 +238,7 @@ int start_reducing(prec_stack_item_t *headStack){
 	int symbolsCount = 0;
 	prec_stack_item_t *tmp = headStack;
 	
+	// count the number of symbols after stop sign to get a correct rule
 	while (tmp->symb != STOP){
 		symbolsCount++;
 		tmp = tmp->next;
@@ -254,7 +249,6 @@ int start_reducing(prec_stack_item_t *headStack){
 	code = reduce_operation(headStack, rule);
 	CHECK_ERROR(code);
 
-	// printf_stack();
 	return NO_ERRORS;
 }
 
@@ -264,7 +258,7 @@ int parse_expression(htable *table, int from){
 	 * 		1 - from condition 
 	*/
 	src = from;
-
+	token_t first;
 start_expr:
 	if(token.type == TOKEN_ASSIGN) GET_TOKEN();
 	if(token.type == TOKEN_ID && token.attribute.string->str[0] != '$') return -1;
@@ -272,19 +266,22 @@ start_expr:
 	prec_stack_init(&stack);
 	prec_stack_push(&stack, DOLLAR, UNDEFINED_TYPE); // push a dollar sign
 
+	first = token;
+
 	prec_symbs_t tokenSymb = get_symbol(token);
 	prec_datatypes_t tokenDatatype = get_data_type(token, table);
-
+	if (tokenSymb >= 3 && tokenSymb <= 13) return SEM_OTHER_ERROR; 
 	if (tokenSymb == ID) PUSH_STOP_SIGN();
 	prec_stack_push(&stack, tokenSymb, tokenDatatype); // push the first symbol
+	
 	prec_stack_item_t *headStack = prec_stack_head(&stack);
 
-	bool endInput, exprStart;
+	bool endInput, exprStart; 
 
+	// while stack doesn't look like E$ get tokens and reduce operands according to the rules
  	while (!prec_stack_is_empty(&stack))
- 	{	
-		// printf("before: \t");
-		// printf_stack();
+ 	{
+
 skip_step:
 		if(exprStart){
 			exprStart = false;
@@ -294,13 +291,14 @@ skip_step:
 
 		GET_TOKEN();
 
-		if(token.type == TOKEN_ASSIGN) {
+		if(token.type == TOKEN_ASSIGN){
 			exprStart = true;
 			goto skip_step;
 		}
 		endInput = token.type == TOKEN_SEMICOLON || token.type == TOKEN_LEFT_BR;
-
-		if(endInput){
+		
+		
+		if(endInput){ // the end of the expression
 			while(!prec_stack_is_empty(&stack)){
 				headStack = prec_stack_head(&stack);    
 				code = start_reducing(headStack);
@@ -313,54 +311,44 @@ expr_proc:
 			tokenDatatype = get_data_type(token, table);
 			
 			if(tokenSymb == ERROR) return SYNTAX_ERROR;
-
-			// printf("input: %d \tstack: %d\n", tokenSymb, headStack->symb);
-
+					
 			switch (prec_table[headStack->symb][tokenSymb]){
-			case '<':
-				headStack = prec_stack_head(&stack); // dgdbaukildajmlkdjfljdvb
+			case '<': // shift
+				headStack = prec_stack_head(&stack); 
 				if (tokenSymb == ID) PUSH_STOP_SIGN();
 				if (headStack->symb == NONTERM){
 					POP_TIMES(1);
 					PUSH_STOP_SIGN();
 					prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
-					//headStack = prec_stack_first_terminal(&stack); lefmgpowr[prkgple]
-				}
-
+				} else if (headStack->symb == LEFT_PAR && tokenSymb >= 3 && tokenSymb <= 13) return SYNTAX_ERROR; 		
 				prec_stack_push(&stack, tokenSymb, tokenDatatype);
-				headStack = prec_stack_first_terminal(&stack); // fdihoufjiodfjoisdfjsiofj
-				// printf("found symbol <\n");
+				headStack = prec_stack_first_terminal(&stack); 
 				break;
 			
-			case '>':
+			case '>': // reduce
 				headStack = prec_stack_head(&stack);
 				code = start_reducing(headStack);
 				CHECK_ERROR(code);
 				headStack = prec_stack_first_terminal(&stack);
 				goto expr_proc;
-				// printf("found symbol >\n");
 				break;
 			
-			case '=':
+			case '=': // equal
 				POP_TIMES(2);
 				prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
-				// printf("found symbol =\n");
 				break;
 			
-			case 'e':
+			case 'e': // error
 				prec_stack_free(&stack);
 				return SYNTAX_ERROR;
 
 			default:
-				// printf("\nerror\n");
 				prec_stack_free(&stack);
 				return SYNTAX_ERROR;
 			}
 		}
-		// printf("after: \t");
-		// printf_stack();
 	}
 
-
+	
 	prec_stack_free(&stack);
 }

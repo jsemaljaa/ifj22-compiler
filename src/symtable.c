@@ -134,37 +134,3 @@ ht_item_t *symt_search(htable *table, char *key){
     // TODO: if no item was found 
     return NULL;
 }
-
-// bool *symt_rm_symb(htable *table, char *key){
-//     if(table == NULL || key == NULL){
-//         // TODO: errors processing
-//         return (bool *)false;
-//     }
-
-//     unsigned int pos = hash_func(key);
-
-//     ht_item_t *last = NULL, *current = (*table)[pos];
-
-//     while(current != NULL){
-//         if(!strcmp(key, current->key)){
-//             if(last == NULL) (*table)[pos] = (*table)[pos]->next;
-//             else last->next = current->next;
-
-//             free(current->key);
-
-//             if(current->type == var){
-//                 if(current->data.var->id.str != NULL)
-//                 str_free(current->data.var->id.str);
-//                 free(current->data);
-//             }
-
-//             free(current);
-//             return (bool *)true;
-//         }
-
-//         last = current;
-//         current = current->next;
-//     }
-
-//     return (bool *)false;
-// }

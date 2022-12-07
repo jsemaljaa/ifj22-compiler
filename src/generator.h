@@ -20,10 +20,14 @@
 struct count
 {
     int ifCount;
+    int elseCount;
     int whileCount;
     int varCount;
+    int argCount;
     int loopCount;
     int maxArgs;
+    bool arg;
+
     char *varsId[MAX_HT_SIZE];
 };
 
@@ -32,16 +36,6 @@ struct count
  * @return nothing
  */
 void generator_header();
-
-/*
- * @brief Define arguments
- * @param *id - id ( name ) of function
- * @param *arg - term of argument
- * @return NULL ( if malloc failed )
- */
-
-bool generator_get_arg(char *id, token_t arg);
-
 
 /*
  * @brief Get the type of term as a string
@@ -65,6 +59,15 @@ bool generator_check_var(ht_item_t *var);
  * @return nothing
  */
 void generator_get_new_var(ht_item_t *var);
+
+/*
+ * @brief Define arguments
+ * @param *id - id ( name ) of function
+ * @param *arg - term of argument
+ * @return NULL ( if malloc failed )
+ */
+
+bool generator_get_arg(char *id, token_t arg, symt_datatype_t idDataType);
 
 /*
 
@@ -95,12 +98,12 @@ void generator_call_func(ht_item_t *func);
  */
 char *generator_str_convert(char *str);
 
-/*
- * @brief Convert token_t to ht_item_t
- * @param token - structure token_t for convert to structure ht_item_t
- * @return ht_item_t sructure
- */
-ht_item_t *generator_default_val(token_t token);
+// /*
+//  * @brief Convert token_t to ht_item_t
+//  * @param token - structure token_t for convert to structure ht_item_t
+//  * @return ht_item_t sructure
+//  */
+// ht_item_t *generator_default_val(token_t token);
 
 /*
  * @brief Start  a if functuon
@@ -115,17 +118,29 @@ void generator_start_if();
 void generator_end_if();
 
 /*
+ * @brief Start  a if functuon
+ * @return nothing
+ */
+void generator_start_else();
+
+/*
+ * @brief End a if function
+ * @return nothing
+ */
+void generator_end_else();
+
+/*
  * @brief Start a while function
  * @param TODO
  * @return nothing
  */
-void generator_start_while(int max_while);
+void generator_start_while(); //int max_while);
 
 /*
  * @brief Print a loop end condition
  * @return nothing
  */
-void generator_loop_condition();
+//void generator_loop_condition();
 
 // void generator_stop_loop_while();
 

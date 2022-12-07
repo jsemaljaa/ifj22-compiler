@@ -1,0 +1,273 @@
+.IFJcode22
+CREATEFRAME
+PUSHFRAME
+DEFVAR LF@$arg0
+MOVE LF@$arg0 string@fail\0320-1\032===\0320-1\010
+WRITE LF@$arg0
+DEFVAR LF@$arg1
+MOVE LF@$arg1 string@fail\0320-1\032===\0320\010
+WRITE LF@$arg1
+DEFVAR LF@$arg2
+MOVE LF@$arg2 string@fail\0320-1\032===\0321\010
+WRITE LF@$arg2
+DEFVAR LF@$arg3
+MOVE LF@$arg3 string@fail\0320-1\032===\0320-1.0\010
+WRITE LF@$arg3
+DEFVAR LF@$arg4
+MOVE LF@$arg4 string@fail\0320-1\032===\0320-0.5\010
+WRITE LF@$arg4
+DEFVAR LF@$arg5
+MOVE LF@$arg5 string@fail\0320-1\032===\0320.0\010
+WRITE LF@$arg5
+DEFVAR LF@$arg6
+MOVE LF@$arg6 string@fail\0320-1\032===\0320.5\010
+WRITE LF@$arg6
+DEFVAR LF@$arg7
+MOVE LF@$arg7 string@fail\0320-1\032===\0321.0\010
+WRITE LF@$arg7
+DEFVAR LF@$arg8
+MOVE LF@$arg8 string@fail\0320\032===\0320-1\010
+WRITE LF@$arg8
+DEFVAR LF@$arg9
+MOVE LF@$arg9 string@fail\0320\032===\0320\010
+WRITE LF@$arg9
+DEFVAR LF@$arg10
+MOVE LF@$arg10 string@fail\0320\032===\0321\010
+WRITE LF@$arg10
+DEFVAR LF@$arg11
+MOVE LF@$arg11 string@fail\0320\032===\0320-1.0\010
+WRITE LF@$arg11
+DEFVAR LF@$arg12
+MOVE LF@$arg12 string@fail\0320\032===\0320-0.5\010
+WRITE LF@$arg12
+DEFVAR LF@$arg13
+MOVE LF@$arg13 string@fail\0320\032===\0320.0\010
+WRITE LF@$arg13
+DEFVAR LF@$arg14
+MOVE LF@$arg14 string@fail\0320\032===\0320.5\010
+WRITE LF@$arg14
+DEFVAR LF@$arg15
+MOVE LF@$arg15 string@fail\0320\032===\0321.0\010
+WRITE LF@$arg15
+DEFVAR LF@$arg16
+MOVE LF@$arg16 string@fail\0321\032===\0320-1\010
+WRITE LF@$arg16
+DEFVAR LF@$arg17
+MOVE LF@$arg17 string@fail\0321\032===\0320\010
+WRITE LF@$arg17
+DEFVAR LF@$arg18
+MOVE LF@$arg18 string@fail\0321\032===\0321\010
+WRITE LF@$arg18
+DEFVAR LF@$arg19
+MOVE LF@$arg19 string@fail\0321\032===\0320-1.0\010
+WRITE LF@$arg19
+DEFVAR LF@$arg20
+MOVE LF@$arg20 string@fail\0321\032===\0320-0.5\010
+WRITE LF@$arg20
+DEFVAR LF@$arg21
+MOVE LF@$arg21 string@fail\0321\032===\0320.0\010
+WRITE LF@$arg21
+DEFVAR LF@$arg22
+MOVE LF@$arg22 string@fail\0321\032===\0320.5\010
+WRITE LF@$arg22
+DEFVAR LF@$arg23
+MOVE LF@$arg23 string@fail\0321\032===\0321.0\010
+WRITE LF@$arg23
+DEFVAR LF@$arg24
+MOVE LF@$arg24 string@fail\0320-1.0\032===\0320-1\010
+WRITE LF@$arg24
+DEFVAR LF@$arg25
+MOVE LF@$arg25 string@fail\0320-1.0\032===\0320\010
+WRITE LF@$arg25
+DEFVAR LF@$arg26
+MOVE LF@$arg26 string@fail\0320-1.0\032===\0321\010
+WRITE LF@$arg26
+DEFVAR LF@$arg27
+MOVE LF@$arg27 string@fail\0320-1.0\032===\0320-1.0\010
+WRITE LF@$arg27
+DEFVAR LF@$arg28
+MOVE LF@$arg28 string@fail\0320-1.0\032===\0320-0.5\010
+WRITE LF@$arg28
+DEFVAR LF@$arg29
+MOVE LF@$arg29 string@fail\0320-1.0\032===\0320.0\010
+WRITE LF@$arg29
+DEFVAR LF@$arg30
+MOVE LF@$arg30 string@fail\0320-1.0\032===\0320.5\010
+WRITE LF@$arg30
+DEFVAR LF@$arg31
+MOVE LF@$arg31 string@fail\0320-1.0\032===\0321.0\010
+WRITE LF@$arg31
+DEFVAR LF@$arg32
+MOVE LF@$arg32 string@fail\0320-0.5\032===\0320-1\010
+WRITE LF@$arg32
+DEFVAR LF@$arg33
+MOVE LF@$arg33 string@fail\0320-0.5\032===\0320\010
+WRITE LF@$arg33
+DEFVAR LF@$arg34
+MOVE LF@$arg34 string@fail\0320-0.5\032===\0321\010
+WRITE LF@$arg34
+DEFVAR LF@$arg35
+MOVE LF@$arg35 string@fail\0320-0.5\032===\0320-1.0\010
+WRITE LF@$arg35
+DEFVAR LF@$arg36
+MOVE LF@$arg36 string@fail\0320-0.5\032===\0320-0.5\010
+WRITE LF@$arg36
+DEFVAR LF@$arg37
+MOVE LF@$arg37 string@fail\0320-0.5\032===\0320.0\010
+WRITE LF@$arg37
+DEFVAR LF@$arg38
+MOVE LF@$arg38 string@fail\0320-0.5\032===\0320.5\010
+WRITE LF@$arg38
+DEFVAR LF@$arg39
+MOVE LF@$arg39 string@fail\0320-0.5\032===\0321.0\010
+WRITE LF@$arg39
+DEFVAR LF@$arg40
+MOVE LF@$arg40 string@fail\0320.0\032===\0320-1\010
+WRITE LF@$arg40
+DEFVAR LF@$arg41
+MOVE LF@$arg41 string@fail\0320.0\032===\0320\010
+WRITE LF@$arg41
+DEFVAR LF@$arg42
+MOVE LF@$arg42 string@fail\0320.0\032===\0321\010
+WRITE LF@$arg42
+DEFVAR LF@$arg43
+MOVE LF@$arg43 string@fail\0320.0\032===\0320-1.0\010
+WRITE LF@$arg43
+DEFVAR LF@$arg44
+MOVE LF@$arg44 string@fail\0320.0\032===\0320-0.5\010
+WRITE LF@$arg44
+DEFVAR LF@$arg45
+MOVE LF@$arg45 string@fail\0320.0\032===\0320.0\010
+WRITE LF@$arg45
+DEFVAR LF@$arg46
+MOVE LF@$arg46 string@fail\0320.0\032===\0320.5\010
+WRITE LF@$arg46
+DEFVAR LF@$arg47
+MOVE LF@$arg47 string@fail\0320.0\032===\0321.0\010
+WRITE LF@$arg47
+DEFVAR LF@$arg48
+MOVE LF@$arg48 string@fail\0320.5\032===\0320-1\010
+WRITE LF@$arg48
+DEFVAR LF@$arg49
+MOVE LF@$arg49 string@fail\0320.5\032===\0320\010
+WRITE LF@$arg49
+DEFVAR LF@$arg50
+MOVE LF@$arg50 string@fail\0320.5\032===\0321\010
+WRITE LF@$arg50
+DEFVAR LF@$arg51
+MOVE LF@$arg51 string@fail\0320.5\032===\0320-1.0\010
+WRITE LF@$arg51
+DEFVAR LF@$arg52
+MOVE LF@$arg52 string@fail\0320.5\032===\0320-0.5\010
+WRITE LF@$arg52
+DEFVAR LF@$arg53
+MOVE LF@$arg53 string@fail\0320.5\032===\0320.0\010
+WRITE LF@$arg53
+DEFVAR LF@$arg54
+MOVE LF@$arg54 string@fail\0320.5\032===\0320.5\010
+WRITE LF@$arg54
+DEFVAR LF@$arg55
+MOVE LF@$arg55 string@fail\0320.5\032===\0321.0\010
+WRITE LF@$arg55
+DEFVAR LF@$arg56
+MOVE LF@$arg56 string@fail\0321.0\032===\0320-1\010
+WRITE LF@$arg56
+DEFVAR LF@$arg57
+MOVE LF@$arg57 string@fail\0321.0\032===\0320\010
+WRITE LF@$arg57
+DEFVAR LF@$arg58
+MOVE LF@$arg58 string@fail\0321.0\032===\0321\010
+WRITE LF@$arg58
+DEFVAR LF@$arg59
+MOVE LF@$arg59 string@fail\0321.0\032===\0320-1.0\010
+WRITE LF@$arg59
+DEFVAR LF@$arg60
+MOVE LF@$arg60 string@fail\0321.0\032===\0320-0.5\010
+WRITE LF@$arg60
+DEFVAR LF@$arg61
+MOVE LF@$arg61 string@fail\0321.0\032===\0320.0\010
+WRITE LF@$arg61
+DEFVAR LF@$arg62
+MOVE LF@$arg62 string@fail\0321.0\032===\0320.5\010
+WRITE LF@$arg62
+DEFVAR LF@$arg63
+MOVE LF@$arg63 string@fail\0321.0\032===\0321.0\010
+WRITE LF@$arg63
+DEFVAR LF@$arg64
+MOVE LF@$arg64 string@fail\032""\032===\032""\010
+WRITE LF@$arg64
+DEFVAR LF@$arg65
+MOVE LF@$arg65 string@fail\032""\032===\032"aa"\010
+WRITE LF@$arg65
+DEFVAR LF@$arg66
+MOVE LF@$arg66 string@fail\032""\032===\032"ab"\010
+WRITE LF@$arg66
+DEFVAR LF@$arg67
+MOVE LF@$arg67 string@fail\032"aa"\032===\032""\010
+WRITE LF@$arg67
+DEFVAR LF@$arg68
+MOVE LF@$arg68 string@fail\032"aa"\032===\032"aa"\010
+WRITE LF@$arg68
+DEFVAR LF@$arg69
+MOVE LF@$arg69 string@fail\032"aa"\032===\032"ab"\010
+WRITE LF@$arg69
+DEFVAR LF@$arg70
+MOVE LF@$arg70 string@fail\032"ab"\032===\032""\010
+WRITE LF@$arg70
+DEFVAR LF@$arg71
+MOVE LF@$arg71 string@fail\032"ab"\032===\032"aa"\010
+WRITE LF@$arg71
+DEFVAR LF@$arg72
+MOVE LF@$arg72 string@fail\032"ab"\032===\032"ab"\010
+WRITE LF@$arg72
+DEFVAR LF@$arg73
+MOVE LF@$arg73 string@fail\0320.0\032===\0320.0\010
+WRITE LF@$arg73
+DEFVAR LF@$arg74
+MOVE LF@$arg74 string@fail\0320.0\032===\0320\010
+WRITE LF@$arg74
+DEFVAR LF@$arg75
+MOVE LF@$arg75 string@fail\0320.0\032===\032""\010
+WRITE LF@$arg75
+DEFVAR LF@$arg76
+MOVE LF@$arg76 string@fail\0320.0\032===\032null\010
+WRITE LF@$arg76
+DEFVAR LF@$arg77
+MOVE LF@$arg77 string@fail\0320\032===\0320.0\010
+WRITE LF@$arg77
+DEFVAR LF@$arg78
+MOVE LF@$arg78 string@fail\0320\032===\0320\010
+WRITE LF@$arg78
+DEFVAR LF@$arg79
+MOVE LF@$arg79 string@fail\0320\032===\032""\010
+WRITE LF@$arg79
+DEFVAR LF@$arg80
+MOVE LF@$arg80 string@fail\0320\032===\032null\010
+WRITE LF@$arg80
+DEFVAR LF@$arg81
+MOVE LF@$arg81 string@fail\032""\032===\0320.0\010
+WRITE LF@$arg81
+DEFVAR LF@$arg82
+MOVE LF@$arg82 string@fail\032""\032===\0320\010
+WRITE LF@$arg82
+DEFVAR LF@$arg83
+MOVE LF@$arg83 string@fail\032""\032===\032""\010
+WRITE LF@$arg83
+DEFVAR LF@$arg84
+MOVE LF@$arg84 string@fail\032""\032===\032null\010
+WRITE LF@$arg84
+DEFVAR LF@$arg85
+MOVE LF@$arg85 string@fail\032null\032===\0320.0\010
+WRITE LF@$arg85
+DEFVAR LF@$arg86
+MOVE LF@$arg86 string@fail\032null\032===\0320\010
+WRITE LF@$arg86
+DEFVAR LF@$arg87
+MOVE LF@$arg87 string@fail\032null\032===\032""\010
+WRITE LF@$arg87
+DEFVAR LF@$arg88
+MOVE LF@$arg88 string@fail\032null\032===\032null\010
+WRITE LF@$arg88
+DEFVAR LF@$arg89
+MOVE LF@$arg89 string@done
+WRITE LF@$arg89

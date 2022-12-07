@@ -23,9 +23,16 @@
 /*
  * @brief Data structure representing a stack of symbols 
 */
+typedef struct precStackItemVals{
+    int Fval;
+    float Ival;
+    
+} prec_stack_item_vals_t;
+
 typedef struct precStackItem {
     prec_symbs_t symb;
     prec_datatypes_t datatype;
+    prec_stack_item_vals_t vals;
     struct precStackItem *next;
 } prec_stack_item_t;
 

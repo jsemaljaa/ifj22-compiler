@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     //printf("Is there an error? %s\n", code != NO_ERRORS ? "Yes" : "No");
     
     str_free(&string);
-    exit_error(code);
+    // exit_error(code);
     return code != NO_ERRORS ? code : NO_ERRORS;
 
 }
