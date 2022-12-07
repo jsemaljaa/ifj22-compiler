@@ -25,18 +25,19 @@ void set_dynamic_string(string_t *string)
     dynStr = string;
 }
 
+int prolog_flag = 1;
+
 int get_next_token(token_t *token)
 // hlavni funkce lexikalniho analyzatoru
 { //инициализация динамических строк
     string_t string, *str = &string;
     if (str_init(str) == 1)
-        return exit_free(LEXICAL_ERROR, str);
+        return exit_free(INTERNAL_ERROR, str);
 
     token->attribute.string = dynStr;
     int state = STATE_START;
     char c;
-    // vymazeme obsah atributu a v pripade identifikatoru
-    // budeme postupne do nej vkladat jeho nazev
+    // int prolog_flag = 1;
 
     while (1)
     {
@@ -44,18 +45,26 @@ int get_next_token(token_t *token)
         // TODO: connect with setstdinFile
         c = (char)getc(stdin);
 
-        // printf("c = %c\n", c);
+        if (prolog_flag == 1)
+        {
+            if (c != '<')
+            {
+                return exit_free(LEXICAL_ERROR, str);
+            }
+            else
+            {
+                prolog_flag = 0;
+            }
+        }
         switch (state)
         {
         case STATE_START:
-            // zakladni stav automatu
             if (isspace(c))
                 state = STATE_START;
 
             else if (c == '+')
             {
                 token->type = TOKEN_PLUS;
-                // printf("------------------: %d\n", token->type);
                 return exit_free(NO_ERRORS, str);
             }
 
@@ -150,18 +159,20 @@ int get_next_token(token_t *token)
 
             else if (isdigit(c))
             {
-                // printf("DIGIT\n" );
                 if (str_add_char(str, c))
                     return exit_free(LEXICAL_ERROR, str);
                 state = STATE_NUMBER;
-                // printf("%s\n", token->attribute.string);
             }
 
-            else if (isalpha(c) || c == '_' || c == '$')
+            else if (c == '$')
+            {
+                str_add_char(str, c);
+                state = STATE_DOLLAR;
+            }
+            else if (isalpha(c) || c == '_')
             {
                 str_add_char(str, c);
                 state = STATE_IDENTIFIER_OR_KEYWORD;
-                // printf("%s\n", token->attribute.string->str);
             }
 
             else
@@ -190,7 +201,7 @@ int get_next_token(token_t *token)
         case STATE_PROLOG_START: // <?
             if (isalpha(c))
             {
-                str_add_char(str, c); 
+                str_add_char(str, c);
             }
             else
             {
@@ -229,7 +240,7 @@ int get_next_token(token_t *token)
             {
                 state = STATE_EOF;
             }
-            else if ( c == 's' || c == 'f' || c == 'i')
+            else if (c == 's' || c == 'f' || c == 'i')
             {
                 str_add_char(str, c);
                 state = STATE_IDENTIFIER_OR_KEYWORD;
@@ -342,10 +353,22 @@ int get_next_token(token_t *token)
         case STATE_BLOCK_COMMENTARY_LEAVE: // /**
             if (c == '/')
                 state = STATE_START; // /**/
+            else if (c == '*')
+                state = STATE_BLOCK_COMMENTARY_LEAVE; // /***
             else if (c == EOF)
                 return exit_free(LEXICAL_ERROR, str);
             else
                 state = STATE_BLOCK_COMMENTARY;
+            break;
+
+        case STATE_DOLLAR:
+            if (isalpha(c) || c == '_')
+            {
+                str_add_char(str, c);
+                state = STATE_IDENTIFIER_OR_KEYWORD;
+            }
+            else
+                return exit_free(LEXICAL_ERROR, str);
             break;
 
         case STATE_IDENTIFIER_OR_KEYWORD:
@@ -405,28 +428,37 @@ int get_next_token(token_t *token)
 
                 else if ((str_cmp_const_str(str, "float") == 0) || (str_cmp_const_str(str, "?float") == 0))
                 {
-                    if(str->str[0] == '?'){
+                    if (str->str[0] == '?')
+                    {
                         token->attribute.keyword = K_FLOAT_N;
-                    } else token->attribute.keyword = K_FLOAT;
-                    
+                    }
+                    else
+                        token->attribute.keyword = K_FLOAT;
+
                     token->type = TOKEN_KEY_W;
                 }
 
                 else if ((str_cmp_const_str(str, "string") == 0) || (str_cmp_const_str(str, "?string") == 0))
                 {
-                    if(str->str[0] == '?'){
+                    if (str->str[0] == '?')
+                    {
                         token->attribute.keyword = K_STRING_N;
-                    } else token->attribute.keyword = K_STRING;
-                    
+                    }
+                    else
+                        token->attribute.keyword = K_STRING;
+
                     token->type = TOKEN_KEY_W;
                 }
 
                 else if ((str_cmp_const_str(str, "int") == 0) || (str_cmp_const_str(str, "?int") == 0))
                 {
-                    if(str->str[0] == '?'){
+                    if (str->str[0] == '?')
+                    {
                         token->attribute.keyword = K_INT_N;
-                    } else token->attribute.keyword = K_INT;
-                    
+                    }
+                    else
+                        token->attribute.keyword = K_INT;
+
                     token->type = TOKEN_KEY_W;
                 }
 
@@ -442,7 +474,6 @@ int get_next_token(token_t *token)
             break;
 
         case STATE_NUMBER:
-            // printf("DIGIT num\n" );
             if (c == 'e' || c == 'E')
             {
                 state = STATE_NUMBER_EXPONENT;
@@ -470,7 +501,6 @@ int get_next_token(token_t *token)
 
                 token->attribute.integer = val;
                 token->type = TOKEN_TYPE_INT;
-                // printf("%d\n", token->attribute.integer);
                 return exit_free(NO_ERRORS, str);
             }
             break;
@@ -490,7 +520,6 @@ int get_next_token(token_t *token)
                 str_add_char(str, c);
             else if (c == 'e' || c == 'E')
             {
-                // printf("e\n");
                 state = STATE_NUMBER_EXPONENT;
                 str_add_char(str, c);
             }
@@ -507,7 +536,6 @@ int get_next_token(token_t *token)
 
                 token->attribute.decimal = val;
                 token->type = TOKEN_TYPE_FLOAT;
-                // printf("%f\n", token->attribute.decimal);
                 return exit_free(NO_ERRORS, str);
             }
             break;
@@ -553,17 +581,15 @@ int get_next_token(token_t *token)
 
                 token->attribute.decimal = val;
                 token->type = TOKEN_TYPE_FLOAT;
-                // printf("%f\n", token->attribute.decimal);
                 return exit_free(NO_ERRORS, str);
             }
             break;
 
         case STATE_STRING_START:
-            // printf("c = %c\n",c);
             if (c == '"')
             {
                 token->type = TOKEN_TYPE_STRING;
-                  str_copy_string(token->attribute.string, str);
+                str_copy_string(token->attribute.string, str);
                 return exit_free(NO_ERRORS, str);
             }
             else if (c == '\\')

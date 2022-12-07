@@ -88,7 +88,8 @@ typedef struct
 #define STATE_COMMENTARY 201             /// Starts with //, ignores every symbol, ends with EOL or EOF
 #define STATE_BLOCK_COMMENTARY 203       /// Starts with /* and ignores every symbol except * - this might be the end of block comment
 #define STATE_BLOCK_COMMENTARY_LEAVE 204 /// Ends with */ the * is read, if the next symbol is /, leave, else if *, stay, else go back to state before
-#define STATE_IDENTIFIER_OR_KEYWORD 205  /// Starts with letter or _, if next symbols are alphanumeric or _, add them to string, which is later compared with reserved words | Returns either keyword or string as ID
+
+#define STATE_IDENTIFIER_OR_KEYWORD 205 /// Starts with letter or _, if next symbols are alphanumeric or _, add them to string, which is later compared with reserved words | Returns either keyword or string as ID
 
 #define STATE_EQUAL_START 206           /// Starts with =, if next symbol is =, return EQUAL, else return ASSIGN
 #define STATE_EQUAL 207                 /// Starts with =, if next symbol is =, return EQUAL, else return ASSIGN
@@ -118,6 +119,7 @@ typedef struct
 #define STATE_QUEST 230
 #define STATE_PROLOG_START 231
 #define STATE_EOF 232
+#define STATE_DOLLAR 233
 // hlavicka funkce simulujici lexikalni analyzator
 int get_next_token(token_t *token);
 void set_dynamic_string(string_t *string);

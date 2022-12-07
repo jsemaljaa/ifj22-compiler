@@ -217,7 +217,6 @@ static int statement(){
     case TOKEN_ID:
         if(token.attribute.string->str[0] == '$'){
             CHECK_RULE(variable_definition());
-
         } else {
             CHECK_RULE(function_call());   // internal function OR user function call
         }
@@ -233,6 +232,12 @@ static int statement(){
         } else if(token.attribute.keyword == K_RETURN){
             CHECK_RULE(return_statement());
         }
+        break;
+    case TOKEN_TYPE_INT:
+    case TOKEN_TYPE_FLOAT:
+    case TOKEN_TYPE_STRING:
+        code = parse_expression(&globalSymt, 0);
+        CHECK_ERROR(code);
         break;
     default:
         if(inIf || inWhile || inFunctionDefinition) return NO_ERRORS;
@@ -532,18 +537,15 @@ static int list_of_datatypes_ret(ht_item_t* item){
 
 // 14. <variable_definition> -> <variable> = <var_def_expr>
 static int variable_definition(){
-    /* 
-        check if we are inside of a function or no
-        it matters cuz we need to know whether we should use 
-        local symtable or global symtable 
-    */
 
     CHECK_RULE(variable());
 
     // here we still have token ID, which is <variable> in the rule above
 
-    GET_AND_CHECK_TOKEN(token.type == TOKEN_ASSIGN, SYNTAX_ERROR);
-    
+    // GET_AND_CHECK_TOKEN(token.type == TOKEN_ASSIGN, SYNTAX_ERROR);
+
+    // GET_TOKEN();
+
     CHECK_RULE(var_def_expr());
     return NO_ERRORS;
 }
@@ -551,35 +553,44 @@ static int variable_definition(){
 // 15. <var_def_expr> -> <function_call> <-- FUNEXP EXTENSION !!!
 // 16. <var_def_expr> -> <expression>;
 static int var_def_expr(){
-    
-    // ASSIGN token here
-    
-    if(token.type == TOKEN_ASSIGN){
-        GET_TOKEN();
-    } else return SYNTAX_ERROR;
-    
-    if(token.type == TOKEN_ID && token.attribute.string->str[0] != '$'){
+    // TOKEN_ID here
+    if(inIf || inWhile || inFunctionDefinition){
+        code = parse_expression(&localSymt, 0);
+    } else code = parse_expression(&globalSymt, 0);
+
+
+    if(code == -1){
         CHECK_RULE(function_call());
         return NO_ERRORS;
-    } else {
-        if(inIf || inWhile || inFunctionDefinition){
-            code = parse_expression(&localSymt, 0);
-        } else {
-            code = parse_expression(&globalSymt, 0);
-        }
-        CHECK_ERROR(code);
-        
-        // while(token.type != TOKEN_SEMICOLON) GET_TOKEN();
-        
-        return NO_ERRORS;
-    }   
+    }
+    
+    
+    // ASSIGN or START OF EXPR token here
+
+    // if(token.type == TOKEN_ASSIGN){
+    //     GET_TOKEN();
+    //     if(inIf || inWhile || inFunctionDefinition){
+    //         code = parse_expression(&localSymt, 0);
+    //     } else {
+    //         code = parse_expression(&globalSymt, 0);
+    //     }
+
+    //     if(code == -1){
+    //         CHECK_RULE(function_call());
+    //         return NO_ERRORS;
+    //     }
+    // } else {
+    //     code = parse_expression(&globalSymt, 0);
+    //     if(code == -1) CHECK_RULE(function_call());
+    // }
+
+    return NO_ERRORS; 
 }
 
 //17. <function_call> -> ID( <list_of_call_parameters> );   
 static int function_call(){
     ht_item_t* item = symt_search(&globalSymt, token.attribute.string->str);
     // printf("\tfound a function call with id '%s'\n", item->key);
-    
     if(item == NULL){
         return SEM_DEF_FUNC_ERROR;
     } else if(item->type == func){        
@@ -597,7 +608,9 @@ static int function_call(){
         inFunctionCall = false;
         // generator_end_func(item);
         return NO_ERRORS;
-    } else return INTERNAL_ERROR;
+    } else {
+        return INTERNAL_ERROR;
+    }
 }
 
 //18. <list_of_call_parameters> -> ε
@@ -727,7 +740,7 @@ static int variable(){
 
     ht_item_t* var;
 
-    if(inFunctionDefinition){
+    if(inFunctionDefinition || inIf || inWhile){
         var = symt_search(&localSymt, token.attribute.string->str);
         if(var == NULL){
             symt_add_symb(&localSymt, token.attribute.string);
