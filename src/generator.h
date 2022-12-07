@@ -15,13 +15,15 @@
 #include "scanner.h"
 #include "symtable.h"
 
-// Structure with counters and an array of variables 
-struct count{
+
+// Structure with counters and an array of variables
+struct count
+{
     int ifCount;
     int whileCount;
     int varCount;
     int loopCount;
-    int maxArgs;        
+    int maxArgs;
     char *varsId[MAX_HT_SIZE];
 };
 
@@ -37,7 +39,9 @@ void generator_header();
  * @param *arg - term of argument
  * @return NULL ( if malloc failed )
  */
-bool generator_get_arg(char *id,  ht_item_t *arg);
+
+bool generator_get_arg(char *id, token_t arg);
+
 
 /*
  * @brief Get the type of term as a string
@@ -55,14 +59,16 @@ char *generator_get_type(symt_datatype_t type);
 bool generator_check_var(ht_item_t *var);
 
 /*
- * @brief Define a new variable 
+
+ * @brief Define a new variable
  * @param *var - term for a new variable
  * @return nothing
  */
 void generator_get_new_var(ht_item_t *var);
 
 /*
- * @brief Start a function 
+
+ * @brief Start a function
  * @param *func - term of function
  * @return nothing
  */
@@ -83,7 +89,7 @@ void generator_end_func(ht_item_t *func);
 void generator_call_func(ht_item_t *func);
 
 /*
- * @brief Convert a string 
+ * @brief Convert a string
  * @param *str - string for convert
  * @return converted string
  */
