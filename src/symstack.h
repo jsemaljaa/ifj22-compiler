@@ -12,11 +12,13 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "error.h"
+#include "expressions.h"
 #include "scanner.h"
 #include "str.h"
 #include "symtable.h"
-#include "expressions.h"
-
 
 /*
  * @brief Data structure representing a stack of symbols 
@@ -28,17 +30,16 @@ typedef struct precStackItem {
 } prec_stack_item_t;
 
 typedef struct precStack {
-    int maxSize;
-    int actualSize;
-    prec_stack_item_t *top;
+    prec_stack_item_t *head;
 } prec_stack_t;
+
 
 /*
  * @brief Stack initialization 
  * @param size - size of stack to initialize 
  * @return If successful, returns a pointer to stack
 */
-prec_stack_t *prec_stack_init(int size);
+void prec_stack_init(prec_stack_t *stack);
 
 /*
  * @brief Deleting the stack and all the data inside 
@@ -48,25 +49,11 @@ prec_stack_t *prec_stack_init(int size);
 void prec_stack_free(prec_stack_t *stack);
 
 /*
- * @brief Count the size of a stack 
- * @param *stack - pointer to a stack 
- * @return If successful, returns an integer size of a given stack
-*/
-int prec_stack_size(prec_stack_t *stack);
-
-/*
  * @brief Check if stack is full 
  * @param *stack - pointer to a stack
  * @return true if stack is empty, false otherwise
 */
 bool prec_stack_is_empty(prec_stack_t *stack);
-
-/*
- * @brief Check if stack is full 
- * @param *stack - pointer to a stack
- * @return true if stack is full, false otherwise
-*/
-bool prec_stack_is_full(prec_stack_t *stack);
 
 /*
  * @brief Push given symbol into the stack  
@@ -83,6 +70,13 @@ bool prec_stack_push(prec_stack_t *stack, prec_symbs_t symb, prec_datatypes_t da
  * @return If successful, return true, else otherwise
 */
 bool prec_stack_pop(prec_stack_t *stack);
+
+/*
+ * @brief Get a head of a stack 
+ * @param *stack - pointer to a stack
+ * @return Returns pointer to an item which is a head of a stack
+*/
+prec_stack_item_t *prec_stack_head(prec_stack_t *stack);
 
 /*
  * @brief Find the first terminal in the stack 

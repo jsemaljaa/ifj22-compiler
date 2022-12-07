@@ -40,8 +40,6 @@ ht_item_t *symt_add_symb(htable *table, string_t *key){
     if(table == NULL) {
         exit_error(INTERNAL_ERROR);
     }
-
-
     
     unsigned int pos = hash_func(key->str);
     ht_item_t *item = symt_search(table, key->str);

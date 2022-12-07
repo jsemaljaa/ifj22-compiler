@@ -287,6 +287,7 @@ char *generator_str_convert(char *str)
         return NULL;
 
     for (int j = 0; j < strlen(new_str); j++) // copy new_str to result_str
+
         result_str[j] = new_str[j];
 
     // strcpy(result_str, new_str); //TODO check
@@ -357,7 +358,7 @@ void generator_start_if()
     printf("PUSHFRAME\n");
 }
 
-void generator_end_if()
+void generator_start_if()
 {
     // printf("LABEL !end_%s\n", end_if_func->key);
     printf("LABEL !end_if_func%d\n", tmp.ifCount);
@@ -383,6 +384,7 @@ void generator_start_while(int max_while)
 
 void generator_loop_condition()
 {
+
     printf("MOVE TF@loop%d bool@false\n", tmp.whileCount); // condition for end while loop
 }
 
@@ -395,6 +397,7 @@ void generator_end_while()
 {
     printf("JUMPIFEQ !loop_while%d TF@loop%d bool@false\n", tmp.loopCount, tmp.whileCount);
     printf("LABEL !end_while_func%d\n", tmp.whileCount);
+
     // generator_pop_frame();
     // generator_return();
     printf("POPFRAME\n");
@@ -425,7 +428,7 @@ void generator_readf()
     // generator_return();
 }
 
-void generator_reads()
+void generator_reads()                                                                                   
 {
     // printf("!reads\n");
     // generator_push_frame();
@@ -597,6 +600,7 @@ void generator_operation(token_type_t operation, ht_item_t *var, ht_item_t *symb
         printf("MUL TF@$%s TF@$%s TF@$%s\n", var->key, symb1->key, symb2->key);
         break;
     case TOKEN_DIV:
+
         if (!strcmp("float", generator_get_type(symb1->data.var->type)) && !strcmp("float", generator_get_type(symb2->data.var->type))) // if simb1 is float and symb2 is float
         {
             printf("JUMPIFEQ !division_by_zero TF@$%s float@%a\n", symb2->key, 0.0);

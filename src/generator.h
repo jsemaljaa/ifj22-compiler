@@ -15,6 +15,7 @@
 #include "scanner.h"
 #include "symtable.h"
 
+
 // Structure with counters and an array of variables
 struct count
 {
@@ -38,7 +39,9 @@ void generator_header();
  * @param *arg - term of argument
  * @return NULL ( if malloc failed )
  */
+
 bool generator_get_arg(char *id, token_t arg);
+
 
 /*
  * @brief Get the type of term as a string
@@ -56,6 +59,7 @@ char *generator_get_type(symt_datatype_t type);
 bool generator_check_var(ht_item_t *var);
 
 /*
+
  * @brief Define a new variable
  * @param *var - term for a new variable
  * @return nothing
@@ -63,6 +67,7 @@ bool generator_check_var(ht_item_t *var);
 void generator_get_new_var(ht_item_t *var);
 
 /*
+
  * @brief Start a function
  * @param *func - term of function
  * @return nothing
@@ -196,5 +201,6 @@ void generator_internal_func(char *func_name);
  * @return nothing (actually an initialized table)
  */
 void generator_operation(token_type_t operation, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2);
+
 
 #endif // GENERATOR_H

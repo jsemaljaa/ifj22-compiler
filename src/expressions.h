@@ -1,7 +1,27 @@
+/*
+ * IFJ2022/project/expressions.h 
+ * 
+ * @brief Precedence analysis implementation declarations
+ * 
+ * @author Vinogradova Alina <xvinog00@vutbr.cz>
+ * @author Mazurava Maryia <xmazur08@vutbr.cz>
+ */
+
+
 #ifndef EXPRESSIONS_H
 #define EXPRESSIONS_H
 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "str.h"
+#include "parser.h"
+#include "error.h"
+#include "symtable.h"
+
 #define PREC_TABLE_SIZE 15
+
+int parse_expression(htable *table, int from);
 
 /**
  * Rules for analysis.
@@ -20,8 +40,7 @@ typedef enum {
 	LESS_R, 		// 10. E -> E < E
 	LEEQ_R,			// 11. E -> E <= E
 	TYPE_EQ_R,     	// 12. E -> E === E
-	NTYPE_EQ_R,   	// 13. E -> E !== E
-	EQ_R            // 14. E -> E = E
+	NTYPE_EQ_R   	// 13. E -> E !== E
 } prec_rules_t;
 
 /*
@@ -29,8 +48,8 @@ typedef enum {
  */
 typedef enum {
 	ID,	            // id
-	LEFT_BRACKET,	// (
-	RIGHT_BRACKET,	// )
+	LEFT_PAR,		// (
+	RIGHT_PAR,		// )
 	MUL,	        // *
 	DIV,			// /
 	PLUS,		    // +
@@ -42,8 +61,10 @@ typedef enum {
 	LEEQ,           // <=
     TYPE_EQ,        // ===
 	NTYPE_EQ,	    // !==
-	STOP,		    // $
-	NONTERM
+	DOLLAR,		    // $
+	STOP,
+	NONTERM,
+	ERROR
 } prec_symbs_t;
 
 typedef enum {
@@ -52,24 +73,6 @@ typedef enum {
     STRING_TYPE,
 	UNDEFINED_TYPE
 } prec_datatypes_t;
-
-typedef enum {
-	ID_INDEX,	      // 0. id
-	RB_INDEX,		  // 1. (
-	LB_INDEX,		  // 2. )
-	MUL_INDEX,		  // 3. *
-	DIV_INDEX,		  // 4. /
-	PLUS_INDEX,		  // 5. +
-	MINUS_INDEX,	  // 6. -
-	CONC_INDEX,		  // 7. .
-	GREATER_INDEX,	  // 8. >
-	GREQ_INDEX,		  // 9. >=
-	LESS_INDEX,		  // 10. <
-	LEEQ_INDEX,		  // 11. <=
-	TYPE_EQ_INDEX,	  // 12. ===
-	NTYPE_EQ_INDEX,   // 13. !==
-	DOLLAR_INDEX	  // 14. $ 
-} prec_index_t; 
 
 
 #endif // EXPRESSIONS_H

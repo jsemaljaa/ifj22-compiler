@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "scanner.h"
+#include "expressions.h"
 #include "parser.h"
 #include "error.h"
 #include "str.h"

@@ -15,9 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "expressions.h"
 #include "str.h"
-#include "symstack.h"
+#include "expressions.h"
 #include "symtable.h"
 #include "scanner.h"
 #include "error.h"
@@ -102,13 +101,15 @@ static const char *list[] = {
     "PROLOG"};
 
 
+void printf_token_debug(token_t token);
+
+
 /*
  * @brief Clean exit from parser
  * @param code - code to return with
  * @return nothing, ends the parser run with an error code
 */
 static void clean_exit(int code);
-
 
 /*
  * @brief Add internal functions to the symtable 
@@ -155,6 +156,8 @@ static int list_of_statements();
  * @return Current error code if something went wrong, NO_ERRORS otherwise
 */
 static int statement();
+
+static int return_statement();
 
 /*
  * @example 11. <return_expressions> -> <expression>
