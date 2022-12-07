@@ -328,16 +328,15 @@ static int inside_while(){
 static int function_definition(){
     GET_AND_CHECK_TOKEN(token.type == TOKEN_ID, SYNTAX_ERROR);
 
+    if(check_id_for_keyword(token.attribute.string) != NO_ERRORS){
+        // consider printing an exact error message
+        // "error: trying to define a function using reserved keyword"    
+        return SYNTAX_ERROR;
+    }
+
     // check whether function with the same id is already defined and in global symtable or no
     ht_item_t *tmp = symt_search(&globalSymt, token.attribute.string->str);
     if(tmp != NULL) return SEM_DEF_FUNC_ERROR;
-
-    if(check_id_for_keyword(token.attribute.string) != NO_ERRORS){
-        // consider printing an exact error message
-        // "error: trying to define a function using reserved keyword"
-        
-        return SYNTAX_ERROR;
-    }
 
     symt_add_symb(&globalSymt, token.attribute.string);
 
@@ -563,26 +562,6 @@ static int var_def_expr(){
         CHECK_RULE(function_call());
         return NO_ERRORS;
     }
-    
-    
-    // ASSIGN or START OF EXPR token here
-
-    // if(token.type == TOKEN_ASSIGN){
-    //     GET_TOKEN();
-    //     if(inIf || inWhile || inFunctionDefinition){
-    //         code = parse_expression(&localSymt, 0);
-    //     } else {
-    //         code = parse_expression(&globalSymt, 0);
-    //     }
-
-    //     if(code == -1){
-    //         CHECK_RULE(function_call());
-    //         return NO_ERRORS;
-    //     }
-    // } else {
-    //     code = parse_expression(&globalSymt, 0);
-    //     if(code == -1) CHECK_RULE(function_call());
-    // }
 
     return NO_ERRORS; 
 }
