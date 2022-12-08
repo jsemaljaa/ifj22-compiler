@@ -20,8 +20,27 @@ declare(strict_types=1);
 // }
 
 
-// write("Hello", 123, "and", 156.7);
+// write(123456, " or ", 123.456, ", thats the question", "\n");
 
-while(1===0){}
+// (1+1);
 
-// function f(int$x):void{}
+// function f() : void {
+//     return;
+//   }
+  
+//   function g() : int {
+//     return 5;
+//   }
+  
+//   f();
+//   g();
+
+readi();
+reads();
+readf();
+
+ord("fff");
+
+chr(3);
+
+substr("subfhg", 1, 3);

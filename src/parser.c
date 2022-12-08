@@ -158,10 +158,14 @@ int parse() {
     CHECK_RULE(prolog());
     
     generator_header();
-    if(token.type == TOKEN_END_OF_FILE) return NO_ERRORS;
+    if(token.type == TOKEN_END_OF_FILE) {
+        // generator_end_of_file();
+        return NO_ERRORS;
+    }
     
     CHECK_RULE(list_of_statements());
 
+    // generator_end_of_file();
     clean_exit(code);  
 }
 
@@ -195,7 +199,7 @@ static int prolog(){
 static int list_of_statements(){
     while(true){
         GET_TOKEN();
-        if(token.type == TOKEN_END_OF_FILE) {
+        if(token.type == TOKEN_END_OF_FILE){
             return NO_ERRORS;
         }
         CHECK_RULE(statement());
@@ -257,6 +261,8 @@ static int statement(){
 static int return_statement(){
     GET_TOKEN();
 
+    if(token.type == TOKEN_SEMICOLON) return NO_ERRORS;
+
     if(local) code = parse_expression(&localSymt, 0);
     else code = parse_expression(&globalSymt, 0);
 
@@ -312,6 +318,9 @@ static int inside_while(){
     GET_AND_CHECK_TOKEN(token.type == TOKEN_LEFT_PAR, SYNTAX_ERROR);
     // here we should collect an expression inside of a WHILE statement, then check if it's okay and after check for the TOKEN_RIGHT_PAR
     // if(!expression_check()) return false;
+
+    // code = parse_expression(&localSymt, 1);
+
 
     // CHECK_RULE(parse_expression());
     do {
@@ -625,15 +634,18 @@ static int list_of_call_parameters(ht_item_t* function){
     str_init(&params);
 
     // token == TOKEN_LEFT_PAR
-    
     GET_TOKEN();
 
     if(token.type == TOKEN_RIGHT_PAR){
-        if(!str_cmp_const_str(&function->data.func->argv, "")){
-            // GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
-            generator_call_func(function);
+        if(!strcmp(function->key, "write")){
             return NO_ERRORS;
-        } else return SEM_TYPE_ERROR;
+        }
+        else if(!str_cmp_const_str(&function->data.func->argv, "")){
+            // GET_AND_CHECK_TOKEN(token.type == TOKEN_SEMICOLON, SYNTAX_ERROR);
+            // generator_call_func(function);
+            return NO_ERRORS;
+        }
+        else return SEM_TYPE_ERROR;
     } else if (token.type == TOKEN_ID || token.type == TOKEN_TYPE_STRING || 
                token.type == TOKEN_TYPE_INT || token.type == TOKEN_TYPE_FLOAT){
         code = call_parameter(function, params);

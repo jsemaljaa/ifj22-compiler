@@ -24,9 +24,6 @@ struct count
     int whileCount;
     int varCount;
     int argCount;
-    int loopCount;
-    int maxArgs;
-    bool arg;
 
     char *varsId[MAX_HT_SIZE];
 };
@@ -98,13 +95,6 @@ void generator_call_func(ht_item_t *func);
  */
 char *generator_str_convert(char *str);
 
-// /*
-//  * @brief Convert token_t to ht_item_t
-//  * @param token - structure token_t for convert to structure ht_item_t
-//  * @return ht_item_t sructure
-//  */
-// ht_item_t *generator_default_val(token_t token);
-
 /*
  * @brief Start  a if functuon
  * @return nothing
@@ -131,44 +121,31 @@ void generator_end_else();
 
 /*
  * @brief Start a while function
- * @param TODO
  * @return nothing
  */
-void generator_start_while(); //int max_while);
+void generator_start_while(); 
 
 /*
- * @brief Print a loop end condition
+ * @brief End a while function
  * @return nothing
- */
-//void generator_loop_condition();
-
-// void generator_stop_loop_while();
-
-/*
- * @brief Table initialization
- * @param *table - symbol table
- * @return nothing (actually an initialized table)
  */
 void generator_end_while();
 
 /*
- * @brief Table initialization
- * @param *table - symbol table
- * @return nothing (actually an initialized table)
+ * @brief Read int type variable from the input
+ * @return int 
  */
 void generator_readi();
 
 /*
- * @brief Table initialization
- * @param *table - symbol table
- * @return nothing (actually an initialized table)
+ * @brief Read float type variable from the input
+ * @return float
  */
 void generator_readf();
 
 /*
- * @brief Table initialization
- * @param *table - symbol table
- * @return nothing (actually an initialized table)
+ * @brief Read string type variable from the input
+ * @return string
  */
 void generator_reads();
 
@@ -201,9 +178,9 @@ void generator_ord();
 void generator_chr();
 
 /*
- * @brief Table initialization
- * @param *table - symbol table
- * @return nothing (actually an initialized table)
+ * @brief Print code of one of built-in functions
+ * @param *func_name - name of built-in function
+ * @return nothing
  */
 void generator_internal_func(char *func_name);
 

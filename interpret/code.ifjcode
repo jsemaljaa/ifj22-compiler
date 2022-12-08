@@ -2,17 +2,5 @@
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@$arg0
-MOVE LF@$arg0 int@123456
+MOVE LF@$arg0 string@DONE\010
 WRITE LF@$arg0
-DEFVAR LF@$arg1
-MOVE LF@$arg1 string@\032or\032
-WRITE LF@$arg1
-DEFVAR LF@$arg2
-MOVE LF@$arg2 float@0x1.edd2f1a9fbe77p+6
-WRITE LF@$arg2
-DEFVAR LF@$arg3
-MOVE LF@$arg3 string@,\032thats\032the\032question
-WRITE LF@$arg3
-DEFVAR LF@$arg4
-MOVE LF@$arg4 string@\010
-WRITE LF@$arg4

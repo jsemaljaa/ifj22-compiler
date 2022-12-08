@@ -294,7 +294,9 @@ skip_step:
 		if(token.type == TOKEN_ASSIGN){
 			exprStart = true;
 			goto skip_step;
-		}
+		} 
+
+end_input:
 		endInput = token.type == TOKEN_SEMICOLON || token.type == TOKEN_LEFT_BR;
 		
 		
@@ -334,10 +336,13 @@ expr_proc:
 				break;
 			
 			case '=': // equal
+				if (tokenSymb == ID) return SEM_OTHER_ERROR;
 				POP_TIMES(2);
 				prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
+				headStack = prec_stack_head(&stack);
+				goto skip_step;
 				break;
-			
+				
 			case 'e': // error
 				prec_stack_free(&stack);
 				return SYNTAX_ERROR;
