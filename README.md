@@ -2,8 +2,10 @@
 ## IFJ22 Imperative Language Compiler Implementation 
 
 ## Authors:
-### @maryia-mazurava
-### @sirotka
+### [Ekaterina Krupenko](https://github.com/sirotka)
+### [Maryia Mazurava](https://github.com/maryia-mazurava)
 ### @evgenia-taipova
+
+The goal of the project was to write a compiler (in C) for the custom language IFJ22
 
 ### Tests from @galloj. [Repository](https://github.com/galloj/IFJ22_Tester).
