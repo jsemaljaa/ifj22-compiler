@@ -22,6 +22,13 @@ declare(strict_types=1);
 
 // write(123456, " or ", 123.456, ", thats the question", "\n");
 
+$a = chr(97);
+write($a);
+
+// write("Hello ", 20, " world\n");
+
+// write(123.456, "\n");
+
 // (1+1);
 
 // function f() : void {
@@ -34,13 +41,3 @@ declare(strict_types=1);
   
 //   f();
 //   g();
-
-readi();
-reads();
-readf();
-
-ord("fff");
-
-chr(3);
-
-substr("subfhg", 1, 3);

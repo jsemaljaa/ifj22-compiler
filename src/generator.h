@@ -184,15 +184,4 @@ void generator_chr();
  */
 void generator_internal_func(char *func_name);
 
-/*
- * @brief Table initialization
- * @param *table - symbol table
- * @param *table - symbol table
- * @param *table - symbol table
- * @param *table - symbol table
- * @return nothing (actually an initialized table)
- */
-void generator_operation(token_type_t operation, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2);
-
-
 #endif // GENERATOR_H

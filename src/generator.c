@@ -10,6 +10,13 @@
 
 struct count tmp;
 
+#define UPDATE_CODE(code)                                   \
+    if(str_concat(&instruction, code)) return false;        \
+
+#define UPDATE_INSTRUCTION(inst)                            \
+    if(str_concat(&instruction, (inst "\n"))) return false; \
+
+
 void generator_header()
 {
     printf(".IFJcode22\n");
@@ -140,10 +147,10 @@ bool generator_get_arg(char *id, token_t arg, symt_datatype_t idDataType)
                 break;
         }
         break;
-        default:                                                                         // declare an argument of type nil
+    default:                                                                         // declare an argument of type nil
         printf("DEFVAR LF@$arg%d\n", tmp.argCount);
         printf("MOVE LF@$arg%d nil@nil\n", tmp.argCount);
-        break;
+    break;
     }
 
     if(!strcmp(id, "write"))
@@ -379,103 +386,135 @@ void generator_end_while()
 
 void generator_readi()
 {
+    printf("LABEL !readi\n");
+    printf("PUSHFRAME\n");
+
     printf("DEFVAR LF@$readi\n");
     printf("READ LF@$readi int\n");
+
+    printf("LABEL !end_readi\n");
+
+    printf("POPFRAME\n");
+    printf("RETURN\n");
 }
 
 void generator_readf()
 {
+    printf("LABEL !readf\n");
+    printf("PUSHFRAME\n");
+
     printf("DEFVAR LF@$readf\n");
     printf("READ LF@$readf float\n");
+
+    printf("LABEL !end_readf\n");
+
+    printf("POPFRAME\n");
+    printf("RETURN\n");
 }
 
 void generator_reads()                                                                                   
 {
+    printf("LABEL !reads\n");
+    printf("PUSHFRAME\n");
+
     printf("DEFVAR LF@$reads\n");
     printf("READ LF@$reads string\n");
-}
 
-void generator_strlen(char *str)
-{
-    printf("DEFVAR LF@$len\n");
-    printf("MOVE LF@$len string@\n");
-    printf("STRLEN LF@$len LF@%s\n", str);
+    printf("LABEL !end_reads\n");
+
+    printf("POPFRAME\n");
+    printf("RETURN\n");
 }
 
 void generator_substr()
 {
+    printf("LABEL !substr\n");
+    printf("PUSHFRAME\n");
+
     printf("DEFVAR LF@$result\n");
     printf("DEFVAR LF@$str_param\n");
-    printf("DEFVAR LF@$str_param1\n");
-    printf("DEFVAR LF@$str_param2\n");
-    printf("DEFVAR LF@$str\n");
     printf("DEFVAR LF@$char\n");
 
     printf("MOVE LF@$result string@\n");
-    printf("MOVE LF@$str TF&arg%d\n", tmp.argCount - 2);
-    printf("MOVE LF@$str_param1 LF@&arg%d\n", tmp.argCount - 1);
-    printf("MOVE LF@$str_param2 LF@&arg%d\n", tmp.argCount);
 
-    printf("JUMPIFEQ !end_substr LF@$str nil@nil\n");
-    printf("JUMPIFEQ !end_substr LF@$str_param1 nil@nil\n");
-    printf("JUMPIFEQ !end_substr LF@$str_param2 nil@nil\n");
+    printf("LT LF@$str_param LF@$arg%d int@1\n", tmp.argCount - 1);
+    printf("JUMPIFEQ !end_substr LF@$str_param bool@true\n");
+    printf("LT LF@$str_param LF@$$arg%d int@1\n", tmp.argCount);
+    printf("JUMPIFEQ !end_substr LF@$str_param bool@true\n");
 
-    printf("LT LF@$str_param LF@$str_param1 int@1\n");
+    printf("DEFVAR LF@$len\n");
+    printf("MOVE LF@$len string@\n");
+    printf("STRLEN LF@$len LF@$arg%d", tmp.argCount - 2);
+
+    printf("GT LF@$str_param LF@$arg%d LF@$len\n", tmp.argCount - 1);
     printf("JUMPIFEQ !end_substr LF@$str_param bool@true\n");
-    printf("LT LF@$str_param LF@$str_param2 int@1\n");
+    printf("GT LF@$str_param LF@$arg%d LF@$len\n", tmp.argCount);
     printf("JUMPIFEQ !end_substr LF@$str_param bool@true\n");
-    generator_strlen("$str");
-    printf("GT LF@$str_param LF@$str_param1 LF@$len\n");
+    printf("LT LF@$str_param LF@$arg%d LF@$arg%d\n", tmp.argCount, tmp.argCount - 1);
     printf("JUMPIFEQ !end_substr LF@$str_param bool@true\n");
-    printf("GT LF@$str_param LF@$str_param2 LF@$len\n");
-    printf("JUMPIFEQ !end_substr LF@$str_param bool@true\n");
-    printf("LT LF@$str_param LF@$str_param2 LF@$str_param1\n");
-    printf("JUMPIFEQ !end_substr LF@$str_param bool@true\n");
-    printf("SUB LF@$str_param1 LF@$str_param1 int@1\n");
+    printf("SUB LF@$arg%d LF@$arg%d int@1\n", tmp.argCount - 1, tmp.argCount - 1);
 
     printf("LABEL !loop_substr\n");
-    printf("GETCHAR LF@$char LF@$str LF@$str_param1\n");
+    printf("GETCHAR LF@$char LF@$arg%d LF@$arg%d\n", tmp.argCount - 2, tmp.argCount - 1);
     printf("CONCAT LF@$result LF@$result LF@$char\n");
-    printf("ADD LF@$str_param1 LF@$str_param1 int@1\n");
-    printf("LT LF@$str_param LF@$str_param1 LF@$str_param2\n");
+    printf("ADD LF@$arg%d LF@$arg%d int@1\n", tmp.argCount - 1, tmp.argCount - 1);
+    printf("LT LF@$str_param LF@$arg%d LF@$arg%d\n", tmp.argCount - 1, tmp.argCount);
     printf("JUMPIFEQ !loop_substr LF@$str_param bool@true\n");
+
+    printf("LABEL !end_substr\n");
+
+    printf("POPFRAME\n");
+    printf("RETURN\n");
 }
 
 void generator_ord()
 {
+    printf("LABEL !ord\n");
+    printf("PUSHFRAME\n");
+
     printf("DEFVAR LF@$result\n");
     printf("DEFVAR LF@$param\n");
-    printf("DEFVAR LF@$str\n");
 
-    printf("MOVE LF@$str LF&arg%d\n", tmp.argCount);
 
-    printf("JUMPIFEQ !end_ord LF@$str nil@nil\n");
+    printf("JUMPIFEQ !end_ord LF@&arg%d nil@nil\n", tmp.argCount);
 
-    generator_strlen("$str");
+    printf("DEFVAR LF@$len\n");
+    printf("MOVE LF@$len string@\n");
+    printf("STRLEN LF@$len LF@$arg%d", tmp.argCount);
 
     printf("LT LF@$param LF@$len int@1\n");
     printf("JUMPIFEQ !end_ord LF@$param bool@true\n");
-    printf("STRI2INT LF@$result LF@$str int@1\n");
+    printf("STRI2INT LF@$result LF@&arg%d int@1\n", tmp.argCount);
     printf("JUMP !end_ord\n");
     printf("LABEL !error_string_is_empty\n");
     printf("MOVE LF$result int@0\n");
+
+    printf("LABEL !end_ord\n");
+
+    printf("POPFRAME\n");
+    printf("RETURN\n");
 }
 
 void generator_chr()
 {
+    printf("LABEL !chr\n");
+    printf("PUSHFRAME\n");
+
     printf("DEFVAR LF@$result\n");
-    printf("DEFVAR LF@$param\n");
     printf("DEFVAR LF@$params\n");
 
-    printf("MOVE LF@$param LF&arg%d\n", tmp.argCount);
+    printf("JUMPIFEQ !end_chr LF@$arg%d nil@nil\n", tmp.argCount);
 
-    printf("JUMPIFEQ !end_chr LF@$param nil@nil\n");
+    printf("LT LF@$params LF@$arg%d int@1\n", tmp.argCount);
+    printf("JUMPIFEQ !end_chr LF@$params bool@true\n");
+    printf("GT LF@$params LF@$arg%d int@255\n", tmp.argCount);
+    printf("JUMPIFEQ !end_chr LF@$params bool@true\n");
+    printf("INT2CHAR LF@$result LF@$arg%d\n", tmp.argCount);
 
-    printf("LT LF@$params LF@$param int@1\n");
-    printf("JUMPIFEQ !end_chr LF@$params bool@true\n");
-    printf("GT LF@$params LF@$param int@255\n");
-    printf("JUMPIFEQ !end_chr LF@$params bool@true\n");
-    printf("INT2CHAR LF@$result LF@$param\n");
+    printf("LABEL !end_chr\n");
+
+    printf("POPFRAME\n");
+    printf("RETURN\n");
 }
 
 void generator_internal_func(char *func_name)
@@ -508,72 +547,5 @@ void generator_internal_func(char *func_name)
                 break;
             }
         }
-    }
-}
-
-void generator_operation(token_type_t operation, ht_item_t *var, ht_item_t *symb1, ht_item_t *symb2)
-{
-    if (generator_check_var(var))   // if variable (var) is new
-        generator_get_new_var(var); // get new variable
-
-    else if (generator_check_var(symb1))
-        generator_get_new_var(symb1);
-
-    else if (generator_check_var(symb1))
-        generator_get_new_var(symb1);
-
-    switch (operation)
-    {
-    case TOKEN_PLUS:
-        printf("ADD LF@$%s LF@$%s LF@$%s\n", var->key, symb1->key, symb2->key);
-        break;
-    case TOKEN_MINUS:
-        printf("SUB LF@$%s LF@$%s LF@$%s\n", var->key, symb1->key, symb2->key);
-        break;
-    case TOKEN_MUL:
-        printf("MUL LF@$%s LF@$%s LF@$%s\n", var->key, symb1->key, symb2->key);
-        break;
-    case TOKEN_DIV:
-
-        if (!strcmp("float", generator_get_type(symb1->data.var->type)) && !strcmp("float", generator_get_type(symb2->data.var->type))) // if simb1 is float and symb2 is float
-        {
-            printf("JUMPIFEQ !division_by_zero LF@$%s float@%a\n", symb2->key, 0.0);
-            printf("DIV LF@$%s LF@$%s LF@$%s\n", var->key, symb1->key, symb2->key); // do operation DIV
-            printf("LABEL !division_by_zero\n");
-        }
-        else if (!strcmp("int", generator_get_type(symb1->data.var->type)) && !strcmp("int", generator_get_type(var->next->next->data.var->type))) // if simb1 is int and symb2 is int
-        {
-            printf("LABEL !division_by_zero\n");
-            printf("IDIV LF@$%s LF@$%s LF@$%s\n", var->key, symb1->key, symb2->key); // do operation IDIV
-            printf("LABEL !division_by_zero\n");
-        }
-        break;
-    case TOKEN_EQUAL:
-        printf("EQ LF@$%s LF@$%s LF@$%s\n", var->key, symb1->key, symb2->key);
-        break;
-    case TOKEN_NOT_EQUAL:
-        printf("EQ LF@$%s LF@$%s LF@$%s\n", var->key, symb1->key, symb2->key); // symb1 == symb2
-        printf("NOT LF@$%s LF@$%s\n", var->key, var->key);                     // NOT(var)
-        break;
-    case TOKEN_LESS:
-        printf("LT LF@$%s LF@$%s LF@$%s\n", var->key, symb1->key, symb2->key);
-        break;
-    case TOKEN_GREATER:
-        printf("GT LF@$%s LF@$%s LF@$%s\n", var->key, symb1->key, symb2->key);
-        break;
-    case TOKEN_LESS_EQ:
-        printf("DEFVAR LF@$param1\n");
-        printf("DEFVAR LF@$param2\n");
-        printf("LT LF@$param1 LF@$%s LF@$%s\n", symb1->key, symb2->key); // symb1 < symb2
-        printf("EQ LF@$param2 LF@$%s LF@$%s\n", symb1->key, symb2->key); // symb1 == symb2
-        printf("OR LF@$%s LF@$$param1 LF@$$param2\n", var->key);         // true if symb1 < symb2 nebo symb1 == symb2
-        break;
-    case TOKEN_GREATER_EQ:
-        printf("DEFVAR LF@$param1\n");
-        printf("DEFVAR LF@$param2\n");
-        printf("GT LF@$param1 LF@$%s LF@$%s\n", symb1->key, symb2->key);
-        printf("EQ LF@$param2 LF@$%s LF@$%s\n", symb1->key, symb2->key);
-        printf("OR LF@$%s LF@$param1 LF@$param2\n", var->key);
-        break;
     }
 }

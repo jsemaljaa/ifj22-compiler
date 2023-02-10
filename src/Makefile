@@ -4,7 +4,7 @@
 
 ZIPNAME=xvinog00
 TARGET=ifj22
-CFLAGS=-std=c99 -Werror -g 
+CFLAGS=-std=c99 -Werror 
 
 all: $(TARGET)
 

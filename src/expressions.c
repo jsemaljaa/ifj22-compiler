@@ -213,7 +213,6 @@ int reduce_operation(prec_stack_item_t *headStack, prec_rules_t rule){
 	case DIV_R:
 	case PLUS_R:
 	case MINUS_R:
-		// if(src != 0) return SEM_OTHER_ERROR;
 		POP_TIMES(4);
 		prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
 		return NO_ERRORS;
@@ -222,8 +221,7 @@ int reduce_operation(prec_stack_item_t *headStack, prec_rules_t rule){
 	case LESS_R:
 	case LEEQ_R:
 	case TYPE_EQ_R:
-	case NTYPE_EQ_R:
-		//if(src != 1) return SEM_OTHER_ERROR; 
+	case NTYPE_EQ_R: 
 		POP_TIMES(4);
 		prec_stack_push(&stack, NONTERM, UNDEFINED_TYPE);
 		return NO_ERRORS;

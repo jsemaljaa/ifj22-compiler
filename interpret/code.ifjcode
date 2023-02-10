@@ -2,5 +2,22 @@
 CREATEFRAME
 PUSHFRAME
 DEFVAR LF@$arg0
-MOVE LF@$arg0 string@DONE\010
-WRITE LF@$arg0
+MOVE LF@$arg0 int@97
+CALL !chr
+LABEL !chr
+PUSHFRAME
+DEFVAR LF@$result
+DEFVAR LF@$params
+JUMPIFEQ !end_chr LF@$arg0 nil@nil
+LT LF@$params LF@$arg0 int@1
+JUMPIFEQ !end_chr LF@$params bool@true
+GT LF@$params LF@$arg0 int@255
+JUMPIFEQ !end_chr LF@$params bool@true
+INT2CHAR LF@$result LF@$arg0
+LABEL !end_chr
+POPFRAME
+RETURN
+DEFVAR LF@$arg1
+DEFVAR LF@$arg1
+MOVE LF@$arg1 nil@nil
+WRITE LF@$arg1

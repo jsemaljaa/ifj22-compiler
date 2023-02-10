@@ -1,3 +1,12 @@
+/*
+ * IFJ2022/project/ifj22.c
+ *
+ * @brief Main program
+ *
+ * @author Vinogradova Alina <xvinog00@vutbr.cz>
+ */
+
+
 #include <stdio.h>
 #include "scanner.h"
 #include "expressions.h"
