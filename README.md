@@ -1,4 +1,3 @@
-# Formal Languages and Compilers university course (2022/23)
 ## IFJ22 Imperative Language Compiler Implementation 
 
 The goal of the project was to write a compiler (in C) for the custom language IFJ22.
