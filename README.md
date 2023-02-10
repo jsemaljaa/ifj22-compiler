@@ -8,8 +8,9 @@ Our team developed the following structure for the final system:
 3) Code generator (generates machine code in IFJcode22)
 
 ## Authors:
+### [Alina Vinogradova](https://github.com/jsemaljaa)
 ### [Ekaterina Krupenko](https://github.com/sirotka)
 ### [Maryia Mazurava](https://github.com/maryia-mazurava)
 ### [Evgenia Taipova](https://github.com/evgenia-taipova)
 
-### Tests from @galloj. [Repository](https://github.com/galloj/IFJ22_Tester).
+### [Tests repository (made by @galloj)](https://github.com/galloj/IFJ22_Tester).
