@@ -16,10 +16,5 @@ Final Score: 16.32/60.00 (distributed equally among 4 team members)
 ### [Ekaterina Krupenko](https://github.com/sirotka)
 ### [Maryia Mazurava](https://github.com/maryia-mazurava)
 ### [Evgenia Taipova](https://github.com/evgenia-taipova)
-<pre>
 
-
-
-
-</pre>
 ### [Tests repository (made by @galloj)](https://github.com/galloj/IFJ22_Tester)
