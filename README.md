@@ -132,9 +132,9 @@ RETURN
 (distributed equally among 4 team members)
 
 ## Authors:
-[Alina Vinogradova](https://github.com/jsemaljaa)
-[Ekaterina Krupenko](https://github.com/sirotka)
-[Maryia Mazurava](https://github.com/maryia-mazurava)
+[Alina Vinogradova](https://github.com/jsemaljaa),
+[Ekaterina Krupenko](https://github.com/sirotka),
+[Maryia Mazurava](https://github.com/maryia-mazurava),
 [Evgenia Taipova](https://github.com/evgenia-taipova)    
 
 [Tests (by @galloj)](https://github.com/galloj/IFJ22_Tester)
